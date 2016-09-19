@@ -1,0 +1,4 @@
+<div data-js-region="base">
+    <div id="navigation" data-js-region="navigation"></div>
+    <div id="content" data-js-region="content"></div>
+</div>

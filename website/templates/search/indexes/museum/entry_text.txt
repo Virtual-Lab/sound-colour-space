@@ -1,0 +1,9 @@
+{{ object.title }}
+{{ object.subtitle }}
+{{ object.year }}
+{{ object.description }}
+{{ object.source }}
+{{ object.copyright_notice }}
+{% for tag in object.tags.all %} {{ tag.name }} {% endfor %}
+{% for author in object.author.all %} {{ author.first_name }} {{ author.last_name }} {{ author.pseudonym }} {% endfor %}
+

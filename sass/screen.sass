@@ -1,0 +1,122 @@
+@charset "utf-8"
+
+@import settings
+@import foundation
+
++foundation-global-styles
+
+//+foundation-grid
++foundation-flex-grid
++foundation-flex-classes
+
++foundation-typography
++foundation-button
++foundation-forms
++foundation-visibility-classes
++foundation-float-classes
++foundation-accordion
++foundation-accordion-menu
++foundation-badge
++foundation-breadcrumbs
++foundation-button-group
++foundation-callout
++foundation-close-button
++foundation-drilldown-menu
++foundation-dropdown
++foundation-dropdown-menu
++foundation-flex-video
++foundation-label
++foundation-media-object
++foundation-menu
++foundation-off-canvas
++foundation-orbit
++foundation-pagination
++foundation-progress-bar
++foundation-slider
++foundation-sticky
++foundation-reveal
++foundation-switch
++foundation-table
++foundation-tabs
++foundation-thumbnail
++foundation-title-bar
++foundation-tooltip
++foundation-top-bar
+
+@import site/apps/base
+
+@mixin keyframe-fadeIn
+  0%
+    opacity: 0
+  100%
+    opacity: 1
+
+@keyframes fadeIn
+  @include keyframe-fadeIn
+
+@mixin fadeIn( $arg )
+  $keyframe-name: fadeIn
+  $duration: $arg
+  animation: $keyframe-name $duration
+
+html
+//overflow-y: scroll // activate if packery has gabs..
+
+body
+  background-color: white
+
+.row.full
+  width: 100%
+  margin-left: auto
+  margin-right: auto
+  max-width: initial
+
+#navigation
+  position: absolute
+  top: 0
+  z-index: 1000
+  width: 100%
+
+  nav
+    background: #f1f1f1
+    font-size: 0.8125rem !important
+    font-weight: bold
+    padding: 0.5rem
+
+#content
+  margin-top: 80px
+  margin-bottom: 50px
+
+///////////////////////
+// grid
+///////////////////////
+.grid-sizer,
+.grid-item
+  @include breakpoint(medium down)
+    width: 100.0%
+  @include breakpoint(medium up)
+    width: 33.3%
+  @include breakpoint(large up)
+    width: 20%
+
+  .entry_wrapper
+    display: inline-block
+    padding: 5px
+    margin: 5px
+    border: 1px dashed lightgrey
+    //@include fadeIn( 1s )
+
+.grow
+  transition: all .2s ease-in-out
+
+.grow:hover
+  transform: scale(1.02)
+
+
+
+.stencil .search
+  box-shadow: none
+  text-shadow: none
+  background-color: inherit
+
+

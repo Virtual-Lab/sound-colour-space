@@ -1,0 +1,22 @@
+<section id="entries">
+
+    <div id="entry_list_header" data-js-region="entry_list_header"></div>
+
+    <div class="row">
+        <div class="medium-12 columns">
+            <!--<div class="entries row small-up-1 medium-up-3 large-up-5 grid" style="margin-top: 50px;"></div>-->
+            <div class="entries grid" style="margin-top: 50px;"></div>
+        </div>
+    </div>
+
+
+    </div>
+
+    <footer>
+        <div class="row">
+            <div class="large-12 medium-12 small-12 column text-center">
+                <!--<h4>List Footer</h4>-->
+            </div>
+        </div>
+    </footer>
+</section>

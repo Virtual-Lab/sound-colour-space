@@ -1,0 +1,88 @@
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="joint.min.css"/>
+    <link type="text/css" rel="stylesheet" href="joint.ui.selectionView.min.css" />
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="lodash.js"></script>
+    <script type="text/javascript" src="backbone.js"></script>
+    <script type="text/javascript" src="joint.min.js"></script>
+    <script type="text/javascript" src="joint.ui.selectionView.min.js"></script>
+</head>
+<body>
+
+    <div id="paper"></div>
+
+    <script type="text/javascript">
+
+        window.App = {
+            Helper: {},
+            Router: {},
+            Model: {},
+            Collection: {},
+            View: {},
+            Form: {}
+        };
+
+        var graph = new joint.dia.Graph;
+
+        var paper = new joint.dia.Paper({
+            el: $('#paper'),
+            width: 900,
+            height: 600,
+            perpendicularLinks: true,
+            model: graph,
+            gridSize: 1
+        });
+
+        var selection = new Backbone.Collection;
+        var selectionView = new joint.ui.SelectionView({ paper: paper, graph: graph, model: selection });
+
+        paper.on('blank:pointerdown', selectionView.startSelecting);
+
+        paper.on('cell:pointerup', function(cellView, evt) {
+            if ((evt.ctrlKey || evt.metaKey) && !(cellView.model instanceof joint.dia.Link)) {
+                selection.add(cellView.model);
+                selectionView.createSelectionBox(cellView);
+            }
+        });
+
+        selectionView.on('selection-box:pointerdown', function(evt) {
+            if (evt.ctrlKey || evt.metaKey) {
+                var cell = selection.get($(evt.target).data('model'));
+                selection.reset(selection.without(cell));
+                selectionView.destroySelectionBox(paper.findViewByModel(cell));
+            }
+        });
+
+
+        App.Helper.r = new joint.shapes.basic.Rect({
+            position: {x: 50, y: 50}, size: {width: 70, height: 40},
+            attrs: {rect: {fill: '#31D0C6', stroke: '#4B4A67', 'stroke-width': 2}, text: {text: 'rect', fill: 'white'}}
+        });
+        var c = new joint.shapes.basic.Circle({
+            position: {x: 220, y: 150}, size: {width: 70, height: 40},
+            attrs: {
+                circle: {fill: '#FE854F', 'stroke-width': 2, stroke: '#4B4A67'},
+                text: {text: 'ellipse', fill: 'white'}
+            }
+        });
+
+        console.log(c.get('id'));
+        console.log(c.get('position'));
+        c.translate(0,150,{});
+        console.log(c.get('position'));
+
+        graph.addCells([App.Helper.r, c]);
+
+        console.log( JSON.stringify(graph.toJSON()) );
+
+        selection.on('reset add', function () {
+            // Print types of all the elements in the selection.
+            console.log(selection.pluck('type'));
+        });
+
+    </script>
+
+</body>

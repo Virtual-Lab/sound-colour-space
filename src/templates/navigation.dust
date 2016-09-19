@@ -1,0 +1,24 @@
+<nav>
+    <div class="row align-spaced">
+        <div class="shrink column small-order-1 large-order-1">
+            <ul class="menu">
+                <li><a href="/">Sound Colour Space</a></li>
+            </ul>
+        </div>
+        <div class="expand column small-order-3 large-order-2">
+            <div class="input-group" style="margin-bottom: 0;"><span class="input-group-label"><i class="fi-magnifying-glass" style="font-size: 1.3rem; color: rgb(170, 170, 170);"></i></span>
+                <input class="input-group-field search" type="search" placeholder="Search">
+                <div class="input-group-button">
+                    <button class="button search"><i class="fi-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="shrink column small-order-2  large-order-3">
+            <ul class="menu">
+                <li><a href="exhibitions">Exhibitions</a></li>
+                <li><a href="editor">Editor</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

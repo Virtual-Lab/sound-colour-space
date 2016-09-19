@@ -1,0 +1,17 @@
+<div class="row">
+    <div class="column small-12 text-center">
+        {?query}<h5>Search results for: <b>{query}</b></h5>{/query}
+    </div>
+</div>
+<div class="row">
+    <div class="column small-12">
+        <div id="entry_list" data-js-region="entry_list"></div>
+    </div>
+</div>
+<!--
+<div class="row">
+    <div class="column small-12 text-center">
+        <button class="button load">load</button>
+    </div>
+</div>
+-->

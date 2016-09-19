@@ -1,0 +1,34 @@
+<!DOCTYPE html>{% load static staticfiles %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <title>Sound Colour Space</title>
+    <link type="text/css" rel="stylesheet" href="{% static 'css/rappid.min.css' %}"/>
+    <link type="text/css" rel="stylesheet" href="{% static 'css/screen.css' %}"/>
+    <link type="text/css" rel="stylesheet" href="{% static 'fonts/foundation-icons.css' %}"/>
+    <!--<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>-->
+</head>
+<body>
+{% block content %}{% endblock %}
+<script>
+    var BASE_URL = '{{ BASE_URL|escapejs }}';
+    var STATIC_URL = '{{ STATIC_URL|escapejs }}';
+    var MEDIA_URL = '{{ MEDIA_URL|escapejs }}';
+    var API_URL = '{{ API_URL|escapejs }}';
+    {% if request.user.is_authenticated %}var SLUG = '{{ request.user.slug }}';{% else %}var SLUG = 'Anonymous';{% endif %}
+</script>
+
+<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/lodash.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/backbone.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/rappid.min.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'js/bundle.js' %}"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<div>
+    <div class="row full align-stretch">
+        <div class="columns align-left">
+            <input type="search" placeholder="search" class="search">
+            <div id="stencil_holder"></div>
+        </div>
+        <div class="columns align-self-stretch">
+            <div id="paper"></div>
+        </div>
+    </div>
+    <div class="row full">
+        <div class="columns large-12 left">
+            <div id="selection-info"></div>
+            <button type="button" class="success button" id="btn_open_svg">Save SVG</button>
+        </div>
+    </div>
+</div>

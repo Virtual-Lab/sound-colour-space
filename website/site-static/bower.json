@@ -1,0 +1,36 @@
+{
+  "name": "stahllabs",
+  "version": "0.0.0",
+  "homepage": "https://github.com/stahlnow/stahllabs",
+  "authors": [
+    "stahl <office@stahlnow.com>"
+  ],
+  "description": "stahllabs website",
+  "dependencies": {
+    "backbone": "1.1.2",
+    "backbone-forms": "~0.14.0",
+    "backbone-tastypie": "*",
+    "backbone.paginator": "~2.0.2",
+    "backbone.touch": "0.4.2",
+    "blueimp-md5": "~1.1.1",
+    "cropit": "~0.4.1",
+    "dustjs-helpers": "~1.7.3",
+    "dustjs-linkedin": "~2.7.2",
+    "foundation": "5.5.2",
+    "isotope": "2.2.1",
+    "jquery-timeago": "1.4.1",
+    "js-cookie": "~2.0.3",
+    "marked": "~0.3.5",
+    "owl.carousel": "2.0.0-beta.3",
+    "backbone.marionette": "marionette#~2.4.4",
+    "waypoints": "~4.0.0"
+  },
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
