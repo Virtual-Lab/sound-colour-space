@@ -51203,9 +51203,15 @@ var marked = require('marked');
 
 // override link rendering
 var renderer = new marked.Renderer();
+
+
 renderer.link = function (href, title, text) {
-    return '<a href="' + href + '" title="' + title + '" target="_blank" data-bypass>' + text + '</a>';
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
+        return '<a href="' + href + '" title="' + title + '" target="_blank" data-bypass>' + text + '</a>';
+    else
+        return '<a href="/diagrams/' + href + '" title="' + title + '" target="_blank">' + text + '</a>';
 };
+
 
 // markdown filter
 dust.filters.markdown = function(text) {
@@ -51536,7 +51542,7 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],37:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h5>").f(ctx.get(["title"], false),ctx,"h").w("</h5><h6>").f(ctx.get(["year"], false),ctx,"h").w("</h6><h6>").f(ctx.getPath(false, ["author","first_name"]),ctx,"h").w(" ").f(ctx.getPath(false, ["author","last_name"]),ctx,"h").w(" ").x(ctx.getPath(false, ["author","pseudonym"]),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_2},{}).w("<img src=\"").f(ctx.get(["image"], false),ctx,"h").w("\"/></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("(").f(ctx.getPath(false, ["author","pseudonym"]),ctx,"h").w(")");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_3},{}).w("</h6>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w(" <a href=\"/q=").f(ctx.getPath(true, []),ctx,"h").w("\">").f(ctx.getPath(true, []),ctx,"h").w("</a>").h("sep",ctx,{"block":body_4},{},"h");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(",");}body_4.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
+(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h5>").f(ctx.get(["title"], false),ctx,"h").w("</h5><h5>").f(ctx.get(["image"], false),ctx,"h").w("</h5><h6>").f(ctx.get(["year"], false),ctx,"h").w("</h6><h6>").f(ctx.getPath(false, ["author","first_name"]),ctx,"h").w(" ").f(ctx.getPath(false, ["author","last_name"]),ctx,"h").w(" ").x(ctx.getPath(false, ["author","pseudonym"]),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_2},{}).w("<img src=\"").f(ctx.get(["image"], false),ctx,"h").w("\"/><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</div><div class=\"related\"><ul>").s(ctx.get(["related"], false),ctx,{"block":body_5},{}).w("</ul></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("(").f(ctx.getPath(false, ["author","pseudonym"]),ctx,"h").w(")");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_3},{}).w("</h6>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w(" <a href=\"/q=").f(ctx.getPath(true, []),ctx,"h").w("\">").f(ctx.getPath(true, []),ctx,"h").w("</a>").h("sep",ctx,{"block":body_4},{},"h");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(",");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></li>\n");}body_5.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],38:[function(require,module,exports){

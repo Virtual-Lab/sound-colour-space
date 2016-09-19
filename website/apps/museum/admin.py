@@ -61,13 +61,17 @@ class EntryAdmin(admin.ModelAdmin):
     'title', 'subtitle', 'year', 'uuid', 'madek', 'show_image')  # 'show_image', 'link_to_author', 'source'
     list_filter = ('author', 'year', 'tags', 'license',)
     search_fields = (
-    'image', 'title', 'description', 'year', 'author__first_name', 'author__last_name', 'author__pseudonym')
+    'uuid', 'image', 'title', 'description', 'year', 'author__first_name', 'author__last_name', 'author__pseudonym')
     readonly_fields = ('uuid', 'created', 'modified', 'title', 'subtitle', 'year', 'source',
                        'copyright_notice', 'author', 'license')
 
     # prepopulated_fields = {'slug': ('title',)}
 
     # change_form_template = 'museum/admin/change_form.html'
+
+    filter_horizontal = [
+        'related',
+    ]
 
     def madek(self, obj):
         if obj.remote_uuid is not None:
@@ -110,8 +114,8 @@ class EntryAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': (
-            'image', 'author', 'year', 'title', 'subtitle', 'description', 'tags', 'source', 'copyright_notice', 'license',
-            'link')
+                'uuid', 'image', 'author', 'year', 'title', 'subtitle', 'description', 'tags', 'source',
+                'copyright_notice', 'license', 'related', 'link')
         }),
 
         ('Advanced options', {

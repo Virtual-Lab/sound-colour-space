@@ -144,6 +144,9 @@ class Entry(Base):
     remote_uuid = models.CharField(_('remote_uuid'), max_length=200, blank=True, null=True)
     remote_href = models.CharField(_('remote_href'), max_length=200, blank=True, null=True)
 
+    # related entries
+    related = models.ManyToManyField('self', symmetrical=True, blank=True)
+
     # attachments
     link = models.ManyToManyField(Link, related_name='museums_entries', blank=True)
 
@@ -151,11 +154,11 @@ class Entry(Base):
         verbose_name = _('diagram')
         verbose_name_plural = _('diagrams')
         db_table = 'museum_entry'
-        ordering = ('-created',)
+        ordering = ('title',)
         get_latest_by = 'created'
 
     def __unicode__(self):
-        return u'%s' % self.uuid
+        return u'%s [%s]' % (self.title, self.uuid)
 
 
     def get_absolute_url(self):

@@ -6,9 +6,15 @@ var marked = require('marked');
 
 // override link rendering
 var renderer = new marked.Renderer();
+
+
 renderer.link = function (href, title, text) {
-    return '<a href="' + href + '" title="' + title + '" target="_blank" data-bypass>' + text + '</a>';
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
+        return '<a href="' + href + '" title="' + title + '" target="_blank" data-bypass>' + text + '</a>';
+    else
+        return '<a href="/diagrams/' + href + '" title="' + title + '" target="_blank">' + text + '</a>';
 };
+
 
 // markdown filter
 dust.filters.markdown = function(text) {

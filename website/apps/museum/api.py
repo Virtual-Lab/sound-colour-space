@@ -97,7 +97,10 @@ class EntryResource(ModelResource):
 
     image = fields.FileField(attribute='image', blank=True, null=True, readonly=True)
     author = fields.ToManyField(AuthorResource, 'author', full=True, blank=True, null=True)
-    #author = fields.ForeignKey(AuthorResource, 'author', full=True, blank=True, null=True)
+
+    #related = fields.ToManyField('self', 'related', full=False, blank=True, null=True)
+    related = fields.ListField(blank=True)
+
     #source = fields.ForeignKey(SourceResource, 'source', full=True, blank=True, null=True)
     #link = fields.ForeignKey(LinkResource, 'gallery', full=True, blank=True, null=True)
 
@@ -134,6 +137,18 @@ class EntryResource(ModelResource):
 
     def dehydrate_tags(self, bundle):
         return [tag.name for tag in bundle.obj.tags.all()]
+
+    def dehydrate_related(self, bundle):
+
+        related_entries = []
+        for related in bundle.obj.related.all():
+            related_entries.append({
+                'title': related.title,
+                'uri': related.get_absolute_url()
+            })
+
+        return related_entries
+
 
     def save_m2m(self, bundle):
         """
