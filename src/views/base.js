@@ -262,9 +262,11 @@ module.exports.SingleView = Backbone.View.extend({
 
     template: '',   // template name
 
+    data: {},
+
     initialize: function (options) {
         this.options = _.extend({}, options);
-        this.data = _.extend({}, options.data);
+        _.extend(this.data, options.data);
         _.bindAll(this, 'render', 'onShow', 'onSync');
 
         this.listenTo(this.model, 'change', this.render);   // model data changed

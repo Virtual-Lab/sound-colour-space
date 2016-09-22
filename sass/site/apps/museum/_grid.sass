@@ -1,0 +1,35 @@
+///////////////////////
+// grid
+///////////////////////
+.grid-sizer,
+.grid-item
+  @include breakpoint(medium down)
+    width: 100.0%
+  @include breakpoint(medium up)
+    width: 33.3%
+  @include breakpoint(large up)
+    width: 20%
+
+  .entry_wrapper
+    display: inline-block
+    padding: 5px
+    margin: 5px
+    border: 1px dashed lightgrey
+    //@include fadeIn( 1s )
+
+    img
+      display: block // could be optimized for high images
+
+.grow
+  transition: all .2s ease-in-out
+
+.grow:hover
+  transform: scale(1.02)
+
+
+
+.stencil .search
+  box-shadow: none
+  text-shadow: none
+  background-color: inherit
+

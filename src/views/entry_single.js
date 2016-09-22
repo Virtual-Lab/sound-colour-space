@@ -24,9 +24,14 @@ var Base = require('./base');
 
 module.exports = Base.SingleView.extend({
 
+    data: {
+        DIAGRAMS_URL: DIAGRAMS_URL
+    },
+
     template: require('../templates/entry_single.dust'),
 
     onShow: function () {
+
         this.$el.on({
             mouseenter: function () {
                 $(this).addClass("active");
@@ -47,5 +52,5 @@ module.exports = Base.SingleView.extend({
 
     },*/
 
-    events: {},
+    events: {}
 });

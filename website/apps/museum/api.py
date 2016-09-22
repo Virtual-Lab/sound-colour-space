@@ -126,7 +126,7 @@ class EntryResource(ModelResource):
         filtering = {
             #'author': ALL_WITH_RELATIONS,
             'image': ALL_WITH_RELATIONS,
-            'year': ('icontains',),
+            'portrayed_object_date': ('icontains',),
             'title': ('icontains',),
             'subtitle': ('icontains',),
             'description': ('icontains',),
@@ -134,6 +134,14 @@ class EntryResource(ModelResource):
 
     def dehydrate_uri(self, bundle):
         return bundle.obj.get_absolute_url()
+
+    def dehydrate_image(self, bundle):
+        image = ({
+            'url': bundle.obj.image,
+            'width': bundle.obj.image.width,
+            'height': bundle.obj.image.height
+        })
+        return image
 
     def dehydrate_tags(self, bundle):
         return [tag.name for tag in bundle.obj.tags.all()]
@@ -186,7 +194,7 @@ class EntryResource(ModelResource):
 
         #results = t | a | ap
 
-        results = SearchQuerySet().models(Entry).filter(text=Raw(query))
+        results = SearchQuerySet().models(Entry).order_by('date').filter(text=Raw(query))
 
         if not results:
             results = EmptySearchQuerySet()

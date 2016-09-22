@@ -51194,17 +51194,30 @@ module.exports.Detail = function (uuid) {
     entry.fetch();
 };
 
-},{"../models/entries":30,"../models/entry":31,"../views/archive.js":43,"../views/entry_detail":46,"../views/regions.js":51,"../views/swap.js":52}],28:[function(require,module,exports){
-var dust  = require('dustjs-linkedin');
-
+},{"../models/entries":30,"../models/entry":31,"../views/archive.js":45,"../views/entry_detail":48,"../views/regions.js":55,"../views/swap.js":56}],28:[function(require,module,exports){
 // dust filters
+var dust = require('dustjs-linkedin');
+
+
 var marked = require('marked');
 //var md5 = require('blueimp-md5');
 
-// override link rendering
+
 var renderer = new marked.Renderer();
 
+marked.setOptions({
+    renderer: renderer,
+    gfm: true,
+    tables: true,
+    breaks: false,
+    pedantic: false,
+    sanitize: false, // IMPORTANT, because we do MathJax before markdown,
+                     //            however we do escaping in 'CreatePreview'.
+    smartLists: true,
+    smartypants: false
+});
 
+// override link rendering
 renderer.link = function (href, title, text) {
     if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
         return '<a href="' + href + '" title="' + title + '" target="_blank" data-bypass>' + text + '</a>';
@@ -51214,44 +51227,45 @@ renderer.link = function (href, title, text) {
 
 
 // markdown filter
-dust.filters.markdown = function(text) {
-    return marked(text, { renderer: renderer });
-}
+dust.filters.markdown = function (text) {
+    return marked(text, {renderer: renderer});
+};
+
 
 // md5 hash filter
 /*
-dust.filters.md5 = function(value) {
-    return md5(value);
-};
-*/
+ dust.filters.md5 = function(value) {
+ return md5(value);
+ };
+ */
 
 // human file size filter
-dust.filters.humanFileSize = function(bytes) {
+dust.filters.humanFileSize = function (bytes) {
     var si = true;
     var thresh = si ? 1000 : 1024;
-    if(Math.abs(bytes) < thresh) {
+    if (Math.abs(bytes) < thresh) {
         return bytes + ' B';
     }
     var units = si
-    ? ['kB','MB','GB','TB','PB','EB','ZB','YB']
-    : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+        ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+        : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
     var u = -1;
     do {
         bytes /= thresh;
         ++u;
-    } while(Math.abs(bytes) >= thresh && u < units.length - 1);
-    return bytes.toFixed(1)+' '+units[u];
+    } while (Math.abs(bytes) >= thresh && u < units.length - 1);
+    return bytes.toFixed(1) + ' ' + units[u];
 };
 
 // twitter filter
-dust.filters.hipster = function(text) {
+dust.filters.hipster = function (text) {
     return twttr.txt.autoLink(text,
-    {
-        usernameUrlBase: BASE_URL+"/",
-        hashtagUrlBase: BASE_URL+"/search#",
-        listUrlBase: BASE_URL+"/",
-    });
-}
+        {
+            usernameUrlBase: BASE_URL + "/",
+            hashtagUrlBase: BASE_URL + "/search#",
+            listUrlBase: BASE_URL + "/",
+        });
+};
 
 },{"dustjs-linkedin":5,"marked":14}],29:[function(require,module,exports){
 (function (global){
@@ -51347,14 +51361,16 @@ $(function () {
         */
     });
 
+    /*
     App.currentView = false;
     $(window).on('scroll', function () {
-        /* Not all views will be interested in maintaining scroll position, so we need to check them first. */
+        // Not all views will be interested in maintaining scroll position, so we need to check them first.
         if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
             //console.warn('setting scrollPosition ', App.currentView.viewState.attributes, $(document).scrollTop());
             App.currentView.viewState.set('scrollPosition', $(document).scrollTop());
         }
     });
+    */
 
     $(document).on('click', 'a:not([data-bypass])', function (evt) {
 
@@ -51396,7 +51412,7 @@ module.exports = Backbone.Collection.extend({
     search: function (options) {
         options = options || {};
         if (options.url === undefined) {
-                options.url = apiUrl('entries') + "/search";
+            options.url = apiUrl('entries') + "/search";
         }
         return Backbone.Model.prototype.fetch.call(this, options);
     },
@@ -51515,7 +51531,7 @@ module.exports = Backbone.Router.extend({
 });
 
 
-},{"./controllers/entry_controller":27,"./views/404.js":42,"./views/archive.js":43,"./views/editor.js":45,"./views/entry_detail.js":46,"./views/layout.js":49,"./views/navigation.js":50,"./views/regions.js":51,"./views/swap.js":52,"backbone":2,"jquery":12}],33:[function(require,module,exports){
+},{"./controllers/entry_controller":27,"./views/404.js":44,"./views/archive.js":45,"./views/editor.js":47,"./views/entry_detail.js":48,"./views/layout.js":53,"./views/navigation.js":54,"./views/regions.js":55,"./views/swap.js":56,"backbone":2,"jquery":12}],33:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("404",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 column text-center\"><h1>404 Not Found</h1></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("404", context || {}, callback); };
@@ -51542,7 +51558,7 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],37:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h5>").f(ctx.get(["title"], false),ctx,"h").w("</h5><h5>").f(ctx.get(["image"], false),ctx,"h").w("</h5><h6>").f(ctx.get(["year"], false),ctx,"h").w("</h6><h6>").f(ctx.getPath(false, ["author","first_name"]),ctx,"h").w(" ").f(ctx.getPath(false, ["author","last_name"]),ctx,"h").w(" ").x(ctx.getPath(false, ["author","pseudonym"]),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_2},{}).w("<img src=\"").f(ctx.get(["image"], false),ctx,"h").w("\"/><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</div><div class=\"related\"><ul>").s(ctx.get(["related"], false),ctx,{"block":body_5},{}).w("</ul></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("(").f(ctx.getPath(false, ["author","pseudonym"]),ctx,"h").w(")");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_3},{}).w("</h6>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w(" <a href=\"/q=").f(ctx.getPath(true, []),ctx,"h").w("\">").f(ctx.getPath(true, []),ctx,"h").w("</a>").h("sep",ctx,{"block":body_4},{},"h");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(",");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></li>\n");}body_5.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
+(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h5>").f(ctx.get(["title"], false),ctx,"h").w("</h5><span>").f(ctx.get(["DIAGRAMS_URL"], false),ctx,"h").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("</span><h6>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</h6><h6>").f(ctx.getPath(false, ["author","first_name"]),ctx,"h").w(" ").f(ctx.getPath(false, ["author","last_name"]),ctx,"h").w(" ").x(ctx.getPath(false, ["author","pseudonym"]),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_2},{}).w("<img src=\"").f(ctx.get(["DIAGRAMS_URL"], false),ctx,"h").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div><div class=\"related\"><ul>").s(ctx.get(["related"], false),ctx,{"block":body_5},{}).w("</ul></div></div><div class=\"preview\" id=\"marked-mathjax-preview-buffer\" style=\"display:none; position:absolute; top:0; left: 0\"></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("(").f(ctx.getPath(false, ["author","pseudonym"]),ctx,"h").w(")");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_3},{}).w("</h6>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w(" <a href=\"/q=").f(ctx.getPath(true, []),ctx,"h").w("\">").f(ctx.getPath(true, []),ctx,"h").w("</a>").h("sep",ctx,{"block":body_4},{},"h");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(",");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></li>\n");}body_5.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],38:[function(require,module,exports){
@@ -51560,16 +51576,28 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],40:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry grid-item ").f(ctx.get(["uuid"], false),ctx,"h").w("\"><!--<div class=\"entry column align-self-bottom grid-item\">--><div class=\"entry_wrapper text-center grow\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.get(["image"], false),ctx,"h").w("\" height=\"200\"/>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("<span>").f(ctx.get(["year"], false),ctx,"h").w("</span></a></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br />");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_single", context || {}, callback); };
+(function(dust){dust.register("entry_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry grid-item ").f(ctx.get(["uuid"], false),ctx,"h").w("\"><!--<div class=\"entry column align-self-bottom grid-item\">--><div class=\"entry_wrapper text-center grow\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.get(["DIAGRAMS_URL"], false),ctx,"h").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" height=\"200\"/>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("<span>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</span></a></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br />");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_single", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],41:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("navigation",body_0);function body_0(chk,ctx){return chk.w("<nav><div class=\"row align-spaced\"><div class=\"shrink column small-order-1 large-order-1\"><ul class=\"menu\"><li><a href=\"/\">Sound Colour Space</a></li></ul></div><div class=\"expand column small-order-3 large-order-2\"><div class=\"input-group\" style=\"margin-bottom: 0;\"><span class=\"input-group-label\"><i class=\"fi-magnifying-glass\" style=\"font-size: 1.3rem; color: rgb(170, 170, 170);\"></i></span><input class=\"input-group-field search\" type=\"search\" placeholder=\"Search\"><div class=\"input-group-button\"><button class=\"button search\"><i class=\"fi-arrow-right\"></i></button></div></div></div><div class=\"shrink column small-order-2  large-order-3\"><ul class=\"menu\"><li><a href=\"exhibitions\">Exhibitions</a></li><li><a href=\"editor\">Editor</a></li></ul></div></div></nav>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("navigation", context || {}, callback); };
+(function(dust){dust.register("entry_single_timeline",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry\"><!--<h5>").f(ctx.get(["title"], false),ctx,"h").w("</h5><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6>--><img src=\"").f(ctx.get(["DIAGRAMS_URL"], false),ctx,"h").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"connector\"><div class=\"circle\"></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br/>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_single_timeline", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],42:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("entry_timeline",body_0);function body_0(chk,ctx){return chk.w("<div><div id=\"timeline_wrapper\"><div id=\"timeline\"></div><div id=\"timeline_content\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_timeline", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":5}],43:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("navigation",body_0);function body_0(chk,ctx){return chk.w("<nav><div class=\"row align-spaced\"><div class=\"shrink column small-order-1 large-order-1\"><ul class=\"menu\"><li><a href=\"/\">Sound Colour Space</a></li></ul></div><div class=\"expand column small-order-3 large-order-2\"><div class=\"input-group\" style=\"margin-bottom: 0;\"><span class=\"input-group-label\"><i class=\"fi-magnifying-glass\" style=\"font-size: 1.3rem; color: rgb(170, 170, 170);\"></i></span><input class=\"input-group-field search\" type=\"search\" placeholder=\"Search\"><div class=\"input-group-button\"><button class=\"button search\"><i class=\"fi-arrow-right\"></i></button></div></div></div><div class=\"shrink column small-order-2  large-order-3\"><ul class=\"menu\"><li><a href=\"exhibitions\">Exhibitions</a></li><li><a href=\"editor\">Editor</a></li></ul></div></div></nav>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("navigation", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":5}],44:[function(require,module,exports){
 var Base = require('./base.js');
 
 // layout template
@@ -51580,11 +51608,12 @@ module.exports = Base.TemplateView.extend({
         console.debug("onShow", this.template);
     }
 });
-},{"../templates/404.dust":33,"./base.js":44}],43:[function(require,module,exports){
+},{"../templates/404.dust":33,"./base.js":46}],45:[function(require,module,exports){
 var Base = require('./base');
 
 var Entries = require('../models/entries');
 var EntryListView = require('./entry_list');
+var EntryTimelineView = require('./entry_timeline');
 
 var swap = require('../views/swap.js');
 
@@ -51601,7 +51630,8 @@ module.exports = Base.TemplateView.extend({
 
         // render and fetch entries
 
-        var view = new EntryListView({collection: this.options.collection});
+        //var view = new EntryListView({collection: this.options.collection});
+        var view = new EntryTimelineView({collection: this.options.collection});
         //App.view = view;
 
         swap($('[data-js-region="entry_list"]'), view);
@@ -51667,7 +51697,7 @@ module.exports = Base.TemplateView.extend({
 
 });
 
-},{"../models/entries":30,"../templates/archive.dust":34,"../views/swap.js":52,"./base":44,"./entry_list":47}],44:[function(require,module,exports){
+},{"../models/entries":30,"../templates/archive.dust":34,"../views/swap.js":56,"./base":46,"./entry_list":49,"./entry_timeline":52}],46:[function(require,module,exports){
 /* Base Views */
 'use strict';
 
@@ -51932,9 +51962,11 @@ module.exports.SingleView = Backbone.View.extend({
 
     template: '',   // template name
 
+    data: {},
+
     initialize: function (options) {
         this.options = _.extend({}, options);
-        this.data = _.extend({}, options.data);
+        _.extend(this.data, options.data);
         _.bindAll(this, 'render', 'onShow', 'onSync');
 
         this.listenTo(this.model, 'change', this.render);   // model data changed
@@ -52055,7 +52087,7 @@ module.exports.ListView = Backbone.View.extend({
     },
 });
 
-},{"backbone":2,"jquery":12,"lodash":13}],45:[function(require,module,exports){
+},{"backbone":2,"jquery":12,"lodash":13}],47:[function(require,module,exports){
 /*
  var Backbone = require('backbone');
  var $ = require('jquery');
@@ -52287,33 +52319,151 @@ module.exports = Base.TemplateView.extend({
 
     }
 });
-},{"../models/entries":30,"../templates/editor.dust":36,"./base.js":44}],46:[function(require,module,exports){
+},{"../models/entries":30,"../templates/editor.dust":36,"./base.js":46}],48:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
+var foundation = require('foundation-sites');
 Backbone.$ = $;
 
 var Base = require('./base');
+
+var marked = require('marked');
+//var md5 = require('blueimp-md5');
+
+
+var renderer = new marked.Renderer();
+
+// override link rendering
+renderer.link = function (href, title, text) {
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
+        return '<a href="' + href + '" title="' + title + '" target="_blank" data-bypass>' + text + '</a>';
+    else
+        return '<a href="/diagrams/' + href + '" title="' + title + '" target="_blank">' + text + '</a>';
+};
+
+
+marked.setOptions({
+    renderer: renderer,
+    gfm: true,
+    tables: true,
+    breaks: false,
+    pedantic: false,
+    sanitize: false, // IMPORTANT, because we do MathJax before markdown,
+                     //            however we do escaping in 'CreatePreview'.
+    smartLists: true,
+    smartypants: false
+});
+
 
 module.exports = Base.DetailView.extend({
 
     template: require('../templates/entry_detail.dust'),
 
-    data: { },
+    data: {
+        DIAGRAMS_URL: DIAGRAMS_URL,
+        mjRunning: false,
+        mjTimeout: null
+    },
 
-    onShow: function() {
+    initialize: function (options) {
+        this.options = _.extend({}, options);
+        _.extend(this.data, options.data);
+        _.bindAll(this, 'onRequest', 'onSync', 'render', 'onShow', 'Escape', 'CreatePreview', 'PreviewDone');
+
+        this.listenTo(this.model, 'change', function () {
+            console.debug('change....', this.model.id);
+            this.render();
+            this.onShow();
+        });
+        this.listenTo(this.model, 'request', this.onRequest);
+        this.listenTo(this.model, 'sync', this.onSync);
+        this.listenTo(this.model, 'destroy', this.remove);
+        this.listenTo(this.model, 'remove', this.remove);
+
+    },
+
+    onShow: function () {
+        console.log('onShow');
         // scroll to top
         $(window).scrollTop(0);
+
+
+
+
+        this.mjBuffer = document.getElementById("marked-mathjax-preview-buffer");
+        this.CreatePreview();
     },
 
-    events: {
+    events: {},
+
+    Escape: function (html, encode) {
+        return html
+            .replace(!encode ? /&(?!#?\w+;)/g : /&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     },
+
+
+    CreatePreview: function () {
+
+        // if (this.data.mjRunning) return;
+
+        var text = $('.description').text();
+
+        if (text === "")
+            return;
+
+        //console.log("Plain text", text);
+
+        text = this.Escape(text);                       // Escape tags before doing stuff
+        //console.log("escaped text is: ", text);
+
+        this.mjBuffer.innerHTML = text;
+        //this.data.mjRunning = true;
+
+        //console.log("CreatePreview", this.mjBuffer);
+
+
+        MathJax.Hub.Queue(
+            ["Typeset", MathJax.Hub, this.mjBuffer],
+            ["PreviewDone", this],
+            ["resetEquationNumbers", MathJax.InputJax.TeX]
+        );
+
+    },
+
+    //
+    //  Indicate that MathJax is no longer running,
+    //  do markdown over MathJax's result,
+    //  and swap the buffers to show the results.
+    //
+    PreviewDone: function () {
+        //this.data.mjRunning = false;
+        var text = this.mjBuffer.innerHTML;
+        //console.log("PreviewDone:", this.mjBuffer.innerHTML);
+
+
+        // replace occurrences of &gt; at the beginning of a new line
+        // with > again, so Markdown blockquotes are handled correctly
+        text = text.replace(/^&gt;/mg, '>');
+
+        this.mjBuffer.innerHTML = marked(text,  {renderer: renderer});
+
+        //this.SwapBuffers();
+
+        //console.log("final:", this.data.mjBuffer);
+        $('.description').html(this.mjBuffer.innerHTML);
+
+    }
 
 
 });
 
 
-},{"../templates/entry_detail.dust":37,"./base":44,"backbone":2,"jquery":12,"lodash":13}],47:[function(require,module,exports){
+},{"../templates/entry_detail.dust":37,"./base":46,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":13,"marked":14}],49:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -52420,7 +52570,7 @@ module.exports = Base.ListView.extend({
     }
 
 });
-},{"../templates/entry_list.dust":38,"../templates/entry_list_header.dust":39,"../views/swap.js":52,"./base":44,"./entry_single":48,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":13,"packery":20}],48:[function(require,module,exports){
+},{"../templates/entry_list.dust":38,"../templates/entry_list_header.dust":39,"../views/swap.js":56,"./base":46,"./entry_single":50,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":13,"packery":20}],50:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -52447,9 +52597,14 @@ var Base = require('./base');
 
 module.exports = Base.SingleView.extend({
 
+    data: {
+        DIAGRAMS_URL: DIAGRAMS_URL
+    },
+
     template: require('../templates/entry_single.dust'),
 
     onShow: function () {
+
         this.$el.on({
             mouseenter: function () {
                 $(this).addClass("active");
@@ -52470,9 +52625,165 @@ module.exports = Base.SingleView.extend({
 
     },*/
 
-    events: {},
+    events: {}
 });
-},{"../templates/entry_single.dust":40,"./base":44,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":13,"packery":20,"velocity-animate":24,"velocity-animate/velocity.ui":25}],49:[function(require,module,exports){
+},{"../templates/entry_single.dust":40,"./base":46,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":13,"packery":20,"velocity-animate":24,"velocity-animate/velocity.ui":25}],51:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var _ = require('lodash');
+Backbone.$ = $;
+
+var imagesLoaded = require('imagesloaded');
+// provide jQuery argument
+imagesLoaded.makeJQueryPlugin($);
+
+
+window.jQuery = window.$ = $;
+require('velocity-animate');
+require('velocity-animate/velocity.ui');
+delete window.jQuery;
+delete window.$;
+
+
+var Base = require('./base');
+
+module.exports = Base.SingleView.extend({
+
+    data: {
+        DIAGRAMS_URL: DIAGRAMS_URL
+    },
+
+    template: require('../templates/entry_single_timeline.dust'),
+
+    onShow: function () {
+
+        this.$el.on({
+            mouseenter: function () {
+                //$(this).addClass("active");
+            },
+            mouseleave: function () {
+                //$(this).removeClass("active");
+            }
+        });
+    },
+
+    /*
+    onRemove: function () {
+        console.warn('onRemove single');
+        $el = this.$el;
+        $el.fadeOut("slow", function() {
+            Base.SingleView.prototype.onRemove.call(this);
+        }).bind(this);
+
+    },*/
+
+    events: {}
+});
+},{"../templates/entry_single_timeline.dust":41,"./base":46,"backbone":2,"imagesloaded":10,"jquery":12,"lodash":13,"velocity-animate":24,"velocity-animate/velocity.ui":25}],52:[function(require,module,exports){
+var Backbone = require('backbone');
+var _ = require('lodash');
+var $ = require('jquery');
+Backbone.$ = $;
+
+
+var imagesLoaded = require('imagesloaded');
+// provide jQuery argument
+imagesLoaded.makeJQueryPlugin($);
+
+
+var Base = require('./base');
+var EntrySingleTimelineView = require('./entry_single_timeline');
+
+var swap = require('../views/swap.js');
+
+var MetaView = Base.TemplateView.extend({
+    template: require('../templates/entry_list_header.dust'),
+});
+
+var i = 0;
+App.Helper.top_right_column = 0;
+App.Helper.top_left_column = 0;
+
+module.exports = Base.ListView.extend({
+
+    template: require('../templates/entry_timeline.dust'),
+
+    addOne: function (model) {
+
+        //console.debug('add', model.id);
+        var view = new EntrySingleTimelineView({model: model});
+        this.$("#timeline_content").append(view.render().el);
+        view.onShow();
+
+        view.$el.css('position', 'absolute');
+
+        if (i % 2 == 0) {
+            view.$el.css('top', App.Helper.top_right_column+'px');
+            //view.$el.css('left', '586px');
+            view.$el.css('right', '0px');
+            //top_right_column += model.get('image').height;
+            App.Helper.top_right_column += view.$el.find('img')[0].height + 20;
+        }
+        else {
+            view.$el.addClass('left-col');
+            view.$el.css('top', App.Helper.top_left_column+'px');
+            //view.$el.css('left', '0px');
+            //top_left_column += model.get('image').height;
+            App.Helper.top_left_column += view.$el.find('img')[0].height + 20;
+        }
+
+        view.$el.imagesLoaded()
+            .progress(function (instance, image) {
+
+            });
+
+        this.$('#timeline').css('height', App.Helper.top_right_column > App.Helper.top_left_column ? App.Helper.top_right_column+"px" : App.Helper.top_left_column+"px");
+
+        // increase counter
+        i++;
+    },
+
+    removeOne: function (model, collection, options) {
+        //$('.grid').packery('remove', this.$('.'+model.get('uuid'))).packery('shiftLayout');
+    },
+
+    // override render function because adding items must be done in the onShow() function
+    render: function () {
+
+        this.template(_.extend(this.data, {meta: this.collection.meta}), function (err, out) {
+            if (err) {
+                console.error(err);
+            }
+            else {
+                this.$el.html($(out).html());
+                this.$el.attr($(out).attr());
+            }
+        }.bind(this));
+
+        return this;
+    },
+
+    onSync: function () {
+        //Base.ListView.prototype.onSync.call(this);
+        console.debug('############################################onSync list');
+        swap($('[data-js-region="entry_list_header"]'), new MetaView({data: {meta: this.collection.meta}}));
+    },
+
+
+    onShow: function () {
+        console.debug("############################################onShow list");
+
+        this.collection.each(this.addOne, this);
+
+
+    },
+
+    events: {
+
+    }
+
+});
+},{"../templates/entry_list_header.dust":39,"../templates/entry_timeline.dust":42,"../views/swap.js":56,"./base":46,"./entry_single_timeline":51,"backbone":2,"imagesloaded":10,"jquery":12,"lodash":13}],53:[function(require,module,exports){
 var Base = require('./base.js');
 
 // layout template
@@ -52485,7 +52796,7 @@ module.exports = Base.TemplateView.extend({
     }
 });
 
-},{"../templates/base.dust":35,"./base.js":44}],50:[function(require,module,exports){
+},{"../templates/base.dust":35,"./base.js":46}],54:[function(require,module,exports){
 (function (global){
 'use strict';
 var Backbone = require('backbone');
@@ -52557,9 +52868,9 @@ module.exports = Base.TemplateView.extend({
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../apiUrl":26,"../templates/navigation.dust":41,"./base.js":44,"backbone":2,"backbone-nprogress":1,"foundation-sites":8,"jquery":12,"lodash":13,"nprogress":15}],51:[function(require,module,exports){
+},{"../apiUrl":26,"../templates/navigation.dust":43,"./base.js":46,"backbone":2,"backbone-nprogress":1,"foundation-sites":8,"jquery":12,"lodash":13,"nprogress":15}],55:[function(require,module,exports){
 module.exports = {};
-},{}],52:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(region, newView) {
 
     // if there's an old View in the region, grab a reference to it

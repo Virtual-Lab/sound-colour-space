@@ -58,11 +58,11 @@ admin.site.register(Link, LinkAdmin)
 
 class EntryAdmin(admin.ModelAdmin):
     list_display = (
-    'title', 'subtitle', 'year', 'uuid', 'madek', 'show_image')  # 'show_image', 'link_to_author', 'source'
-    list_filter = ('author', 'year', 'tags', 'license',)
+    'title', 'subtitle', 'portrayed_object_date', 'date', 'uuid', 'madek', 'show_image')  # 'show_image', 'link_to_author', 'source'
+    list_filter = ('author', 'portrayed_object_date', 'tags', 'license',)
     search_fields = (
-    'uuid', 'image', 'title', 'description', 'year', 'author__first_name', 'author__last_name', 'author__pseudonym')
-    readonly_fields = ('uuid', 'created', 'modified', 'title', 'subtitle', 'year', 'source',
+    'uuid', 'image', 'title', 'description', 'portrayed_object_date', 'author__first_name', 'author__last_name', 'author__pseudonym')
+    readonly_fields = ('uuid', 'created', 'modified', 'title', 'subtitle', 'portrayed_object_date', 'source',
                        'copyright_notice', 'author', 'license')
 
     # prepopulated_fields = {'slug': ('title',)}
@@ -114,7 +114,7 @@ class EntryAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': (
-                'uuid', 'image', 'author', 'year', 'title', 'subtitle', 'description', 'tags', 'source',
+                'uuid', 'image', 'author', 'portrayed_object_date', 'date', 'date_accuracy', 'title', 'subtitle', 'description', 'tags', 'source',
                 'copyright_notice', 'license', 'related', 'link')
         }),
 

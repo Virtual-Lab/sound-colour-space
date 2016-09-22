@@ -90,14 +90,16 @@ $(function () {
         */
     });
 
+    /*
     App.currentView = false;
     $(window).on('scroll', function () {
-        /* Not all views will be interested in maintaining scroll position, so we need to check them first. */
+        // Not all views will be interested in maintaining scroll position, so we need to check them first.
         if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
             //console.warn('setting scrollPosition ', App.currentView.viewState.attributes, $(document).scrollTop());
             App.currentView.viewState.set('scrollPosition', $(document).scrollTop());
         }
     });
+    */
 
     $(document).on('click', 'a:not([data-bypass])', function (evt) {
 

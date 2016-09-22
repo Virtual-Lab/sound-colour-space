@@ -1,0 +1,6 @@
+<div>
+    <div id="timeline_wrapper">
+        <div id="timeline"></div>
+        <div id="timeline_content"></div>
+    </div>
+</div>

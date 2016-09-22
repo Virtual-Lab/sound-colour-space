@@ -1,7 +1,7 @@
 {{ object.title }}
 {{ object.image }}
 {{ object.subtitle }}
-{{ object.year }}
+{{ object.portrayed_object_date }}
 {{ object.description }}
 {{ object.source }}
 {{ object.copyright_notice }}

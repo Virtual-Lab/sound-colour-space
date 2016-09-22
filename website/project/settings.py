@@ -57,7 +57,7 @@ TEMPLATES = [
                 'common.context_processors.api_url',
                 'common.context_processors.base_url',
                 'common.context_processors.media_url',
-                #'common.context_processors.diagrams_url',
+                'common.context_processors.diagrams_url',
             ],
         },
     },

@@ -6,22 +6,22 @@ from museum.models import Entry, Author
 class EntryIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.EdgeNgramField(document=True, use_template=True)
 
-    '''
     # We add this for autocomplete.
     title = indexes.CharField(model_attr='title', null=True)
     title_auto = indexes.EdgeNgramField(model_attr='title', null=True)
 
-    year = indexes.CharField(model_attr='year', null=True)
-    year_auto = indexes.EdgeNgramField(model_attr='year', null=True)
+    portrayed_object_date = indexes.CharField(model_attr='portrayed_object_date', null=True)
+    portrayed_object_date_auto = indexes.EdgeNgramField(model_attr='portrayed_object_date', null=True)
 
-    author = indexes.CharField(model_attr='author', null=True)
-    author_auto = indexes.EdgeNgramField(model_attr='author', null=True)
+    date = indexes.DateTimeField(model_attr='date', null=True)
 
-    pseudonym = indexes.CharField(model_attr='author', null=True)
-    pseudonym_auto = indexes.EdgeNgramField(model_attr='author', null=True)
+    #author = indexes.CharField(model_attr='author', null=True)
+    #author_auto = indexes.EdgeNgramField(model_attr='author', null=True)
+
+    #pseudonym = indexes.CharField(model_attr='author', null=True)
+    #pseudonym_auto = indexes.EdgeNgramField(model_attr='author', null=True)
 
     #pub_date = indexes.DateTimeField(model_attr='pub_date')
-    '''
 
     def get_model(self):
         return Entry

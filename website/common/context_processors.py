@@ -9,6 +9,10 @@ def media_url(request):
     # return the value you want as a dictionnary. you may add multiple values in there.
     return {'MEDIA_URL': settings.MEDIA_URL}
 
+def diagrams_url(request):
+    # return the value you want as a dictionnary. you may add multiple values in there.
+    return {'DIAGRAMS_URL': settings.DIAGRAMS_URL}
+
 
 def base_url(request, slash=False):
     """

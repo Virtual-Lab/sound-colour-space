@@ -11,6 +11,17 @@
     <link type="text/css" rel="stylesheet" href="{% static 'css/screen.css' %}"/>
     <link type="text/css" rel="stylesheet" href="{% static 'fonts/foundation-icons.css' %}"/>
     <!--<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>-->
+
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+        showProcessingMessages: true,
+        tex2jax: { inlineMath: [['$','$'],['\\(','\\)']] },
+        TeX: { equationNumbers: {autoNumber: "AMS"} }
+    });
+    </script>
+    <script type="text/javascript"
+            src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </head>
 <body>
 {% block content %}{% endblock %}
@@ -18,9 +29,17 @@
     var BASE_URL = '{{ BASE_URL|escapejs }}';
     var STATIC_URL = '{{ STATIC_URL|escapejs }}';
     var MEDIA_URL = '{{ MEDIA_URL|escapejs }}';
+    var DIAGRAMS_URL = '{{ DIAGRAMS_URL|escapejs }}';
     var API_URL = '{{ API_URL|escapejs }}';
-    {% if request.user.is_authenticated %}var SLUG = '{{ request.user.slug }}';{% else %}var SLUG = 'Anonymous';{% endif %}
+    {% if request.user.is_authenticated %}
+    var SLUG = '{{ request.user.slug }}';
+    {% else %}
+    var SLUG = 'Anonymous';
+    {% endif %}
 </script>
+
+
+
 
 <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/lodash.js' %}"></script>
@@ -28,7 +47,6 @@
 <script type="text/javascript" src="{% static 'js/rappid.min.js' %}"></script>
 
 <script type="text/javascript" src="{% static 'js/bundle.js' %}"></script>
-
 
 </body>
 </html>

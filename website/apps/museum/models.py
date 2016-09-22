@@ -122,6 +122,14 @@ def generate_data_path(obj, filename):
     path = "%s/%s" % (obj.uuid, filename)
     return path.replace('-', '/')
 
+ACCURACY_CHOICES = (
+    (1, _("exact")),
+    (2, _("month")),
+    (3, _("year")),
+    (4, _("decennium")),
+    (5, _("century")),
+    (6, _("unknown"))
+)
 
 class Entry(Base):
     """
@@ -130,7 +138,9 @@ class Entry(Base):
     author = models.ManyToManyField(Author, related_name='museums_entries',blank=True)
     license = models.ManyToManyField(License, related_name='museums_entries', blank=True)
     image = models.ImageField(_('image'), max_length=200, upload_to=generate_data_path, storage=museum_store, null=True, blank=True)
-    year = models.CharField(_('year'), max_length=200, blank=True, null=True)
+    portrayed_object_date = models.CharField(_('portrayed_object_date'), max_length=200, blank=True, null=True)
+    date = models.DateTimeField(_('date'), null=True, blank=True)
+    date_accuracy = models.IntegerField(choices=ACCURACY_CHOICES, default=3, null=True, blank=True)
     title = models.CharField(_('title'), max_length=200, blank=True, null=True)
     subtitle = models.CharField(_('subtitle'), max_length=200, blank=True, null=True)
     description = models.TextField(_('description'), blank=True, null=True)
@@ -154,7 +164,7 @@ class Entry(Base):
         verbose_name = _('diagram')
         verbose_name_plural = _('diagrams')
         db_table = 'museum_entry'
-        ordering = ('title',)
+        ordering = ('date',)
         get_latest_by = 'created'
 
     def __unicode__(self):
