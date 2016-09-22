@@ -18,7 +18,8 @@ var MetaView = Base.TemplateView.extend({
     template: require('../templates/entry_list_header.dust'),
 });
 
-var i = 0;
+App.Helper.i = 0;
+App.Helper.d = 20;  // margin
 App.Helper.top_right_column = 0;
 App.Helper.top_left_column = 0;
 
@@ -35,51 +36,53 @@ module.exports = Base.ListView.extend({
 
         view.$el.css('position', 'absolute');
 
-        if (i % 2 == 0) {
-            view.$el.css('top', App.Helper.top_right_column+'px');
-            //view.$el.css('left', '586px');
-            view.$el.css('right', '0px');
-            //top_right_column += model.get('image').height;
-            App.Helper.top_right_column += view.$el.find('img')[0].height + 20;
-        }
-        else {
-            view.$el.addClass('left-col');
-            view.$el.css('top', App.Helper.top_left_column+'px');
-            //view.$el.css('left', '0px');
-            //top_left_column += model.get('image').height;
-            App.Helper.top_left_column += view.$el.find('img')[0].height + 20;
-        }
-
         view.$el.imagesLoaded()
             .progress(function (instance, image) {
 
-            });
+                // increase counter
+                App.Helper.i++;
 
-        this.$('#timeline').css('height', App.Helper.top_right_column > App.Helper.top_left_column ? App.Helper.top_right_column+"px" : App.Helper.top_left_column+"px");
+                if (App.Helper.i % 2 == 0) {
+                    view.$el.css('top', App.Helper.top_right_column + 'px');
+                    //view.$el.css('left', '586px');
+                    view.$el.css('right', '0px');
+                    App.Helper.top_right_column += image.img.clientHeight + App.Helper.d;
+                }
+                else {
+                    view.$el.addClass('left-col');
+                    view.$el.css('top', App.Helper.top_left_column + 'px');
+                    //view.$el.css('left', '0px');
+                    App.Helper.top_left_column += image.img.clientHeight + App.Helper.d;
+                }
 
-        // increase counter
-        i++;
+                this.$('#timeline').css('height', $(document).height()+"px");
+
+            }.bind(this));
+
+
     },
 
     removeOne: function (model, collection, options) {
         //$('.grid').packery('remove', this.$('.'+model.get('uuid'))).packery('shiftLayout');
     },
 
-    // override render function because adding items must be done in the onShow() function
-    render: function () {
+    /*
+     // override render function because adding items must be done in the onShow() function
+     render: function () {
 
-        this.template(_.extend(this.data, {meta: this.collection.meta}), function (err, out) {
-            if (err) {
-                console.error(err);
-            }
-            else {
-                this.$el.html($(out).html());
-                this.$el.attr($(out).attr());
-            }
-        }.bind(this));
+     this.template(_.extend(this.data, {meta: this.collection.meta}), function (err, out) {
+     if (err) {
+     console.error(err);
+     }
+     else {
+     this.$el.html($(out).html());
+     this.$el.attr($(out).attr());
+     }
+     }.bind(this));
 
-        return this;
-    },
+     return this;
+     },
+     */
 
     onSync: function () {
         //Base.ListView.prototype.onSync.call(this);
@@ -87,17 +90,14 @@ module.exports = Base.ListView.extend({
         swap($('[data-js-region="entry_list_header"]'), new MetaView({data: {meta: this.collection.meta}}));
     },
 
+    /*
+     onShow: function () {
+     console.debug("############################################onShow list");
 
-    onShow: function () {
-        console.debug("############################################onShow list");
+     this.collection.each(this.addOne, this);
+     },
+     */
 
-        this.collection.each(this.addOne, this);
-
-
-    },
-
-    events: {
-
-    }
+    events: {}
 
 });

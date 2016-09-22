@@ -51582,7 +51582,7 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],41:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_single_timeline",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry\"><!--<h5>").f(ctx.get(["title"], false),ctx,"h").w("</h5><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6>--><img src=\"").f(ctx.get(["DIAGRAMS_URL"], false),ctx,"h").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"connector\"><div class=\"circle\"></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br/>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_single_timeline", context || {}, callback); };
+(function(dust){dust.register("entry_single_timeline",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry\"><!--<h5>").f(ctx.get(["title"], false),ctx,"h").w("</h5><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6>--><img src=\"").f(ctx.get(["DIAGRAMS_URL"], false),ctx,"h").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"expand\">").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</div><div class=\"connector\"><div class=\"circle\"></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br/>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_single_timeline", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],42:[function(require,module,exports){
@@ -51642,7 +51642,7 @@ module.exports = Base.TemplateView.extend({
                 reset: true,
                 data: {
                     q: this.data.query,
-                    limit: 15
+                    limit: 100
                 },
                 success: function (collection, response, options) {
                     console.warn("adding new", collection.models.length);
@@ -51653,7 +51653,7 @@ module.exports = Base.TemplateView.extend({
             this.options.collection.fetch({
                 remove: false,
                 data: {
-                    limit: 15
+                    limit: 100
                 }
             });
         }
@@ -52700,7 +52700,8 @@ var MetaView = Base.TemplateView.extend({
     template: require('../templates/entry_list_header.dust'),
 });
 
-var i = 0;
+App.Helper.i = 0;
+App.Helper.d = 20;  // margin
 App.Helper.top_right_column = 0;
 App.Helper.top_left_column = 0;
 
@@ -52717,51 +52718,53 @@ module.exports = Base.ListView.extend({
 
         view.$el.css('position', 'absolute');
 
-        if (i % 2 == 0) {
-            view.$el.css('top', App.Helper.top_right_column+'px');
-            //view.$el.css('left', '586px');
-            view.$el.css('right', '0px');
-            //top_right_column += model.get('image').height;
-            App.Helper.top_right_column += view.$el.find('img')[0].height + 20;
-        }
-        else {
-            view.$el.addClass('left-col');
-            view.$el.css('top', App.Helper.top_left_column+'px');
-            //view.$el.css('left', '0px');
-            //top_left_column += model.get('image').height;
-            App.Helper.top_left_column += view.$el.find('img')[0].height + 20;
-        }
-
         view.$el.imagesLoaded()
             .progress(function (instance, image) {
 
-            });
+                // increase counter
+                App.Helper.i++;
 
-        this.$('#timeline').css('height', App.Helper.top_right_column > App.Helper.top_left_column ? App.Helper.top_right_column+"px" : App.Helper.top_left_column+"px");
+                if (App.Helper.i % 2 == 0) {
+                    view.$el.css('top', App.Helper.top_right_column + 'px');
+                    //view.$el.css('left', '586px');
+                    view.$el.css('right', '0px');
+                    App.Helper.top_right_column += image.img.clientHeight + App.Helper.d;
+                }
+                else {
+                    view.$el.addClass('left-col');
+                    view.$el.css('top', App.Helper.top_left_column + 'px');
+                    //view.$el.css('left', '0px');
+                    App.Helper.top_left_column += image.img.clientHeight + App.Helper.d;
+                }
 
-        // increase counter
-        i++;
+                this.$('#timeline').css('height', $(document).height()+"px");
+
+            }.bind(this));
+
+
     },
 
     removeOne: function (model, collection, options) {
         //$('.grid').packery('remove', this.$('.'+model.get('uuid'))).packery('shiftLayout');
     },
 
-    // override render function because adding items must be done in the onShow() function
-    render: function () {
+    /*
+     // override render function because adding items must be done in the onShow() function
+     render: function () {
 
-        this.template(_.extend(this.data, {meta: this.collection.meta}), function (err, out) {
-            if (err) {
-                console.error(err);
-            }
-            else {
-                this.$el.html($(out).html());
-                this.$el.attr($(out).attr());
-            }
-        }.bind(this));
+     this.template(_.extend(this.data, {meta: this.collection.meta}), function (err, out) {
+     if (err) {
+     console.error(err);
+     }
+     else {
+     this.$el.html($(out).html());
+     this.$el.attr($(out).attr());
+     }
+     }.bind(this));
 
-        return this;
-    },
+     return this;
+     },
+     */
 
     onSync: function () {
         //Base.ListView.prototype.onSync.call(this);
@@ -52769,18 +52772,15 @@ module.exports = Base.ListView.extend({
         swap($('[data-js-region="entry_list_header"]'), new MetaView({data: {meta: this.collection.meta}}));
     },
 
+    /*
+     onShow: function () {
+     console.debug("############################################onShow list");
 
-    onShow: function () {
-        console.debug("############################################onShow list");
+     this.collection.each(this.addOne, this);
+     },
+     */
 
-        this.collection.each(this.addOne, this);
-
-
-    },
-
-    events: {
-
-    }
+    events: {}
 
 });
 },{"../templates/entry_list_header.dust":39,"../templates/entry_timeline.dust":42,"../views/swap.js":56,"./base":46,"./entry_single_timeline":51,"backbone":2,"imagesloaded":10,"jquery":12,"lodash":13}],53:[function(require,module,exports){

@@ -1,4 +1,4 @@
-$timeline_color: $primary-color
+$timeline_color: #999
 
 
 // wrapper could be used together with section classes for different colors etc.
@@ -13,7 +13,7 @@ $timeline_color: $primary-color
         transition: background-color 3000ms
 
 #timeline 
-  width: 1px
+  width: 5px
   min-height: 1200px
   position: absolute
   top: 0
@@ -35,19 +35,6 @@ $timeline_color: $primary-color
   position: relative
   z-index: 1
 
-  .entry.left-col
-    text-align: right
-
-    @media screen
-      @include breakpoint(medium up)
-        .connector
-          left: auto
-          right: -15px
-
-          .circle
-            left: auto
-            right: -5px
-
   .entry
     width: calc(100% - 15px)
     margin-left: 15px
@@ -59,13 +46,19 @@ $timeline_color: $primary-color
         width: calc(50% - 16px)
         margin-left: 0
 
-    h5
-      margin-top: 20px
-      padding-top: 20px
+    .expand
+      position: absolute
+      top: 15px
+      left: 15px
+      z-index: 8
+      padding: 5px
+      color: #ffffff
+      background-color: rgba(0,0,0,0.4)
+      border: 1px solid #fff
 
     .connector
       width: 15px
-      height: 1px
+      height: 5px
       display: block
       position: absolute
       left: -15px
@@ -74,13 +67,13 @@ $timeline_color: $primary-color
 
       .circle
         content: ' '
-        width: 9px
-        height: 9px
+        width: 16px
+        height: 16px
         display: block
         position: absolute
-        left: -5px
+        left: -8px
         top: 50%
-        margin-top: -5px
+        margin-top: -8px
         border-radius: 50%
         //background-color: transparent
 
@@ -93,7 +86,23 @@ $timeline_color: $primary-color
       z-index: 1
       border: 1px solid $timeline_color
 
+  // left columnt adjustments
+  .entry.left-col
+    text-align: right
 
+    @media screen
+      @include breakpoint(medium up)
+        .connector
+          left: auto
+          right: -15px
+
+          .circle
+            left: auto
+            right: -10px
+
+    .expand
+      right: 15px
+      left: auto
 
 
 

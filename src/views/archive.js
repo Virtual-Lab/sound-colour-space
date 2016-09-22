@@ -31,7 +31,7 @@ module.exports = Base.TemplateView.extend({
                 reset: true,
                 data: {
                     q: this.data.query,
-                    limit: 15
+                    limit: 100
                 },
                 success: function (collection, response, options) {
                     console.warn("adding new", collection.models.length);
@@ -42,7 +42,7 @@ module.exports = Base.TemplateView.extend({
             this.options.collection.fetch({
                 remove: false,
                 data: {
-                    limit: 15
+                    limit: 100
                 }
             });
         }
