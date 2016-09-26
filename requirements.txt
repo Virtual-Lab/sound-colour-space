@@ -11,7 +11,5 @@ easy-thumbnails==2.3
 elasticsearch>=1.0.0,<2.0.0
 django-haystack==2.5.dev1
 requests==2.11.1
-ipython==5.1.0
-jupyter==1.0.0
 -e git://github.com/palmbeach-interactive/django-slick-admin.git#egg=django-slick-admin
 django-admin-tools==0.8.0
