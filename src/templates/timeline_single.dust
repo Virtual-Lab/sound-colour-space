@@ -3,8 +3,8 @@
     <h5>{title}</h5>
     <h6>{#author}<span>{first_name} {last_name} {@sep} and {/sep}</span><br/>{/author}</h6>
     -->
-    <img src="{DIAGRAMS_URL}{image.url}"/>
-    <div class="expand">{portrayed_object_date}</div>
+    <img src="{image.url}"/>
+    <div class="expand">{title}</div>
     <div class="connector">
         <div class="circle"></div>
     </div>

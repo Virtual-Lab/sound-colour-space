@@ -23,7 +23,7 @@ App.Helper.d = 20;  // margin
 App.Helper.top_right_column = 0;
 App.Helper.top_left_column = 0;
 
-module.exports = Base.ListView.extend({
+module.exports = Base.TemplateView.extend({
 
     template: require('../templates/entry_timeline.dust'),
 
@@ -36,29 +36,26 @@ module.exports = Base.ListView.extend({
 
         view.$el.css('position', 'absolute');
 
+        // increase counter
+        App.Helper.i++;
+
+        if (App.Helper.i % 2 == 0) {
+            view.$el.css('top', App.Helper.top_right_column + 'px');
+            //view.$el.css('left', '586px');
+            view.$el.css('right', '0px');
+            App.Helper.top_right_column += model.get('image').height + App.Helper.d;
+        }
+        else {
+            view.$el.addClass('left-col');
+            view.$el.css('top', App.Helper.top_left_column + 'px');
+            //view.$el.css('left', '0px');
+            App.Helper.top_left_column += model.get('image').height + App.Helper.d;
+        }
+
         view.$el.imagesLoaded()
             .progress(function (instance, image) {
-
-                // increase counter
-                App.Helper.i++;
-
-                if (App.Helper.i % 2 == 0) {
-                    view.$el.css('top', App.Helper.top_right_column + 'px');
-                    //view.$el.css('left', '586px');
-                    view.$el.css('right', '0px');
-                    App.Helper.top_right_column += image.img.clientHeight + App.Helper.d;
-                }
-                else {
-                    view.$el.addClass('left-col');
-                    view.$el.css('top', App.Helper.top_left_column + 'px');
-                    //view.$el.css('left', '0px');
-                    App.Helper.top_left_column += image.img.clientHeight + App.Helper.d;
-                }
-
-                this.$('#timeline').css('height', $(document).height()+"px");
-
+                this.$('#timeline').css('height', $(document).height() + "px");
             }.bind(this));
-
 
     },
 
@@ -66,23 +63,23 @@ module.exports = Base.ListView.extend({
         //$('.grid').packery('remove', this.$('.'+model.get('uuid'))).packery('shiftLayout');
     },
 
-    /*
-     // override render function because adding items must be done in the onShow() function
-     render: function () {
 
-     this.template(_.extend(this.data, {meta: this.collection.meta}), function (err, out) {
-     if (err) {
-     console.error(err);
-     }
-     else {
-     this.$el.html($(out).html());
-     this.$el.attr($(out).attr());
-     }
-     }.bind(this));
+    // override render function because adding items must be done in the onShow() function
+    render: function () {
 
-     return this;
-     },
-     */
+        this.template(_.extend(this.data, {meta: this.collection.meta}), function (err, out) {
+            if (err) {
+                console.error(err);
+            }
+            else {
+                this.$el.html($(out).html());
+                this.$el.attr($(out).attr());
+            }
+        }.bind(this));
+
+        return this;
+    },
+
 
     onSync: function () {
         //Base.ListView.prototype.onSync.call(this);
@@ -90,13 +87,13 @@ module.exports = Base.ListView.extend({
         swap($('[data-js-region="entry_list_header"]'), new MetaView({data: {meta: this.collection.meta}}));
     },
 
-    /*
-     onShow: function () {
-     console.debug("############################################onShow list");
 
-     this.collection.each(this.addOne, this);
-     },
-     */
+    onShow: function () {
+        console.debug("############################################onShow list");
+
+        this.collection.each(this.addOne, this);
+    },
+
 
     events: {}
 
