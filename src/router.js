@@ -36,6 +36,7 @@ var editor = function (actions) {
     App.currentView = EditorView;
 };
 
+/*
 var archive = function (q) {
     if (q) {
         swap(Regions.content, new ArchiveView({collection: App.entries, data: {query: q}}));
@@ -56,7 +57,7 @@ var archive = function (q) {
     App.currentView = ArchiveView;
     App.currentView.viewState.set('view', 'ArchiveView');
 };
-
+*/
 module.exports = Backbone.Router.extend({
 
     initialize: function () {
@@ -72,7 +73,7 @@ module.exports = Backbone.Router.extend({
 
     routes: {
         '(/)(q=:q)': entryController.List,
-        //'q=:q': archive,
+        'timeline(/)': entryController.Timeline,
         'editor(/)': editor,
         'diagrams/:uuid(/)': entryController.Detail,
         '*actions': defaultRoute

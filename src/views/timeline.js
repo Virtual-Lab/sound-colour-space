@@ -10,7 +10,7 @@ imagesLoaded.makeJQueryPlugin($);
 
 
 var Base = require('./base');
-var EntrySingleTimelineView = require('./entry_single_timeline');
+var EntrySingleTimelineView = require('./timeline_single');
 
 var swap = require('../views/swap.js');
 
@@ -25,7 +25,7 @@ App.Helper.top_left_column = 0;
 
 module.exports = Base.TemplateView.extend({
 
-    template: require('../templates/entry_timeline.dust'),
+    template: require('../templates/timeline.dust'),
 
     addOne: function (model) {
 
@@ -56,7 +56,6 @@ module.exports = Base.TemplateView.extend({
             .progress(function (instance, image) {
                 this.$('#timeline').css('height', $(document).height() + "px");
             }.bind(this));
-
     },
 
     removeOne: function (model, collection, options) {
