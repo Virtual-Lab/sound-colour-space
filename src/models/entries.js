@@ -16,7 +16,7 @@ module.exports = Backbone.Collection.extend({
     search: function (options) {
         options = options || {};
         if (options.url === undefined) {
-            options.url = apiUrl('entries') + "/search";
+            options.url = apiUrl('entries') + 'search';
         }
         return Backbone.Model.prototype.fetch.call(this, options);
     },

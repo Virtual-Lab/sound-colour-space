@@ -2,7 +2,7 @@ var Base = require('./base');
 
 var Entries = require('../models/entries');
 var EntryListView = require('./entry_list');
-var EntryTimelineView = require('./entry_timeline');
+var EntryTimelineView = require('./timeline');
 
 var swap = require('../views/swap.js');
 

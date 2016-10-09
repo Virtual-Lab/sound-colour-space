@@ -1,4 +1,4 @@
-/*
+ /*
  var Backbone = require('backbone');
  var $ = require('jquery');
  var _ = require('lodash');
@@ -44,16 +44,16 @@ module.exports = Base.TemplateView.extend({
                     var i = 0;
                     var stencils = [];
 
-                    var length = collection.models.length();
+                    //var length = collection.models.length;
 
                     //collection.models.forEach(function (m) {
 
-                    /*
 
+                    /*
                     for (var i = 0, row; row = length / 2; i++) {
                         for (var j = 0; col; col =
 
-                            console.log(, m.get('image'));
+                            //console.log(, m.get('image'));
 
                             for (y = 0; i <)
                                  var img = new joint.shapes.basic.Image({
@@ -82,6 +82,7 @@ module.exports = Base.TemplateView.extend({
 
                     }
                     */
+
 
 
                     //});

@@ -23,7 +23,7 @@ module.exports = Base.SingleView.extend({
         DIAGRAMS_URL: DIAGRAMS_URL
     },
 
-    template: require('../templates/entry_single_timeline.dust'),
+    template: require('../templates/timeline_single.dust'),
 
     onShow: function () {
 
