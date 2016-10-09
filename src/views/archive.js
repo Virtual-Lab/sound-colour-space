@@ -2,6 +2,7 @@ var Base = require('./base');
 
 var Entries = require('../models/entries');
 var EntryListView = require('./entry_list');
+
 var EntryTimelineView = require('./timeline');
 
 var swap = require('../views/swap.js');
@@ -18,9 +19,8 @@ module.exports = Base.TemplateView.extend({
     onShow: function () {
 
         // render and fetch entries
+        var view = new EntryListView({collection: this.options.collection});
 
-        //var view = new EntryListView({collection: this.options.collection});
-        var view = new EntryTimelineView({collection: this.options.collection});
         //App.view = view;
 
         swap($('[data-js-region="entry_list"]'), view);
@@ -31,7 +31,7 @@ module.exports = Base.TemplateView.extend({
                 reset: true,
                 data: {
                     q: this.data.query,
-                    limit: 100
+                    limit: 10
                 },
                 success: function (collection, response, options) {
                     console.warn("adding new", collection.models.length);
@@ -42,7 +42,7 @@ module.exports = Base.TemplateView.extend({
             this.options.collection.fetch({
                 remove: false,
                 data: {
-                    limit: 100
+                    limit: 10
                 }
             });
         }

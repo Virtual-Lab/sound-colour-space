@@ -5,11 +5,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 
 sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
+sys.path.insert(0, os.path.join(BASE_DIR, "common"))
 
-ALLOWED_HOSTS = ['*',]
+ALLOWED_HOSTS = ['*', ]
 SITE_ID = 1
 
 INSTALLED_APPS = (
+    'admin_tools',
+    #'admin_tools.theming',
+    #'admin_tools.menu',
+    'admin_tools.dashboard',
+    'django_slick_admin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -19,6 +25,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'gunicorn',
     'django_extensions',
+    'easy_thumbnails',
     'tastypie',
     'adminsortable2',
     'haystack',
@@ -43,7 +50,6 @@ TEMPLATES = [
         'DIRS': [
             os.path.join(BASE_DIR, 'templates'),
         ],
-        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.contrib.auth.context_processors.auth',
@@ -59,10 +65,15 @@ TEMPLATES = [
                 'common.context_processors.media_url',
                 'common.context_processors.diagrams_url',
             ],
+            'loaders': [
+                # admin tools
+                'admin_tools.template_loaders.Loader',
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader'
+            ]
         },
     },
 ]
-
 
 APPEND_SLASH = True
 
@@ -97,6 +108,22 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 DIAGRAMS_ROOT = os.path.join(BASE_DIR, 'media/diagrams')
 DIAGRAMS_URL = '/media/diagrams/'
+
+# easy_thumbnails
+THUMBNAIL_QUALITY = 95
+THUMBNAIL_PRESERVE_EXTENSIONS = True
+THUMBNAIL_MEDIA_ROOT = DIAGRAMS_ROOT
+THUMBNAIL_MEDIA_URL = DIAGRAMS_URL
+
+THUMBNAIL_ALIASES = {
+    'museum.Entry.image': {
+        'medium': {
+            'quality': 95,
+            'size': (554, 0),
+        },
+
+    },
+}
 
 # tastypie
 API_VERSION = 'v1'

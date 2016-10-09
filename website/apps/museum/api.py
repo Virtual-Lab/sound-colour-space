@@ -1,3 +1,4 @@
+from easy_thumbnails.files import get_thumbnailer
 from tastypie import fields
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 from tastypie.authentication import SessionAuthentication, Authentication
@@ -130,16 +131,20 @@ class EntryResource(ModelResource):
             'title': ('icontains',),
             'subtitle': ('icontains',),
             'description': ('icontains',),
+            'date': ['exact', 'gt', 'gte', 'lt', 'lte', 'range']
         }
 
     def dehydrate_uri(self, bundle):
         return bundle.obj.get_absolute_url()
 
     def dehydrate_image(self, bundle):
+
+        thumbnail = get_thumbnailer(bundle.obj.image)['medium']
+
         image = ({
-            'url': bundle.obj.image,
-            'width': bundle.obj.image.width,
-            'height': bundle.obj.image.height
+            'url': thumbnail.url,
+            'width': thumbnail.width,
+            'height': thumbnail.height
         })
         return image
 

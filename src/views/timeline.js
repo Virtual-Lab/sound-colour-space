@@ -56,7 +56,6 @@ module.exports = Base.TemplateView.extend({
             .progress(function (instance, image) {
                 this.$('#timeline').css('height', $(document).height() + "px");
             }.bind(this));
-
     },
 
     removeOne: function (model, collection, options) {

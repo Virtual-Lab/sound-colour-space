@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^api/', include(v1_api.urls)),
     url(r'^admin', admin.site.urls),
     url(r'^admin/', admin.site.urls),
+    url(r'^admin_tools/', include('admin_tools.urls')),
     url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     url(r'^search/', include('haystack.urls')),
     url(r'^', TemplateView.as_view(template_name='index.html'), name='index'),

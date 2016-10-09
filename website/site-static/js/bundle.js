@@ -50746,7 +50746,8 @@ var Entries = require('../models/entries');
 var Entry = require('../models/entry');
 
 // views
-var ArchiveView = require('../views/archive.js');
+var ArchiveView = require('../views/archive');
+var TimelineView = require('../views/timeline');
 var EntryDetailView = require('../views/entry_detail');
 
 // list
@@ -50768,6 +50769,18 @@ module.exports.List = function (q) {
 
 };
 
+// timeline
+module.exports.Timeline = function(q)  {
+    console.debug('##### Controller -> Timeline');
+
+    if (!App.entries) // TODO maybe get rid of App.entries?
+        App.entries = new Entries();
+
+    var entries = new Entries();
+    swap(Regions.content, new TimelineView({collection: entries, data: {query: q}}));
+
+};
+
 // entry detail
 module.exports.Detail = function (uuid) {
     console.debug('##### Controller -> Detail', uuid);
@@ -50783,7 +50796,11 @@ module.exports.Detail = function (uuid) {
     entry.fetch();
 };
 
+<<<<<<< HEAD
 },{"../models/entries":30,"../models/entry":31,"../views/archive.js":45,"../views/entry_detail":48,"../views/regions.js":53,"../views/swap.js":54}],28:[function(require,module,exports){
+=======
+},{"../models/entries":30,"../models/entry":31,"../views/archive":45,"../views/entry_detail":48,"../views/regions.js":53,"../views/swap.js":54,"../views/timeline":55}],28:[function(require,module,exports){
+>>>>>>> 291d1b44aff04a197e3e3e7bac052dbd9e820c77
 // dust filters
 var dust = require('dustjs-linkedin');
 
@@ -51065,6 +51082,7 @@ var editor = function (actions) {
     App.currentView = EditorView;
 };
 
+/*
 var archive = function (q) {
     if (q) {
         swap(Regions.content, new ArchiveView({collection: App.entries, data: {query: q}}));
@@ -51085,7 +51103,7 @@ var archive = function (q) {
     App.currentView = ArchiveView;
     App.currentView.viewState.set('view', 'ArchiveView');
 };
-
+*/
 module.exports = Backbone.Router.extend({
 
     initialize: function () {
@@ -51101,7 +51119,7 @@ module.exports = Backbone.Router.extend({
 
     routes: {
         '(/)(q=:q)': entryController.List,
-        //'q=:q': archive,
+        'timeline(/)': entryController.Timeline,
         'editor(/)': editor,
         'diagrams/:uuid(/)': entryController.Detail,
         '*actions': defaultRoute
@@ -51147,7 +51165,7 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],37:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h5>").f(ctx.get(["title"], false),ctx,"h").w("</h5><span>").f(ctx.get(["DIAGRAMS_URL"], false),ctx,"h").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("</span><h6>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</h6><h6>").f(ctx.getPath(false, ["author","first_name"]),ctx,"h").w(" ").f(ctx.getPath(false, ["author","last_name"]),ctx,"h").w(" ").x(ctx.getPath(false, ["author","pseudonym"]),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_2},{}).w("<img src=\"").f(ctx.get(["DIAGRAMS_URL"], false),ctx,"h").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div><div class=\"related\"><ul>").s(ctx.get(["related"], false),ctx,{"block":body_5},{}).w("</ul></div></div><div class=\"preview\" id=\"marked-mathjax-preview-buffer\" style=\"display:none; position:absolute; top:0; left: 0\"></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("(").f(ctx.getPath(false, ["author","pseudonym"]),ctx,"h").w(")");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_3},{}).w("</h6>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w(" <a href=\"/q=").f(ctx.getPath(true, []),ctx,"h").w("\">").f(ctx.getPath(true, []),ctx,"h").w("</a>").h("sep",ctx,{"block":body_4},{},"h");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(",");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></li>\n");}body_5.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
+(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h5>").f(ctx.get(["title"], false),ctx,"h").w("</h5><span>").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("</span><h6>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</h6><h6>").f(ctx.getPath(false, ["author","first_name"]),ctx,"h").w(" ").f(ctx.getPath(false, ["author","last_name"]),ctx,"h").w(" ").x(ctx.getPath(false, ["author","pseudonym"]),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_2},{}).w("<img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div><div class=\"related\"><ul>").s(ctx.get(["related"], false),ctx,{"block":body_5},{}).w("</ul></div></div><div class=\"preview\" id=\"marked-mathjax-preview-buffer\" style=\"display:none; position:absolute; top:0; left: 0\"></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("(").f(ctx.getPath(false, ["author","pseudonym"]),ctx,"h").w(")");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_3},{}).w("</h6>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w(" <a href=\"/q=").f(ctx.getPath(true, []),ctx,"h").w("\">").f(ctx.getPath(true, []),ctx,"h").w("</a>").h("sep",ctx,{"block":body_4},{},"h");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(",");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></li>\n");}body_5.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],38:[function(require,module,exports){
@@ -51165,7 +51183,7 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],40:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry grid-item ").f(ctx.get(["uuid"], false),ctx,"h").w("\"><!--<div class=\"entry column align-self-bottom grid-item\">--><div class=\"entry_wrapper text-center grow\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.get(["DIAGRAMS_URL"], false),ctx,"h").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" height=\"200\"/>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("<span>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</span></a></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br />");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_single", context || {}, callback); };
+(function(dust){dust.register("entry_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry grid-item ").f(ctx.get(["uuid"], false),ctx,"h").w("\"><!--<div class=\"entry column align-self-bottom grid-item\">--><div class=\"entry_wrapper text-center grow\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" height=\"200\"/>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("<span>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</span></a></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br />");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_single", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],41:[function(require,module,exports){
@@ -51202,7 +51220,10 @@ var Base = require('./base');
 
 var Entries = require('../models/entries');
 var EntryListView = require('./entry_list');
+<<<<<<< HEAD
 var EntryTimelineView = require('./timeline');
+=======
+>>>>>>> 291d1b44aff04a197e3e3e7bac052dbd9e820c77
 
 var swap = require('../views/swap.js');
 
@@ -51218,9 +51239,8 @@ module.exports = Base.TemplateView.extend({
     onShow: function () {
 
         // render and fetch entries
+        var view = new EntryListView({collection: this.options.collection});
 
-        //var view = new EntryListView({collection: this.options.collection});
-        var view = new EntryTimelineView({collection: this.options.collection});
         //App.view = view;
 
         swap($('[data-js-region="entry_list"]'), view);
@@ -51231,7 +51251,7 @@ module.exports = Base.TemplateView.extend({
                 reset: true,
                 data: {
                     q: this.data.query,
-                    limit: 100
+                    limit: 10
                 },
                 success: function (collection, response, options) {
                     console.warn("adding new", collection.models.length);
@@ -51242,7 +51262,7 @@ module.exports = Base.TemplateView.extend({
             this.options.collection.fetch({
                 remove: false,
                 data: {
-                    limit: 100
+                    limit: 10
                 }
             });
         }
@@ -51286,7 +51306,11 @@ module.exports = Base.TemplateView.extend({
 
 });
 
+<<<<<<< HEAD
 },{"../models/entries":30,"../templates/archive.dust":34,"../views/swap.js":54,"./base":46,"./entry_list":49,"./timeline":55}],46:[function(require,module,exports){
+=======
+},{"../models/entries":30,"../templates/archive.dust":34,"../views/swap.js":54,"./base":46,"./entry_list":49}],46:[function(require,module,exports){
+>>>>>>> 291d1b44aff04a197e3e3e7bac052dbd9e820c77
 /* Base Views */
 'use strict';
 
@@ -52400,7 +52424,10 @@ module.exports = Base.TemplateView.extend({
             .progress(function (instance, image) {
                 this.$('#timeline').css('height', $(document).height() + "px");
             }.bind(this));
+<<<<<<< HEAD
 
+=======
+>>>>>>> 291d1b44aff04a197e3e3e7bac052dbd9e820c77
     },
 
     removeOne: function (model, collection, options) {
