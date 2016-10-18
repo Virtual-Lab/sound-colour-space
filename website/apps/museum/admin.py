@@ -114,7 +114,7 @@ class EntryAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': (
-                'uuid', 'image', 'author', 'portrayed_object_date', 'date', 'date_accuracy', 'title', 'subtitle', 'description', 'tags', 'source',
+                'doc_id', 'uuid', 'image', 'author', 'portrayed_object_date', 'date', 'date_accuracy', 'title', 'subtitle', 'description', 'tags', 'source',
                 'copyright_notice', 'license', 'related', 'link')
         }),
 

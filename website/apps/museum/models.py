@@ -166,7 +166,7 @@ class Entry(Base):
         verbose_name = _('diagram')
         verbose_name_plural = _('diagrams')
         db_table = 'museum_entry'
-        ordering = ('date',)
+        ordering = ('doc_id', 'date',)
         get_latest_by = 'created'
 
     def __unicode__(self):
