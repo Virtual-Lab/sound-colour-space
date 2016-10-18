@@ -198,8 +198,18 @@ class EntryResource(ModelResource):
         #ap = SearchQuerySet().models(Entry).autocomplete(pseudonym_auto=query)
 
         #results = t | a | ap
+        filter = request.GET.get('date__range', None)
 
-        results = SearchQuerySet().models(Entry).order_by('date').filter(text=Raw(query))
+        if not filter:
+            results = SearchQuerySet().models(Entry).order_by('date').filter(text=Raw(query))
+        else:
+            start = filter.split(',')[0]
+            end = filter.split(',')[1]
+            print (start, end)
+            results = SearchQuerySet().models(Entry).filter(date__range=(start,end)).order_by('date').filter(text=Raw(query))
+
+
+
 
         if not results:
             results = EmptySearchQuerySet()

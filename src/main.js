@@ -8,11 +8,11 @@ window.App = {
 };
 
 var Backbone = require('backbone');
-
+/*
 // foundation needs global.$ because it doesn't "require" jquery for some reason
 global.$ = global.jQuery = require('jquery');
-
-var foundation = require('foundation-sites');
+require('foundation-sites');
+*/
 
 Backbone.$ = $;
 

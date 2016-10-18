@@ -73,7 +73,7 @@ module.exports = Backbone.Router.extend({
 
     routes: {
         '(/)(q=:q)': entryController.List,
-        'timeline(/)': entryController.Timeline,
+        'timeline(/)(q=:q)': entryController.Timeline,
         'editor(/)': editor,
         'diagrams/:uuid(/)': entryController.Detail,
         '*actions': defaultRoute

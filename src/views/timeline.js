@@ -3,6 +3,9 @@ var _ = require('underscore');
 var $ = require('jquery');
 Backbone.$ = $;
 
+// foundation needs global.$ because it doesn't "require" jquery for some reason
+global.$ = global.jQuery = require('jquery');
+require('foundation-sites');
 
 var imagesLoaded = require('imagesloaded');
 // provide jQuery argument
@@ -15,7 +18,42 @@ var EntrySingleTimelineView = require('./timeline_single');
 var swap = require('../views/swap.js');
 
 var MetaView = Base.TemplateView.extend({
-    template: require('../templates/entry_list_header.dust'),
+
+    /*
+    initialize: function(options) {
+        Base.TemplateView.prototype.initialize.apply(this, [options]);
+        this.parent = options.parent;
+    },
+    */
+
+    template: require('../templates/timeline_header.dust'),
+
+    onShow: function () {
+
+        console.log(this.options.parent);
+
+        this.date_slider = new Foundation.Slider($('#date_slider'), {
+            start: 800,
+            end: 1900,
+            step: 10,
+            initialStart: 800,
+            initialEnd: 900,
+            //doubleSided: true,
+            //binding: true,
+            clickSelect: true,
+            changedDelay: 500
+        });
+    },
+
+    events: {
+        'moved.zf.slider #date_slider': function () {
+            $('#dateSliderStart').text(this.date_slider.$input.val());
+            $('#dateSliderEnd').text(this.date_slider.$input2.val());
+        },
+        'changed.zf.slider #date_slider': function() {
+            //cthis.options.parent.doQuery();
+        }
+    }
 });
 
 App.Helper.i = 0;
@@ -23,7 +61,7 @@ App.Helper.d = 20;  // margin
 App.Helper.top_right_column = 0;
 App.Helper.top_left_column = 0;
 
-module.exports = Base.TemplateView.extend({
+module.exports = Base.ListView.extend({
 
     template: require('../templates/timeline.dust'),
 
@@ -82,15 +120,61 @@ module.exports = Base.TemplateView.extend({
 
     onSync: function () {
         //Base.ListView.prototype.onSync.call(this);
-        console.debug('############################################onSync list');
-        swap($('[data-js-region="entry_list_header"]'), new MetaView({data: {meta: this.collection.meta}}));
+        console.debug('############################################onSync timeline');
+        //swap($('[data-js-region="timeline_header"]'), new MetaView({parent: this, data: {meta: this.collection.meta}}));
     },
 
 
-    onShow: function () {
-        console.debug("############################################onShow list");
+    doQuery: function() {
+        var self = this;
+        if (this.data.query) {
+            console.log('do search...', this.data.query);
+            this.options.collection.search({
+                reset: true,
+                data: {
+                    q: this.data.query,
+                    limit: 10
+                },
+                success: function (collection, response, options) {
+                    console.warn("adding new", collection.models.length);
+                    swap($('[data-js-region="timeline_header"]'), new MetaView({parent: self, data: {meta: collection.meta}}));
+                    //App.entries.add(collection.models); // merge into App.entries
+                }
+            });
+        } else {
+            this.options.collection.fetch({
+                remove: false,
+                data: {
+                    limit: 10
+                }
+            });
+        }
 
-        this.collection.each(this.addOne, this);
+    },
+
+    onShow: function () {
+
+        this.doQuery();
+
+        // fetch on bottom
+        $(window).on("scroll", _.bind(function () {
+            var scrollHeight = $(document).height();
+            var scrollPosition = $(window).height() + $(window).scrollTop();
+            if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
+
+                // load more!
+                if (this.options.collection.meta !== undefined && this.options.collection.meta.next != null) {
+                    this.options.collection.url = this.options.collection.meta.next;
+                    this.options.collection.fetch({
+                        remove: false,
+                        success: function (collection, response, options) {
+                            console.warn("adding", response.objects.length, "total: ", collection.models.length);
+                            App.entries.add(collection.models); // merge into App.entries
+                        }
+                    });
+                }
+            }
+        }, this));
     },
 
 

@@ -179,6 +179,8 @@ var addSlash = function (str) {
 
 module.exports.TemplateView = Backbone.View.extend({
 
+    data: {},
+
     initialize: function (options) {
         this.options = _.extend({}, options);
         this.data = _.extend({}, options.data);

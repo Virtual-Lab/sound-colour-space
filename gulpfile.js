@@ -86,7 +86,7 @@ function bundle() {
 }
 
 
-gulp.task('proxy', ['styles', 'js'], function () {
+gulp.task('proxy', ['styles', 'admin-styles', 'js'], function () {
 
     browserSync.init({
         notify: false,
@@ -105,7 +105,7 @@ gulp.task('proxy', ['styles', 'js'], function () {
         }
     });
 
-    gulp.watch("sass/**/*.*", ['styles']);
+    gulp.watch("sass/**/*.*", ['styles', 'admin-styles']);
     //gulp.watch("website/**/*.html").on('change', browserSync.reload);
 });
 
@@ -119,10 +119,28 @@ gulp.task('styles', function () {
             outputStyle: 'expanded',
             sourceComments: true,
             precision: 10
-        }))
+        }).on('error', sass.logError))
         .pipe($.autoprefixer({browsers: AUTOPREFIXER_BROWSERS}))
         .pipe($.sourcemaps.write())
         .pipe(gulp.dest('website/site-static/css/'))
+        .pipe(browserSync.stream({match: '**/*.css'}))
+        .pipe($.size({title: 'styles'}));
+});
+
+gulp.task('admin-styles', function () {
+    return gulp.src([
+        'sass/site/admin/django-slick-admin.sass'
+    ])
+        .pipe($.sourcemaps.init())
+        .pipe($.sass({
+            includePaths: './node_modules/django-slick-admin-styles/sass/',
+            outputStyle: 'expanded',
+            precision: 10
+        }).on('error', sass.logError))
+        .pipe($.autoprefixer({browsers: AUTOPREFIXER_BROWSERS}))
+        .pipe($.sourcemaps.write())
+        //.pipe(concat('django-slick-admin.css'))
+        .pipe(gulp.dest('website/site-static/django_slick_admin/css/'))
         .pipe(browserSync.stream({match: '**/*.css'}))
         .pipe($.size({title: 'styles'}));
 });

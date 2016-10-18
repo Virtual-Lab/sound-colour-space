@@ -26,12 +26,13 @@ class Command(BaseCommand):
                 # print ("#%s: %s \n\n%s") % (i[2], i[0], i[1])
 
                 entries = Entry.objects.filter(image__icontains=i[0])
-                if (len(entries) == 0):
-                    self.stdout.write(self.style.WARNING('no entries for %s.' % i[0]))
-                elif (len(entries) > 1):
-                    self.stdout.write(self.style.WARNING('multiple entries for %s.' % i[0]))
+                if len(entries) == 0:
+                    self.stdout.write(self.style.WARNING('no entries for %s, ref: %s.' % (i[0], i[2])))
+                elif len(entries) > 1:
+                    self.stdout.write(self.style.WARNING('multiple entries for %s, ref: %s' % (i[0], i[2])))
                 else:
                     entries[0].description = unicode(i[1], errors='ignore')
+                    entries[0].doc_id = i[2]
                     entries[0].save()
                     total += 1
 

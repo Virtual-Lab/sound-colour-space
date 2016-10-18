@@ -1,0 +1,29 @@
+<div class="row">
+    <div class="small-12 column text-center">
+        <h1>Timeline</h1>
+        <div id="date_slider" class="slider">
+            <span class="slider-handle" data-slider-handle role="slider" tabindex="1"></span>
+            <span class="slider-fill" data-slider-fill></span>
+            <span class="slider-handle" data-slider-handle role="slider" tabindex="1"></span>
+            <input type="hidden">
+            <input type="hidden">
+        </div>
+        <div class="clearfix">
+            <div class="float-left" id="dateSliderStart"></div>
+            <div class="float-right" id="dateSliderEnd"></div>
+        </div>
+        {#meta}
+        {?search_query}
+        <p>Found {total_count} diagrams for <b>{search_query}</b>.</p>
+        <button class="button small radius">Clear Filter</button>
+        {/search_query}
+        {/meta}
+    </div>
+</div>
+<!--
+<div class="row">
+    <div class="small-12 column text-center">
+        <button class="button toggle_grid">Grid!</button>
+    </div>
+</div>
+-->
