@@ -17,7 +17,7 @@ renderer.link = function (href, title, text) {
     if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
         return '<a href="' + href + '" title="' + title + '" target="_blank" data-bypass>' + text + '</a>';
     else
-        return '<a href="/diagrams/' + href + '" title="' + title + '" target="_blank">' + text + '</a>';
+        return '<a href="/diagrams/' + href + '" title="' + title + '">' + text + '</a>';
 };
 
 
@@ -65,8 +65,6 @@ module.exports = Base.DetailView.extend({
         console.log('onShow');
         // scroll to top
         $(window).scrollTop(0);
-
-
 
 
         this.mjBuffer = document.getElementById("marked-mathjax-preview-buffer");

@@ -9,19 +9,37 @@ window.App = {
 
 var Backbone = require('backbone');
 /*
-// foundation needs global.$ because it doesn't "require" jquery for some reason
-global.$ = global.jQuery = require('jquery');
-require('foundation-sites');
-*/
+ // foundation needs global.$ because it doesn't "require" jquery for some reason
+ global.$ = global.jQuery = require('jquery');
+ require('foundation-sites');
+ */
 
 Backbone.$ = $;
 
 // we do need this for dustjs helpers!!!
 require('dustjs-helpers');
-
 require('./dust-filters.js');
 
 var Router = require('./router.js');
+
+
+// global key shortcuts
+var key = require('keymaster');
+
+key('s', function () {
+    $('input[type=search]').focus();
+    return false; // prevent writing of 's'
+});
+
+key('h', function () {
+    App.Router.r.navigate('/', {trigger: true});
+});
+
+key('t', function () {
+    App.Router.r.navigate('/timeline', {trigger: true});
+});
+
+
 
 
 // jquery attr() functionality
@@ -84,22 +102,22 @@ $(function () {
         window.scrollTo(0, 0); // scroll to top on url change! TODO: finer control when to scroll top ie. when navigation from detail to list views that were scrolled before...
 
         /*
-        if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
-            $(document).scrollTop(App.currentView.viewState.get('scrollPosition'));
-        }
-        */
+         if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
+         $(document).scrollTop(App.currentView.viewState.get('scrollPosition'));
+         }
+         */
     });
 
     /*
-    App.currentView = false;
-    $(window).on('scroll', function () {
-        // Not all views will be interested in maintaining scroll position, so we need to check them first.
-        if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
-            //console.warn('setting scrollPosition ', App.currentView.viewState.attributes, $(document).scrollTop());
-            App.currentView.viewState.set('scrollPosition', $(document).scrollTop());
-        }
-    });
-    */
+     App.currentView = false;
+     $(window).on('scroll', function () {
+     // Not all views will be interested in maintaining scroll position, so we need to check them first.
+     if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
+     //console.warn('setting scrollPosition ', App.currentView.viewState.attributes, $(document).scrollTop());
+     App.currentView.viewState.set('scrollPosition', $(document).scrollTop());
+     }
+     });
+     */
 
     $(document).on('click', 'a:not([data-bypass])', function (evt) {
 
@@ -111,7 +129,7 @@ $(function () {
             App.Router.r.navigate(href, {trigger: true});
         }
     });
-    
+
     App.Router.r = new Router();
     Backbone.history.start({pushState: true});
 

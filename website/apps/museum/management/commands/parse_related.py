@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
 
-import collections
 import re
 from museum.models import Entry
 
@@ -12,7 +11,6 @@ class Command(BaseCommand):
 
         entries = Entry.objects.all()
 
-        refs = {}
         total = 0
 
         for e in entries:
@@ -20,21 +18,27 @@ class Command(BaseCommand):
             if matches:
                 i = 0
                 for m in matches:
-                    matches[i] = (int)(matches[i].replace('[', '').replace(']', ''))
+                    number = (int)(matches[i].replace('[', '').replace(']', ''))
+                    try:
+                        ref = Entry.objects.get(doc_id=number)
+                        title = ref.title
+                        # update description text: [doc_id](doc_id "title")
+                        e.description = e.description.replace(matches[i], '[' + matches[i] + '](' + str(
+                            number) + ' "' + title + '")')
+
+                        # add related obj
+                        e.related.add(ref)
+
+                        e.save()
+
+                        # save only number for related set
+                        # matches[i] = number
+                    except (Entry.DoesNotExist):
+                        self.stdout.write(self.style.WARNING('Referenced entry does not exist: %s' % number))
+
                     i += 1
-                refs[e.doc_id] = matches
 
-        od = collections.OrderedDict(sorted(refs.items()))
-        for id, refs in od.items():
-            # print ("%s: %s") % (id, refs)
-
-            related_objs = Entry.objects.filter(doc_id__in=refs)
-            e = Entry.objects.filter(doc_id=id)[0]
-            if related_objs:
-                print e, '==>', related_objs
-
-            e.related.set(related_objs)
-            total += 1
+                total += 1
 
         self.stdout.write(self.style.SUCCESS('Updated %s entries.' % total))
 

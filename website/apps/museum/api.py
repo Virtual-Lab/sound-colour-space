@@ -99,6 +99,8 @@ class EntryResource(ModelResource):
     image = fields.FileField(attribute='image', blank=True, null=True, readonly=True)
     author = fields.ToManyField(AuthorResource, 'author', full=True, blank=True, null=True)
 
+    license = fields.ToManyField(LicenseResource, 'license', full=True, blank=True, null=True)
+
     #related = fields.ToManyField('self', 'related', full=False, blank=True, null=True)
     related = fields.ListField(blank=True)
 
@@ -111,7 +113,7 @@ class EntryResource(ModelResource):
     class Meta:
         queryset = Entry.objects.all()
         resource_name = 'entry'
-        detail_uri_name = 'uuid'
+        detail_uri_name = 'doc_id'
         always_return_data = True
 
         authentication = Authentication()
@@ -139,7 +141,12 @@ class EntryResource(ModelResource):
 
     def dehydrate_image(self, bundle):
 
-        thumbnail = get_thumbnailer(bundle.obj.image)['medium']
+        try:
+            image_size = bundle.request.GET['image_size']
+        except:
+            image_size = "medium"
+
+        thumbnail = get_thumbnailer(bundle.obj.image)[image_size]
 
         image = ({
             'url': thumbnail.url,

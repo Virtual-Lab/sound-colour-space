@@ -42,10 +42,10 @@ module.exports.Timeline = function(q)  {
 };
 
 // entry detail
-module.exports.Detail = function (uuid) {
-    console.debug('##### Controller -> Detail', uuid);
+module.exports.Detail = function (doc_id) {
+    console.debug('##### Controller -> Detail', doc_id);
 
-    var entry = new Entry({uuid: uuid});
+    var entry = new Entry({doc_id: doc_id});
 
     // render
     swap(Regions.content, new EntryDetailView({model: entry}));

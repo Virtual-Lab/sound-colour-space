@@ -12,8 +12,8 @@ SITE_ID = 1
 
 INSTALLED_APPS = (
     'admin_tools',
-    #'admin_tools.theming',
-    #'admin_tools.menu',
+    # 'admin_tools.theming',
+    # 'admin_tools.menu',
     'admin_tools.dashboard',
     'django_slick_admin',
     'django.contrib.admin',
@@ -117,11 +117,18 @@ THUMBNAIL_MEDIA_URL = DIAGRAMS_URL
 
 THUMBNAIL_ALIASES = {
     'museum.Entry.image': {
+        'small': {
+            'quality': 95,
+            'size': (400, 0),
+        },
         'medium': {
             'quality': 95,
             'size': (554, 0),
         },
-
+        'large': {
+            'quality': 95,
+            'size': (1108, 0),
+        },
     },
 }
 

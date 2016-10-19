@@ -174,7 +174,7 @@ class Entry(Base):
 
 
     def get_absolute_url(self):
-        return 'diagrams/%s/' % self.uuid
+        return 'diagrams/%s/' % self.doc_id
 
     '''
     def fetch_from_api(self, override=False):

@@ -1,19 +1,30 @@
 <div class="row">
     <div class="entry detail large-12 medium-12 small-12 column text-center">
-        <h5>{title}</h5>
-        <span>{image.url}</span>
-        <h6>{portrayed_object_date}</h6>
-        <h6>{author.first_name} {author.last_name} {?author.pseudonym}({author.pseudonym}){/author.pseudonym}</h6>
+        <h3>{title}</h3>
+        <h6>{subtitle}</h6>
+        {! <span>{image.url}</span> !}
+        <h6><i>{portrayed_object_date}</i></h6>
+        <h6>{#author}{first_name} {last_name} {?pseudonym}({pseudonym}){/pseudonym}{/author}</h6>
         {?tags}<h6>Tags:{#tags} <a href="/q={.}">{.}</a>{@sep},{/sep}{/tags}</h6>{/tags}
         <img src="{image.url}"/>
         <div class="description">{description}</div>
-        <div class="related">
+        <div class="related text-left">
+            {?related}See also:{/related}
             <ul>
                 {#related}
                 <li><a href="/{uri}">{title}</a></li>
                 {~n}{/related}
             </ul>
         </div>
+        <br/>
+        <div class="row">
+            <div class="large-12 medium-12 small-12 column text-left">
+                Source: {source}<br/>
+                Copyright: {copyright_notice}<br/>
+                License: {#license}<a href="{url}" data-bypass target="_blank">{label}</a>{/license}
+            </div>
+        </div>
     </div>
-    <div class="preview" id="marked-mathjax-preview-buffer" style="display:none; position:absolute; top:0; left: 0"></div>
+    <div class="preview" id="marked-mathjax-preview-buffer"
+         style="display:none; position:absolute; top:0; left: 0"></div>
 </div>

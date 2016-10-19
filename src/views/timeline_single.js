@@ -38,14 +38,20 @@ module.exports = Base.SingleView.extend({
     },
 
     /*
-    onRemove: function () {
-        console.warn('onRemove single');
-        $el = this.$el;
-        $el.fadeOut("slow", function() {
-            Base.SingleView.prototype.onRemove.call(this);
-        }).bind(this);
+     onRemove: function () {
+     console.warn('onRemove single');
+     $el = this.$el;
+     $el.fadeOut("slow", function() {
+     Base.SingleView.prototype.onRemove.call(this);
+     }).bind(this);
 
-    },*/
+     },*/
 
-    events: {}
+    events: {
+        "click .eye": function () {
+            this.$el.find('.description').toggleClass('active');
+            this.$el.find('.overlay').toggleClass('active');
+        }
+    }
 });
+

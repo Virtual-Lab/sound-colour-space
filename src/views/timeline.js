@@ -57,7 +57,7 @@ var MetaView = Base.TemplateView.extend({
 });
 
 App.Helper.i = 0;
-App.Helper.d = 20;  // margin
+App.Helper.d = 25;  // margin
 App.Helper.top_right_column = 0;
 App.Helper.top_left_column = 0;
 
@@ -77,17 +77,18 @@ module.exports = Base.ListView.extend({
         // increase counter
         App.Helper.i++;
 
+        //var height = Math.min(model.get('image').height, 108); // TODO set height according to settings.py / browser
+        var height = model.get('image').height;
+
         if (App.Helper.i % 2 == 0) {
-            view.$el.css('top', App.Helper.top_right_column + 'px');
-            //view.$el.css('left', '586px');
             view.$el.css('right', '0px');
-            App.Helper.top_right_column += model.get('image').height + App.Helper.d;
+            view.$el.css('top', App.Helper.top_right_column + 'px');
+            App.Helper.top_right_column += height + App.Helper.d;
         }
         else {
             view.$el.addClass('left-col');
             view.$el.css('top', App.Helper.top_left_column + 'px');
-            //view.$el.css('left', '0px');
-            App.Helper.top_left_column += model.get('image').height + App.Helper.d;
+            App.Helper.top_left_column += height + App.Helper.d;
         }
 
         view.$el.imagesLoaded()
@@ -133,7 +134,8 @@ module.exports = Base.ListView.extend({
                 reset: true,
                 data: {
                     q: this.data.query,
-                    limit: 10
+                    limit: 10,
+                    image_size: 'medium'
                 },
                 success: function (collection, response, options) {
                     console.warn("adding new", collection.models.length);
@@ -145,7 +147,8 @@ module.exports = Base.ListView.extend({
             this.options.collection.fetch({
                 remove: false,
                 data: {
-                    limit: 10
+                    limit: 10,
+                    image_size: 'medium'
                 }
             });
         }

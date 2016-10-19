@@ -5,7 +5,7 @@ var apiUrl = require('../apiUrl');
 
 module.exports = Backbone.Model.extend({
 
-    idAttribute: 'uuid',
+    idAttribute: 'doc_id',
 
     initialize: function() {
     },

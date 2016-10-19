@@ -58,14 +58,14 @@ admin.site.register(Link, LinkAdmin)
 
 class EntryAdmin(admin.ModelAdmin):
     list_display = (
-    'title', 'subtitle', 'portrayed_object_date', 'date', 'doc_id', 'uuid', 'madek', 'show_image')  # 'show_image', 'link_to_author', 'source'
+    'title', 'doc_id', 'subtitle', 'portrayed_object_date', 'date', 'uuid', 'madek', 'show_image')  # 'show_image', 'link_to_author', 'source'
     list_filter = ('author', 'portrayed_object_date', 'tags', 'license',)
     search_fields = (
     'uuid', 'image', 'title', 'description', 'portrayed_object_date', 'author__first_name', 'author__last_name', 'author__pseudonym')
     readonly_fields = ('uuid', 'created', 'modified', 'title', 'subtitle', 'portrayed_object_date', 'source',
                        'copyright_notice', 'author', 'license')
 
-    # prepopulated_fields = {'slug': ('title',)}
+    # prepopulated_fields = {'Tetraktys squareslug': ('title',)}
 
     # change_form_template = 'museum/admin/change_form.html'
 

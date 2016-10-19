@@ -8,6 +8,17 @@ var marked = require('marked');
 
 var renderer = new marked.Renderer();
 
+
+// override link rendering
+renderer.link = function (href, title, text) {
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
+        return '<a href="' + href + '" title="' + (title!=null? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
+    else
+        return '<a href="/diagrams/' + href + '" title="' + (title!=null? title : "") + '" target="_blank">' + text + '</a>';
+};
+
+
+/*
 marked.setOptions({
     renderer: renderer,
     gfm: true,
@@ -19,15 +30,7 @@ marked.setOptions({
     smartLists: true,
     smartypants: false
 });
-
-// override link rendering
-renderer.link = function (href, title, text) {
-    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
-        return '<a href="' + href + '" title="' + title + '" target="_blank" data-bypass>' + text + '</a>';
-    else
-        return '<a href="/diagrams/' + href + '" title="' + title + '" target="_blank">' + text + '</a>';
-};
-
+*/
 
 // markdown filter
 dust.filters.markdown = function (text) {

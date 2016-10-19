@@ -38,7 +38,7 @@ function patch(parent, method) {
   };
 }
 
-},{"backbone":2,"nprogress":15}],2:[function(require,module,exports){
+},{"backbone":2,"nprogress":16}],2:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.3.3
 
@@ -1963,7 +1963,7 @@ function patch(parent, method) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"jquery":12,"underscore":23}],3:[function(require,module,exports){
+},{"jquery":12,"underscore":24}],3:[function(require,module,exports){
 /**
  * matchesSelector v2.0.1
  * matchesSelector( element, '.selector' )
@@ -3620,7 +3620,7 @@ return dust;
 
 }).call(this,require('_process'))
 
-},{"_process":22}],6:[function(require,module,exports){
+},{"_process":23}],6:[function(require,module,exports){
 /**
  * EvEmitter v1.0.3
  * Lil' event emitter
@@ -23586,6 +23586,304 @@ return jQuery;
 }));
 
 },{}],13:[function(require,module,exports){
+//     keymaster.js
+//     (c) 2011-2013 Thomas Fuchs
+//     keymaster.js may be freely distributed under the MIT license.
+
+;(function(global){
+  var k,
+    _handlers = {},
+    _mods = { 16: false, 18: false, 17: false, 91: false },
+    _scope = 'all',
+    // modifier keys
+    _MODIFIERS = {
+      '⇧': 16, shift: 16,
+      '⌥': 18, alt: 18, option: 18,
+      '⌃': 17, ctrl: 17, control: 17,
+      '⌘': 91, command: 91
+    },
+    // special keys
+    _MAP = {
+      backspace: 8, tab: 9, clear: 12,
+      enter: 13, 'return': 13,
+      esc: 27, escape: 27, space: 32,
+      left: 37, up: 38,
+      right: 39, down: 40,
+      del: 46, 'delete': 46,
+      home: 36, end: 35,
+      pageup: 33, pagedown: 34,
+      ',': 188, '.': 190, '/': 191,
+      '`': 192, '-': 189, '=': 187,
+      ';': 186, '\'': 222,
+      '[': 219, ']': 221, '\\': 220
+    },
+    code = function(x){
+      return _MAP[x] || x.toUpperCase().charCodeAt(0);
+    },
+    _downKeys = [];
+
+  for(k=1;k<20;k++) _MAP['f'+k] = 111+k;
+
+  // IE doesn't support Array#indexOf, so have a simple replacement
+  function index(array, item){
+    var i = array.length;
+    while(i--) if(array[i]===item) return i;
+    return -1;
+  }
+
+  // for comparing mods before unassignment
+  function compareArray(a1, a2) {
+    if (a1.length != a2.length) return false;
+    for (var i = 0; i < a1.length; i++) {
+        if (a1[i] !== a2[i]) return false;
+    }
+    return true;
+  }
+
+  var modifierMap = {
+      16:'shiftKey',
+      18:'altKey',
+      17:'ctrlKey',
+      91:'metaKey'
+  };
+  function updateModifierKey(event) {
+      for(k in _mods) _mods[k] = event[modifierMap[k]];
+  };
+
+  // handle keydown event
+  function dispatch(event) {
+    var key, handler, k, i, modifiersMatch, scope;
+    key = event.keyCode;
+
+    if (index(_downKeys, key) == -1) {
+        _downKeys.push(key);
+    }
+
+    // if a modifier key, set the key.<modifierkeyname> property to true and return
+    if(key == 93 || key == 224) key = 91; // right command on webkit, command on Gecko
+    if(key in _mods) {
+      _mods[key] = true;
+      // 'assignKey' from inside this closure is exported to window.key
+      for(k in _MODIFIERS) if(_MODIFIERS[k] == key) assignKey[k] = true;
+      return;
+    }
+    updateModifierKey(event);
+
+    // see if we need to ignore the keypress (filter() can can be overridden)
+    // by default ignore key presses if a select, textarea, or input is focused
+    if(!assignKey.filter.call(this, event)) return;
+
+    // abort if no potentially matching shortcuts found
+    if (!(key in _handlers)) return;
+
+    scope = getScope();
+
+    // for each potential shortcut
+    for (i = 0; i < _handlers[key].length; i++) {
+      handler = _handlers[key][i];
+
+      // see if it's in the current scope
+      if(handler.scope == scope || handler.scope == 'all'){
+        // check if modifiers match if any
+        modifiersMatch = handler.mods.length > 0;
+        for(k in _mods)
+          if((!_mods[k] && index(handler.mods, +k) > -1) ||
+            (_mods[k] && index(handler.mods, +k) == -1)) modifiersMatch = false;
+        // call the handler and stop the event if neccessary
+        if((handler.mods.length == 0 && !_mods[16] && !_mods[18] && !_mods[17] && !_mods[91]) || modifiersMatch){
+          if(handler.method(event, handler)===false){
+            if(event.preventDefault) event.preventDefault();
+              else event.returnValue = false;
+            if(event.stopPropagation) event.stopPropagation();
+            if(event.cancelBubble) event.cancelBubble = true;
+          }
+        }
+      }
+    }
+  };
+
+  // unset modifier keys on keyup
+  function clearModifier(event){
+    var key = event.keyCode, k,
+        i = index(_downKeys, key);
+
+    // remove key from _downKeys
+    if (i >= 0) {
+        _downKeys.splice(i, 1);
+    }
+
+    if(key == 93 || key == 224) key = 91;
+    if(key in _mods) {
+      _mods[key] = false;
+      for(k in _MODIFIERS) if(_MODIFIERS[k] == key) assignKey[k] = false;
+    }
+  };
+
+  function resetModifiers() {
+    for(k in _mods) _mods[k] = false;
+    for(k in _MODIFIERS) assignKey[k] = false;
+  };
+
+  // parse and assign shortcut
+  function assignKey(key, scope, method){
+    var keys, mods;
+    keys = getKeys(key);
+    if (method === undefined) {
+      method = scope;
+      scope = 'all';
+    }
+
+    // for each shortcut
+    for (var i = 0; i < keys.length; i++) {
+      // set modifier keys if any
+      mods = [];
+      key = keys[i].split('+');
+      if (key.length > 1){
+        mods = getMods(key);
+        key = [key[key.length-1]];
+      }
+      // convert to keycode and...
+      key = key[0]
+      key = code(key);
+      // ...store handler
+      if (!(key in _handlers)) _handlers[key] = [];
+      _handlers[key].push({ shortcut: keys[i], scope: scope, method: method, key: keys[i], mods: mods });
+    }
+  };
+
+  // unbind all handlers for given key in current scope
+  function unbindKey(key, scope) {
+    var multipleKeys, keys,
+      mods = [],
+      i, j, obj;
+
+    multipleKeys = getKeys(key);
+
+    for (j = 0; j < multipleKeys.length; j++) {
+      keys = multipleKeys[j].split('+');
+
+      if (keys.length > 1) {
+        mods = getMods(keys);
+        key = keys[keys.length - 1];
+      }
+
+      key = code(key);
+
+      if (scope === undefined) {
+        scope = getScope();
+      }
+      if (!_handlers[key]) {
+        return;
+      }
+      for (i = 0; i < _handlers[key].length; i++) {
+        obj = _handlers[key][i];
+        // only clear handlers if correct scope and mods match
+        if (obj.scope === scope && compareArray(obj.mods, mods)) {
+          _handlers[key][i] = {};
+        }
+      }
+    }
+  };
+
+  // Returns true if the key with code 'keyCode' is currently down
+  // Converts strings into key codes.
+  function isPressed(keyCode) {
+      if (typeof(keyCode)=='string') {
+        keyCode = code(keyCode);
+      }
+      return index(_downKeys, keyCode) != -1;
+  }
+
+  function getPressedKeyCodes() {
+      return _downKeys.slice(0);
+  }
+
+  function filter(event){
+    var tagName = (event.target || event.srcElement).tagName;
+    // ignore keypressed in any elements that support keyboard data input
+    return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+  }
+
+  // initialize key.<modifier> to false
+  for(k in _MODIFIERS) assignKey[k] = false;
+
+  // set current scope (default 'all')
+  function setScope(scope){ _scope = scope || 'all' };
+  function getScope(){ return _scope || 'all' };
+
+  // delete all handlers for a given scope
+  function deleteScope(scope){
+    var key, handlers, i;
+
+    for (key in _handlers) {
+      handlers = _handlers[key];
+      for (i = 0; i < handlers.length; ) {
+        if (handlers[i].scope === scope) handlers.splice(i, 1);
+        else i++;
+      }
+    }
+  };
+
+  // abstract key logic for assign and unassign
+  function getKeys(key) {
+    var keys;
+    key = key.replace(/\s/g, '');
+    keys = key.split(',');
+    if ((keys[keys.length - 1]) == '') {
+      keys[keys.length - 2] += ',';
+    }
+    return keys;
+  }
+
+  // abstract mods logic for assign and unassign
+  function getMods(key) {
+    var mods = key.slice(0, key.length - 1);
+    for (var mi = 0; mi < mods.length; mi++)
+    mods[mi] = _MODIFIERS[mods[mi]];
+    return mods;
+  }
+
+  // cross-browser events
+  function addEvent(object, event, method) {
+    if (object.addEventListener)
+      object.addEventListener(event, method, false);
+    else if(object.attachEvent)
+      object.attachEvent('on'+event, function(){ method(window.event) });
+  };
+
+  // set the handlers globally on document
+  addEvent(document, 'keydown', function(event) { dispatch(event) }); // Passing _scope to a callback to ensure it remains the same by execution. Fixes #48
+  addEvent(document, 'keyup', clearModifier);
+
+  // reset modifiers to false whenever the window is (re)focused.
+  addEvent(window, 'focus', resetModifiers);
+
+  // store previously defined key
+  var previousKey = global.key;
+
+  // restore previously defined key and return reference to our key object
+  function noConflict() {
+    var k = global.key;
+    global.key = previousKey;
+    return k;
+  }
+
+  // set window.key and window.key.set/get/deleteScope, and the default filter
+  global.key = assignKey;
+  global.key.setScope = setScope;
+  global.key.getScope = getScope;
+  global.key.deleteScope = deleteScope;
+  global.key.filter = filter;
+  global.key.isPressed = isPressed;
+  global.key.getPressedKeyCodes = getPressedKeyCodes;
+  global.key.noConflict = noConflict;
+  global.key.unbind = unbindKey;
+
+  if(typeof module !== 'undefined') module.exports = assignKey;
+
+})(this);
+
+},{}],14:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -40323,7 +40621,7 @@ return jQuery;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 (function (global){
 /**
  * marked - a markdown parser
@@ -41614,7 +41912,7 @@ if (typeof module !== 'undefined' && typeof exports === 'object') {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /* NProgress, (c) 2013, 2014 Rico Sta. Cruz - http://ricostacruz.com/nprogress
  * @license MIT */
 
@@ -42092,7 +42390,7 @@ if (typeof module !== 'undefined' && typeof exports === 'object') {
 });
 
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * Outlayer Item
  */
@@ -42647,7 +42945,7 @@ return Item;
 
 }));
 
-},{"ev-emitter":6,"get-size":9}],17:[function(require,module,exports){
+},{"ev-emitter":6,"get-size":9}],18:[function(require,module,exports){
 /*!
  * Outlayer v2.1.0
  * the brains and guts of a layout library
@@ -43588,7 +43886,7 @@ return Outlayer;
 
 }));
 
-},{"./item":16,"ev-emitter":6,"fizzy-ui-utils":7,"get-size":9}],18:[function(require,module,exports){
+},{"./item":17,"ev-emitter":6,"fizzy-ui-utils":7,"get-size":9}],19:[function(require,module,exports){
 /**
  * Packery Item Element
 **/
@@ -43720,7 +44018,7 @@ return Item;
 
 }));
 
-},{"./rect":21,"outlayer":17}],19:[function(require,module,exports){
+},{"./rect":22,"outlayer":18}],20:[function(require,module,exports){
 /**
  * Packer
  * bin-packing algorithm
@@ -43919,7 +44217,7 @@ return Packer;
 
 }));
 
-},{"./rect":21}],20:[function(require,module,exports){
+},{"./rect":22}],21:[function(require,module,exports){
 /*!
  * Packery v2.1.1
  * Gapless, draggable grid layouts
@@ -44588,7 +44886,7 @@ return Packery;
 
 }));
 
-},{"./item":18,"./packer":19,"./rect":21,"get-size":9,"outlayer":17}],21:[function(require,module,exports){
+},{"./item":19,"./packer":20,"./rect":22,"get-size":9,"outlayer":18}],22:[function(require,module,exports){
 /**
  * Rect
  * low-level utility class for basic geometry
@@ -44742,7 +45040,7 @@ return Rect;
 
 }));
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -44924,7 +45222,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -46474,7 +46772,7 @@ process.umask = function() { return 0; };
   }
 }.call(this));
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /*! VelocityJS.org (1.2.3). (C) 2014 Julian Shapiro. MIT @license: en.wikipedia.org/wiki/MIT_License */
 
 /*************************
@@ -50361,7 +50659,7 @@ return function (global, window, document, undefined) {
 /* The CSS spec mandates that the translateX/Y/Z transforms are %-relative to the element itself -- not its parent.
 Velocity, however, doesn't make this distinction. Thus, converting to or from the % unit with these subproperties
 will produce an inaccurate conversion value. The same issue exists with the cx/cy attributes of SVG circles and ellipses. */
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /**********************
    Velocity UI Pack
 **********************/
@@ -51124,7 +51422,7 @@ return function (global, window, document, undefined) {
     };
 }((window.jQuery || window.Zepto || window), window, document);
 }));
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var api_url = '/api/v1/';
 
 var URLs = {
@@ -51148,7 +51446,7 @@ var apiUrl = function (type) {
 };
 
 module.exports = apiUrl;
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var Regions = require('../views/regions.js');
 var swap = require('../views/swap.js');
 
@@ -51193,10 +51491,10 @@ module.exports.Timeline = function(q)  {
 };
 
 // entry detail
-module.exports.Detail = function (uuid) {
-    console.debug('##### Controller -> Detail', uuid);
+module.exports.Detail = function (doc_id) {
+    console.debug('##### Controller -> Detail', doc_id);
 
-    var entry = new Entry({uuid: uuid});
+    var entry = new Entry({doc_id: doc_id});
 
     // render
     swap(Regions.content, new EntryDetailView({model: entry}));
@@ -51207,7 +51505,7 @@ module.exports.Detail = function (uuid) {
     entry.fetch();
 };
 
-},{"../models/entries":30,"../models/entry":31,"../views/archive":46,"../views/entry_detail":49,"../views/regions.js":54,"../views/swap.js":55,"../views/timeline":56}],28:[function(require,module,exports){
+},{"../models/entries":31,"../models/entry":32,"../views/archive":47,"../views/entry_detail":50,"../views/regions.js":55,"../views/swap.js":56,"../views/timeline":57}],29:[function(require,module,exports){
 // dust filters
 var dust = require('dustjs-linkedin');
 
@@ -51218,6 +51516,17 @@ var marked = require('marked');
 
 var renderer = new marked.Renderer();
 
+
+// override link rendering
+renderer.link = function (href, title, text) {
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
+        return '<a href="' + href + '" title="' + (title!=null? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
+    else
+        return '<a href="/diagrams/' + href + '" title="' + (title!=null? title : "") + '" target="_blank">' + text + '</a>';
+};
+
+
+/*
 marked.setOptions({
     renderer: renderer,
     gfm: true,
@@ -51229,15 +51538,7 @@ marked.setOptions({
     smartLists: true,
     smartypants: false
 });
-
-// override link rendering
-renderer.link = function (href, title, text) {
-    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
-        return '<a href="' + href + '" title="' + title + '" target="_blank" data-bypass>' + text + '</a>';
-    else
-        return '<a href="/diagrams/' + href + '" title="' + title + '" target="_blank">' + text + '</a>';
-};
-
+*/
 
 // markdown filter
 dust.filters.markdown = function (text) {
@@ -51280,7 +51581,7 @@ dust.filters.hipster = function (text) {
         });
 };
 
-},{"dustjs-linkedin":5,"marked":14}],29:[function(require,module,exports){
+},{"dustjs-linkedin":5,"marked":15}],30:[function(require,module,exports){
 window.App = {
     Helper: {},
     Router: {},
@@ -51292,19 +51593,37 @@ window.App = {
 
 var Backbone = require('backbone');
 /*
-// foundation needs global.$ because it doesn't "require" jquery for some reason
-global.$ = global.jQuery = require('jquery');
-require('foundation-sites');
-*/
+ // foundation needs global.$ because it doesn't "require" jquery for some reason
+ global.$ = global.jQuery = require('jquery');
+ require('foundation-sites');
+ */
 
 Backbone.$ = $;
 
 // we do need this for dustjs helpers!!!
 require('dustjs-helpers');
-
 require('./dust-filters.js');
 
 var Router = require('./router.js');
+
+
+// global key shortcuts
+var key = require('keymaster');
+
+key('s', function () {
+    $('input[type=search]').focus();
+    return false; // prevent writing of 's'
+});
+
+key('h', function () {
+    App.Router.r.navigate('/', {trigger: true});
+});
+
+key('t', function () {
+    App.Router.r.navigate('/timeline', {trigger: true});
+});
+
+
 
 
 // jquery attr() functionality
@@ -51367,22 +51686,22 @@ $(function () {
         window.scrollTo(0, 0); // scroll to top on url change! TODO: finer control when to scroll top ie. when navigation from detail to list views that were scrolled before...
 
         /*
-        if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
-            $(document).scrollTop(App.currentView.viewState.get('scrollPosition'));
-        }
-        */
+         if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
+         $(document).scrollTop(App.currentView.viewState.get('scrollPosition'));
+         }
+         */
     });
 
     /*
-    App.currentView = false;
-    $(window).on('scroll', function () {
-        // Not all views will be interested in maintaining scroll position, so we need to check them first.
-        if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
-            //console.warn('setting scrollPosition ', App.currentView.viewState.attributes, $(document).scrollTop());
-            App.currentView.viewState.set('scrollPosition', $(document).scrollTop());
-        }
-    });
-    */
+     App.currentView = false;
+     $(window).on('scroll', function () {
+     // Not all views will be interested in maintaining scroll position, so we need to check them first.
+     if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
+     //console.warn('setting scrollPosition ', App.currentView.viewState.attributes, $(document).scrollTop());
+     App.currentView.viewState.set('scrollPosition', $(document).scrollTop());
+     }
+     });
+     */
 
     $(document).on('click', 'a:not([data-bypass])', function (evt) {
 
@@ -51394,7 +51713,7 @@ $(function () {
             App.Router.r.navigate(href, {trigger: true});
         }
     });
-    
+
     App.Router.r = new Router();
     Backbone.history.start({pushState: true});
 
@@ -51403,7 +51722,7 @@ $(function () {
 
 
 
-},{"./dust-filters.js":28,"./router.js":32,"backbone":2,"dustjs-helpers":4}],30:[function(require,module,exports){
+},{"./dust-filters.js":29,"./router.js":33,"backbone":2,"dustjs-helpers":4,"keymaster":13}],31:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -51428,7 +51747,7 @@ module.exports = Backbone.Collection.extend({
     },
 });
 
-},{"../apiUrl":26,"./entry":31,"backbone":2,"jquery":12}],31:[function(require,module,exports){
+},{"../apiUrl":27,"./entry":32,"backbone":2,"jquery":12}],32:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -51436,7 +51755,7 @@ var apiUrl = require('../apiUrl');
 
 module.exports = Backbone.Model.extend({
 
-    idAttribute: 'uuid',
+    idAttribute: 'doc_id',
 
     initialize: function() {
     },
@@ -51447,7 +51766,7 @@ module.exports = Backbone.Model.extend({
 
 });
 
-},{"../apiUrl":26,"backbone":2,"jquery":12}],32:[function(require,module,exports){
+},{"../apiUrl":27,"backbone":2,"jquery":12}],33:[function(require,module,exports){
 // Application router
 // ==================
 'use strict';
@@ -51525,7 +51844,7 @@ module.exports = Backbone.Router.extend({
         '(/)(q=:q)': entryController.List,
         'timeline(/)(q=:q)': entryController.Timeline,
         'editor(/)': editor,
-        'diagrams/:uuid(/)': entryController.Detail,
+        'diagrams/:doc_id(/)': entryController.Detail,
         '*actions': defaultRoute
     },
 
@@ -51542,79 +51861,79 @@ module.exports = Backbone.Router.extend({
 });
 
 
-},{"./controllers/entry_controller":27,"./views/404.js":45,"./views/archive.js":46,"./views/editor.js":48,"./views/entry_detail.js":49,"./views/layout.js":52,"./views/navigation.js":53,"./views/regions.js":54,"./views/swap.js":55,"backbone":2,"jquery":12}],33:[function(require,module,exports){
+},{"./controllers/entry_controller":28,"./views/404.js":46,"./views/archive.js":47,"./views/editor.js":49,"./views/entry_detail.js":50,"./views/layout.js":53,"./views/navigation.js":54,"./views/regions.js":55,"./views/swap.js":56,"backbone":2,"jquery":12}],34:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("404",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 column text-center\"><h1>404 Not Found</h1></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("404", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],34:[function(require,module,exports){
+},{"dustjs-linkedin":5}],35:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("archive",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"column small-12 text-center\">").x(ctx.get(["query"], false),ctx,{"block":body_1},{}).w("</div></div><div class=\"row\"><div class=\"column small-12\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div><!--<div class=\"row\"><div class=\"column small-12 text-center\"><button class=\"button load\">load</button></div></div>-->");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<h5>Search results for: <b>").f(ctx.get(["query"], false),ctx,"h").w("</b></h5>");}body_1.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("archive", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],35:[function(require,module,exports){
+},{"dustjs-linkedin":5}],36:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("base",body_0);function body_0(chk,ctx){return chk.w("<div data-js-region=\"base\"><div id=\"navigation\" data-js-region=\"navigation\"></div><div id=\"content\" data-js-region=\"content\"></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("base", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],36:[function(require,module,exports){
+},{"dustjs-linkedin":5}],37:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("editor",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row full align-stretch\"><div class=\"columns align-left\"><input type=\"search\" placeholder=\"search\" class=\"search\"><div id=\"stencil_holder\"></div></div><div class=\"columns align-self-stretch\"><div id=\"paper\"></div></div></div><div class=\"row full\"><div class=\"columns large-12 left\"><div id=\"selection-info\"></div><button type=\"button\" class=\"success button\" id=\"btn_open_svg\">Save SVG</button></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("editor", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],37:[function(require,module,exports){
-(function() {
-var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h5>").f(ctx.get(["title"], false),ctx,"h").w("</h5><span>").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("</span><h6>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</h6><h6>").f(ctx.getPath(false, ["author","first_name"]),ctx,"h").w(" ").f(ctx.getPath(false, ["author","last_name"]),ctx,"h").w(" ").x(ctx.getPath(false, ["author","pseudonym"]),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_2},{}).w("<img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div><div class=\"related\"><ul>").s(ctx.get(["related"], false),ctx,{"block":body_5},{}).w("</ul></div></div><div class=\"preview\" id=\"marked-mathjax-preview-buffer\" style=\"display:none; position:absolute; top:0; left: 0\"></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("(").f(ctx.getPath(false, ["author","pseudonym"]),ctx,"h").w(")");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_3},{}).w("</h6>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w(" <a href=\"/q=").f(ctx.getPath(true, []),ctx,"h").w("\">").f(ctx.getPath(true, []),ctx,"h").w("</a>").h("sep",ctx,{"block":body_4},{},"h");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(",");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></li>\n");}body_5.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
-}).call(this);
-
 },{"dustjs-linkedin":5}],38:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_list",body_0);function body_0(chk,ctx){return chk.w("<section id=\"entries\"><div id=\"entry_list_header\" data-js-region=\"entry_list_header\"></div><div class=\"row\"><div class=\"medium-12 columns\"><!--<div class=\"entries row small-up-1 medium-up-3 large-up-5 grid\" style=\"margin-top: 50px;\"></div>--><div class=\"entries grid\" style=\"margin-top: 50px;\"></div></div></div></div><footer><div class=\"row\"><div class=\"large-12 medium-12 small-12 column text-center\"><!--<h4>List Footer</h4>--></div></div></footer></section>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list", context || {}, callback); };
+(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h3>").f(ctx.get(["title"], false),ctx,"h").w("</h3><h6>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h6><h6><i>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</i></h6><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_3},{}).w("<img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div><div class=\"related text-left\">").x(ctx.get(["related"], false),ctx,{"block":body_6},{}).w("<ul>").s(ctx.get(["related"], false),ctx,{"block":body_7},{}).w("</ul></div><br/><div class=\"row\"><div class=\"large-12 medium-12 small-12 column text-left\">Source: ").f(ctx.get(["source"], false),ctx,"h").w("<br/>Copyright: ").f(ctx.get(["copyright_notice"], false),ctx,"h").w("<br/>License: ").s(ctx.get(["license"], false),ctx,{"block":body_8},{}).w("</div></div></div><div class=\"preview\" id=\"marked-mathjax-preview-buffer\"style=\"display:none; position:absolute; top:0; left: 0\"></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_4},{}).w("</h6>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(" <a href=\"/q=").f(ctx.getPath(true, []),ctx,"h").w("\">").f(ctx.getPath(true, []),ctx,"h").w("</a>").h("sep",ctx,{"block":body_5},{},"h");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w(",");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("See also:");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></li>\n");}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\" data-bypass target=\"_blank\">").f(ctx.get(["label"], false),ctx,"h").w("</a>");}body_8.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],39:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_list_header",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 column text-center\">").s(ctx.get(["meta"], false),ctx,{"block":body_1},{}).w("</div></div><!--<div class=\"row\"><div class=\"small-12 column text-center\"><button class=\"button toggle_grid\">Grid!</button></div></div>-->");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.x(ctx.get(["search_query"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<p>Found ").f(ctx.get(["total_count"], false),ctx,"h").w(" diagrams.</p>");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_header", context || {}, callback); };
+(function(dust){dust.register("entry_list",body_0);function body_0(chk,ctx){return chk.w("<section id=\"entries\"><div id=\"entry_list_header\" data-js-region=\"entry_list_header\"></div><div class=\"row\"><div class=\"medium-12 columns\"><!--<div class=\"entries row small-up-1 medium-up-3 large-up-5 grid\" style=\"margin-top: 50px;\"></div>--><div class=\"entries grid\" style=\"margin-top: 50px;\"></div></div></div></div><footer><div class=\"row\"><div class=\"large-12 medium-12 small-12 column text-center\"><!--<h4>List Footer</h4>--></div></div></footer></section>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],40:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry grid-item ").f(ctx.get(["uuid"], false),ctx,"h").w("\"><!--<div class=\"entry column align-self-bottom grid-item\">--><div class=\"entry_wrapper text-center grow\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" height=\"200\"/>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("<span>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</span></a></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br />");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_single", context || {}, callback); };
+(function(dust){dust.register("entry_list_header",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 column text-center\">").s(ctx.get(["meta"], false),ctx,{"block":body_1},{}).w("</div></div><!--<div class=\"row\"><div class=\"small-12 column text-center\"><button class=\"button toggle_grid\">Grid!</button></div></div>-->");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.x(ctx.get(["search_query"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<p>Found ").f(ctx.get(["total_count"], false),ctx,"h").w(" diagrams.</p>");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_header", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],41:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("navigation",body_0);function body_0(chk,ctx){return chk.w("<nav><div class=\"row align-spaced\"><div class=\"shrink column small-order-1 large-order-1\"><ul class=\"menu\"><li><a href=\"/\">Sound Colour Space</a></li></ul></div><div class=\"expand column small-order-3 large-order-2\"><div class=\"input-group\" style=\"margin-bottom: 0;\"><span class=\"input-group-label\"><i class=\"fi-magnifying-glass\" style=\"font-size: 1.3rem; color: rgb(170, 170, 170);\"></i></span><input class=\"input-group-field search\" type=\"search\" placeholder=\"Search\"><div class=\"input-group-button\"><button class=\"button search\"><i class=\"fi-arrow-right\"></i></button></div></div></div><div class=\"shrink column small-order-2  large-order-3\"><ul class=\"menu\"><li><a href=\"exhibitions\">Exhibitions</a></li><li><a href=\"editor\">Editor</a></li></ul></div></div></nav>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("navigation", context || {}, callback); };
+(function(dust){dust.register("entry_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry grid-item ").f(ctx.get(["uuid"], false),ctx,"h").w("\"><!--<div class=\"entry column align-self-bottom grid-item\">--><div class=\"entry_wrapper text-center grow\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" height=\"200\"/>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("<span>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</span></a></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br />");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_single", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],42:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("timeline",body_0);function body_0(chk,ctx){return chk.w("<div><div id=\"timeline_header\" data-js-region=\"timeline_header\"></div><div id=\"timeline_wrapper\"><div id=\"timeline\"></div><div id=\"timeline_content\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline", context || {}, callback); };
+(function(dust){dust.register("navigation",body_0);function body_0(chk,ctx){return chk.w("<nav><div class=\"row align-spaced\"><div class=\"shrink column small-order-1 large-order-1\"><ul class=\"menu\"><li><a href=\"/\">Sound Colour Space</a></li></ul></div><div class=\"expand column small-order-3 large-order-2\"><div class=\"input-group\" style=\"margin-bottom: 0;\"><span class=\"input-group-label\"><i class=\"fi-magnifying-glass\" style=\"font-size: 1.3rem; color: rgb(170, 170, 170);\"></i></span><input class=\"input-group-field search\" type=\"search\" placeholder=\"Search\"><div class=\"input-group-button\"><button class=\"button search\"><i class=\"fi-arrow-right\"></i></button></div></div></div><div class=\"shrink column small-order-2  large-order-3\"><ul class=\"menu\"><li><a href=\"exhibitions\">Exhibitions</a></li><li><a href=\"editor\">Editor</a></li></ul></div></div></nav>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("navigation", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],43:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("timeline_header",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 column text-center\"><h1>Timeline</h1><div id=\"date_slider\" class=\"slider\"><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"></span><span class=\"slider-fill\" data-slider-fill></span><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"></span><input type=\"hidden\"><input type=\"hidden\"></div><div class=\"clearfix\"><div class=\"float-left\" id=\"dateSliderStart\"></div><div class=\"float-right\" id=\"dateSliderEnd\"></div></div>").s(ctx.get(["meta"], false),ctx,{"block":body_1},{}).w("</div></div><!--<div class=\"row\"><div class=\"small-12 column text-center\"><button class=\"button toggle_grid\">Grid!</button></div></div>-->");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.x(ctx.get(["search_query"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<p>Found ").f(ctx.get(["total_count"], false),ctx,"h").w(" diagrams for <b>").f(ctx.get(["search_query"], false),ctx,"h").w("</b>.</p><button class=\"button small radius\">Clear Filter</button>");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_header", context || {}, callback); };
+(function(dust){dust.register("timeline",body_0);function body_0(chk,ctx){return chk.w("<div><div id=\"timeline_header\" data-js-region=\"timeline_header\"></div><div id=\"timeline_wrapper\"><div id=\"timeline\"></div><div id=\"timeline_content\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],44:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("timeline_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry\"><!--<h5>").f(ctx.get(["title"], false),ctx,"h").w("</h5><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6>--><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"expand\">").f(ctx.get(["title"], false),ctx,"h").w("</div><div class=\"connector\"><div class=\"circle\"></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br/>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_single", context || {}, callback); };
+(function(dust){dust.register("timeline_header",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 column text-center\"><h1>Timeline</h1><div id=\"date_slider\" class=\"slider\"><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"></span><span class=\"slider-fill\" data-slider-fill></span><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"></span><input type=\"hidden\"><input type=\"hidden\"></div><div class=\"clearfix\"><div class=\"float-left\" id=\"dateSliderStart\"></div><div class=\"float-right\" id=\"dateSliderEnd\"></div></div>").s(ctx.get(["meta"], false),ctx,{"block":body_1},{}).w("</div></div><!--<div class=\"row\"><div class=\"small-12 column text-center\"><button class=\"button toggle_grid\">Grid!</button></div></div>-->");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.x(ctx.get(["search_query"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<p>Found ").f(ctx.get(["total_count"], false),ctx,"h").w(" diagrams for <b>").f(ctx.get(["search_query"], false),ctx,"h").w("</b>.</p><button class=\"button small radius\">Clear Filter</button>");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_header", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],45:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("timeline_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry\"><div class=\"wrapper\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"overlay\"></div><div class=\"eye\"><i class=\"fi-eye\"></i></div><div class=\"description\"><h7>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</h7><h4>").f(ctx.get(["title"], false),ctx,"h").w("</h4><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6><p>").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</p></div></div><div class=\"connector\"><div class=\"circle\"></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br/>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_single", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":5}],46:[function(require,module,exports){
 var Base = require('./base.js');
 
 // layout template
@@ -51625,7 +51944,7 @@ module.exports = Base.TemplateView.extend({
         console.debug("onShow", this.template);
     }
 });
-},{"../templates/404.dust":33,"./base.js":47}],46:[function(require,module,exports){
+},{"../templates/404.dust":34,"./base.js":48}],47:[function(require,module,exports){
 var Base = require('./base');
 
 var Entries = require('../models/entries');
@@ -51659,7 +51978,7 @@ module.exports = Base.TemplateView.extend({
                 reset: true,
                 data: {
                     q: this.data.query,
-                    limit: 10
+                    limit: 30
                 },
                 success: function (collection, response, options) {
                     console.warn("adding new", collection.models.length);
@@ -51670,7 +51989,7 @@ module.exports = Base.TemplateView.extend({
             this.options.collection.fetch({
                 remove: false,
                 data: {
-                    limit: 10
+                    limit: 30
                 }
             });
         }
@@ -51714,7 +52033,7 @@ module.exports = Base.TemplateView.extend({
 
 });
 
-},{"../models/entries":30,"../templates/archive.dust":34,"../views/swap.js":55,"./base":47,"./entry_list":50,"./timeline":56}],47:[function(require,module,exports){
+},{"../models/entries":31,"../templates/archive.dust":35,"../views/swap.js":56,"./base":48,"./entry_list":51,"./timeline":57}],48:[function(require,module,exports){
 /* Base Views */
 'use strict';
 
@@ -52106,7 +52425,7 @@ module.exports.ListView = Backbone.View.extend({
     },
 });
 
-},{"backbone":2,"jquery":12,"lodash":13}],48:[function(require,module,exports){
+},{"backbone":2,"jquery":12,"lodash":14}],49:[function(require,module,exports){
  /*
  var Backbone = require('backbone');
  var $ = require('jquery');
@@ -52339,7 +52658,7 @@ module.exports = Base.TemplateView.extend({
 
     }
 });
-},{"../models/entries":30,"../templates/editor.dust":36,"./base.js":47}],49:[function(require,module,exports){
+},{"../models/entries":31,"../templates/editor.dust":37,"./base.js":48}],50:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -52359,7 +52678,7 @@ renderer.link = function (href, title, text) {
     if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
         return '<a href="' + href + '" title="' + title + '" target="_blank" data-bypass>' + text + '</a>';
     else
-        return '<a href="/diagrams/' + href + '" title="' + title + '" target="_blank">' + text + '</a>';
+        return '<a href="/diagrams/' + href + '" title="' + title + '">' + text + '</a>';
 };
 
 
@@ -52407,8 +52726,6 @@ module.exports = Base.DetailView.extend({
         console.log('onShow');
         // scroll to top
         $(window).scrollTop(0);
-
-
 
 
         this.mjBuffer = document.getElementById("marked-mathjax-preview-buffer");
@@ -52483,7 +52800,7 @@ module.exports = Base.DetailView.extend({
 });
 
 
-},{"../templates/entry_detail.dust":37,"./base":47,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":13,"marked":14}],50:[function(require,module,exports){
+},{"../templates/entry_detail.dust":38,"./base":48,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14,"marked":15}],51:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -52590,7 +52907,7 @@ module.exports = Base.ListView.extend({
     }
 
 });
-},{"../templates/entry_list.dust":38,"../templates/entry_list_header.dust":39,"../views/swap.js":55,"./base":47,"./entry_single":51,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":13,"packery":20}],51:[function(require,module,exports){
+},{"../templates/entry_list.dust":39,"../templates/entry_list_header.dust":40,"../views/swap.js":56,"./base":48,"./entry_single":52,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":14,"packery":21}],52:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -52647,7 +52964,7 @@ module.exports = Base.SingleView.extend({
 
     events: {}
 });
-},{"../templates/entry_single.dust":40,"./base":47,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":13,"packery":20,"velocity-animate":24,"velocity-animate/velocity.ui":25}],52:[function(require,module,exports){
+},{"../templates/entry_single.dust":41,"./base":48,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":14,"packery":21,"velocity-animate":25,"velocity-animate/velocity.ui":26}],53:[function(require,module,exports){
 var Base = require('./base.js');
 
 // layout template
@@ -52660,7 +52977,7 @@ module.exports = Base.TemplateView.extend({
     }
 });
 
-},{"../templates/base.dust":35,"./base.js":47}],53:[function(require,module,exports){
+},{"../templates/base.dust":36,"./base.js":48}],54:[function(require,module,exports){
 (function (global){
 'use strict';
 var Backbone = require('backbone');
@@ -52732,9 +53049,9 @@ module.exports = Base.TemplateView.extend({
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../apiUrl":26,"../templates/navigation.dust":41,"./base.js":47,"backbone":2,"backbone-nprogress":1,"foundation-sites":8,"jquery":12,"lodash":13,"nprogress":15}],54:[function(require,module,exports){
+},{"../apiUrl":27,"../templates/navigation.dust":42,"./base.js":48,"backbone":2,"backbone-nprogress":1,"foundation-sites":8,"jquery":12,"lodash":14,"nprogress":16}],55:[function(require,module,exports){
 module.exports = {};
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(region, newView) {
 
     // if there's an old View in the region, grab a reference to it
@@ -52771,7 +53088,7 @@ module.exports = function(region, newView) {
     }
 
 };
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 (function (global){
 var Backbone = require('backbone');
 var _ = require('lodash');
@@ -52832,7 +53149,7 @@ var MetaView = Base.TemplateView.extend({
 });
 
 App.Helper.i = 0;
-App.Helper.d = 20;  // margin
+App.Helper.d = 25;  // margin
 App.Helper.top_right_column = 0;
 App.Helper.top_left_column = 0;
 
@@ -52852,17 +53169,18 @@ module.exports = Base.ListView.extend({
         // increase counter
         App.Helper.i++;
 
+        //var height = Math.min(model.get('image').height, 108); // TODO set height according to settings.py / browser
+        var height = model.get('image').height;
+
         if (App.Helper.i % 2 == 0) {
-            view.$el.css('top', App.Helper.top_right_column + 'px');
-            //view.$el.css('left', '586px');
             view.$el.css('right', '0px');
-            App.Helper.top_right_column += model.get('image').height + App.Helper.d;
+            view.$el.css('top', App.Helper.top_right_column + 'px');
+            App.Helper.top_right_column += height + App.Helper.d;
         }
         else {
             view.$el.addClass('left-col');
             view.$el.css('top', App.Helper.top_left_column + 'px');
-            //view.$el.css('left', '0px');
-            App.Helper.top_left_column += model.get('image').height + App.Helper.d;
+            App.Helper.top_left_column += height + App.Helper.d;
         }
 
         view.$el.imagesLoaded()
@@ -52908,7 +53226,8 @@ module.exports = Base.ListView.extend({
                 reset: true,
                 data: {
                     q: this.data.query,
-                    limit: 10
+                    limit: 10,
+                    image_size: 'medium'
                 },
                 success: function (collection, response, options) {
                     console.warn("adding new", collection.models.length);
@@ -52920,7 +53239,8 @@ module.exports = Base.ListView.extend({
             this.options.collection.fetch({
                 remove: false,
                 data: {
-                    limit: 10
+                    limit: 10,
+                    image_size: 'medium'
                 }
             });
         }
@@ -52958,7 +53278,7 @@ module.exports = Base.ListView.extend({
 });
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../templates/timeline.dust":42,"../templates/timeline_header.dust":43,"../views/swap.js":55,"./base":47,"./timeline_single":57,"backbone":2,"foundation-sites":8,"imagesloaded":10,"jquery":12,"lodash":13}],57:[function(require,module,exports){
+},{"../templates/timeline.dust":43,"../templates/timeline_header.dust":44,"../views/swap.js":56,"./base":48,"./timeline_single":58,"backbone":2,"foundation-sites":8,"imagesloaded":10,"jquery":12,"lodash":14}],58:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -52999,18 +53319,25 @@ module.exports = Base.SingleView.extend({
     },
 
     /*
-    onRemove: function () {
-        console.warn('onRemove single');
-        $el = this.$el;
-        $el.fadeOut("slow", function() {
-            Base.SingleView.prototype.onRemove.call(this);
-        }).bind(this);
+     onRemove: function () {
+     console.warn('onRemove single');
+     $el = this.$el;
+     $el.fadeOut("slow", function() {
+     Base.SingleView.prototype.onRemove.call(this);
+     }).bind(this);
 
-    },*/
+     },*/
 
-    events: {}
+    events: {
+        "click .eye": function () {
+            this.$el.find('.description').toggleClass('active');
+            this.$el.find('.overlay').toggleClass('active');
+        }
+    }
 });
-},{"../templates/timeline_single.dust":44,"./base":47,"backbone":2,"imagesloaded":10,"jquery":12,"lodash":13,"velocity-animate":24,"velocity-animate/velocity.ui":25}]},{},[29])
+
+
+},{"../templates/timeline_single.dust":45,"./base":48,"backbone":2,"imagesloaded":10,"jquery":12,"lodash":14,"velocity-animate":25,"velocity-animate/velocity.ui":26}]},{},[30])
 
 
 //# sourceMappingURL=bundle.js.map
