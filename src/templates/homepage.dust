@@ -1,0 +1,24 @@
+<div class="row">
+    <div class="column">
+        <h1>Sound Colour Space – A Virtual Museum</h1>
+        <img src="{STATIC_URL}img/fig_0_head_1456_464.jpg"/>
+        <br/><br/>
+        <p>
+            Im Zentrum des Projekts Sound Colour Space – A Virtual Museum steht das Begriffsfeld Klang, Ton, Tonhöhe,
+            Klangfarbe in seiner Beziehung zu visuellen Phänomenen und geometrischen Konzepten. Das Vorhaben versteht
+            sich als Beitrag zu einem interdisziplinären Forschungsgebiet und erforscht seine adäquaten Darstellungs-
+            und Vermittlungsformen.
+        </p>
+        <p>
+            Zahlreiche Wissenschaftler und Philosophen von der Antike bis zur heutigen Zeit haben die Beziehungen
+            zwischen Ton, Farbe und Geometrie untersucht. Viele ihrer Visualisierungen zu akustischen, optischen und
+            wahrnehmungsbezogenen Themen sprechen zu den Augen und sollen vergleichend studiert werden. Da ein gegebenes
+            Bild oder Diagramm in verschiedenen Kontexten und mit unterschiedlichen Implikationen auftreten kann,
+            erlaubt eine ausgeprägte Netzwerkarchitektur eine redundanzfreie Darstellung der betreffenden Inhalte. Neben
+            der Entwicklung einer exemplarischen Webanwendung, wird das Themengebiet mit Beiträgen aus unterschiedlichen
+            Disziplinen und mit künstlerischen Anwendungen bearbeitet und in einen aktuellen Forschungskontext gestellt.
+        </p>
+    </div>
+</div>
+
+

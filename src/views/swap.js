@@ -20,6 +20,7 @@ module.exports = function(region, newView) {
         // remove references to the el DOM nodes
         delete oldView.$el;
         delete oldView.el;
+        //delete oldView.data;
     }
 
     // save a reference to the new View on the Region itself

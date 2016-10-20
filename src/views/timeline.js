@@ -20,11 +20,11 @@ var swap = require('../views/swap.js');
 var MetaView = Base.TemplateView.extend({
 
     /*
-    initialize: function(options) {
-        Base.TemplateView.prototype.initialize.apply(this, [options]);
-        this.parent = options.parent;
-    },
-    */
+     initialize: function(options) {
+     Base.TemplateView.prototype.initialize.apply(this, [options]);
+     this.parent = options.parent;
+     },
+     */
 
     template: require('../templates/timeline_header.dust'),
 
@@ -50,20 +50,23 @@ var MetaView = Base.TemplateView.extend({
             $('#dateSliderStart').text(this.date_slider.$input.val());
             $('#dateSliderEnd').text(this.date_slider.$input2.val());
         },
-        'changed.zf.slider #date_slider': function() {
+        'changed.zf.slider #date_slider': function () {
             //cthis.options.parent.doQuery();
         }
     }
 });
 
-App.Helper.i = 0;
-App.Helper.d = 25;  // margin
-App.Helper.top_right_column = 0;
-App.Helper.top_left_column = 0;
 
-module.exports = Base.ListView.extend({
+module.exports = Base.TemplateView.extend({
 
     template: require('../templates/timeline.dust'),
+
+    data: {
+        item_counter: 0,
+        item_margin: 25,  // margin
+        top_right_column: 0,
+        top_left_column: 0,
+    },
 
     addOne: function (model) {
 
@@ -75,49 +78,34 @@ module.exports = Base.ListView.extend({
         view.$el.css('position', 'absolute');
 
         // increase counter
-        App.Helper.i++;
+        this.data.item_counter++;
 
         //var height = Math.min(model.get('image').height, 108); // TODO set height according to settings.py / browser
         var height = model.get('image').height;
 
-        if (App.Helper.i % 2 == 0) {
+        if (this.data.item_counter % 2 == 0) {
             view.$el.css('right', '0px');
-            view.$el.css('top', App.Helper.top_right_column + 'px');
-            App.Helper.top_right_column += height + App.Helper.d;
+            view.$el.css('top', this.data.top_right_column + 'px');
+            this.data.top_right_column += height + this.data.item_margin;
         }
         else {
             view.$el.addClass('left-col');
-            view.$el.css('top', App.Helper.top_left_column + 'px');
-            App.Helper.top_left_column += height + App.Helper.d;
+            view.$el.css('top', this.data.top_left_column + 'px');
+            this.data.top_left_column += height + this.data.item_margin;
         }
 
         view.$el.imagesLoaded()
             .progress(function (instance, image) {
                 this.$('#timeline').css('height', $(document).height() + "px");
             }.bind(this));
+
+        //console.warn("total items: ", this.data.item_counter);
+        //console.warn("top_right_column: ", this.data.top_right_column);
     },
 
     removeOne: function (model, collection, options) {
         //$('.grid').packery('remove', this.$('.'+model.get('uuid'))).packery('shiftLayout');
     },
-
-
-    // override render function because adding items must be done in the onShow() function
-    render: function () {
-
-        this.template(_.extend(this.data, {meta: this.collection.meta}), function (err, out) {
-            if (err) {
-                console.error(err);
-            }
-            else {
-                this.$el.html($(out).html());
-                this.$el.attr($(out).attr());
-            }
-        }.bind(this));
-
-        return this;
-    },
-
 
     onSync: function () {
         //Base.ListView.prototype.onSync.call(this);
@@ -125,8 +113,10 @@ module.exports = Base.ListView.extend({
         //swap($('[data-js-region="timeline_header"]'), new MetaView({parent: this, data: {meta: this.collection.meta}}));
     },
 
+    doQuery: function () {
 
-    doQuery: function() {
+        console.log('doQuery');
+
         var self = this;
         if (this.data.query) {
             console.log('do search...', this.data.query);
@@ -139,23 +129,37 @@ module.exports = Base.ListView.extend({
                 },
                 success: function (collection, response, options) {
                     console.warn("adding new", collection.models.length);
-                    swap($('[data-js-region="timeline_header"]'), new MetaView({parent: self, data: {meta: collection.meta}}));
+                    swap($('[data-js-region="timeline_header"]'), new MetaView({
+                        parent: self,
+                        data: {meta: collection.meta}
+                    }));
                     //App.entries.add(collection.models); // merge into App.entries
                 }
             });
         } else {
             this.options.collection.fetch({
+                //reset: true,
                 remove: false,
                 data: {
                     limit: 10,
                     image_size: 'medium'
+                },
+                /*
+                success: function (collection, response, options) {
+                    console.warn("adding new", collection.models.length);
+                    //this.collection.add(collection.models); // merge into App.entries
+                    collection.each(this.addOne, this);
                 }
+                */
             });
         }
 
     },
 
     onShow: function () {
+
+        this.listenTo(this.options.collection, 'add', this.addOne);
+        this.listenTo(this.options.collection, 'remove', this.removeOne);
 
         this.doQuery();
 
@@ -171,8 +175,8 @@ module.exports = Base.ListView.extend({
                     this.options.collection.fetch({
                         remove: false,
                         success: function (collection, response, options) {
-                            console.warn("adding", response.objects.length, "total: ", collection.models.length);
-                            App.entries.add(collection.models); // merge into App.entries
+                            //console.warn("adding", response.objects.length, "total: ", collection.models.length);
+                            //App.entries.add(collection.models); // merge into App.entries
                         }
                     });
                 }

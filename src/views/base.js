@@ -183,7 +183,9 @@ module.exports.TemplateView = Backbone.View.extend({
 
     initialize: function (options) {
         this.options = _.extend({}, options);
-        this.data = _.extend({}, options.data);
+        //_.extend(this.data, options.data);
+        this.data = _.extend({}, this.data, options.data);
+
         _.bindAll(this, 'render', 'onShow');
     },
 
@@ -204,7 +206,13 @@ module.exports.TemplateView = Backbone.View.extend({
 
     onShow: function () {
         // optional override in view
+    },
+
+    onRemove: function() {
+        console.log("onRemove");
+        //delete this.data;
     }
+
 });
 
 
@@ -322,7 +330,8 @@ module.exports.ListView = Backbone.View.extend({
 
     initialize: function (options) {
         this.options = _.extend({}, options);
-        this.data = _.extend({}, options.data);
+        //this.data = _.extend({}, options.data);
+        this.data = _.extend({}, this.data, options.data);
         _.bindAll(this, 'onRequest', 'onSync', 'render', 'addOne', 'removeOne', 'onShow', 'onRemove');
 
         this.listenTo(this.collection, 'request', this.onRequest);

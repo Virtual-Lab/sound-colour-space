@@ -22,6 +22,10 @@ require('./dust-filters.js');
 
 var Router = require('./router.js');
 
+var swap = require('./views/swap.js');
+var Regions = require('./views/regions.js');
+var NavigationView = require('./views/navigation.js');
+
 
 // global key shortcuts
 var key = require('keymaster');
@@ -35,11 +39,13 @@ key('h', function () {
     App.Router.r.navigate('/', {trigger: true});
 });
 
+key('a', function () {
+    App.Router.r.navigate('/archive', {trigger: true});
+});
+
 key('t', function () {
     App.Router.r.navigate('/timeline', {trigger: true});
 });
-
-
 
 
 // jquery attr() functionality
@@ -78,6 +84,8 @@ $(function () {
         }
     });
 
+    var navigation = new NavigationView({});
+
     Backbone.History.prototype.navigate = _.wrap(Backbone.History.prototype.navigate, function () {
         // Get arguments as an array
         var args = _.toArray(arguments);
@@ -101,12 +109,13 @@ $(function () {
         //console.warn("url-changed");
         window.scrollTo(0, 0); // scroll to top on url change! TODO: finer control when to scroll top ie. when navigation from detail to list views that were scrolled before...
 
-        /*
-         if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
-         $(document).scrollTop(App.currentView.viewState.get('scrollPosition'));
-         }
-         */
+
+        // if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
+        //$(document).scrollTop(App.currentView.viewState.get('scrollPosition'));
+        //}
+
     });
+
 
     /*
      App.currentView = false;
@@ -131,8 +140,14 @@ $(function () {
     });
 
     App.Router.r = new Router();
+
+    App.Router.r.on('route', function (route, params) {
+        navigation.render();
+        navigation.onShow();
+    });
     Backbone.history.start({pushState: true});
 
+    swap(Regions.navigation, navigation);
 
 });
 

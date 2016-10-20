@@ -1,12 +1,15 @@
 'use strict';
+
+//var $ = require('jquery');
+global.$ = global.jQuery = require('jquery');
+var _ = require('underscore');
+
 var Backbone = require('backbone');
+Backbone.$ = $;
 
 // foundation needs global.$ because it doesn't "require" jquery for some reason
-global.$ = global.jQuery = require('jquery');
-var foundation = require('foundation-sites');
 
-var _ = require('underscore');
-Backbone.$ = $;
+require('foundation-sites');
 
 // configure nprogress
 var nprogress = require('nprogress');
@@ -26,7 +29,42 @@ module.exports = Base.TemplateView.extend({
     template: require('../templates/navigation.dust'),
 
     data: {
-        STATIC_URL: STATIC_URL
+        STATIC_URL: STATIC_URL,
+
+        "currentUrl": function () {
+            return (Backbone.History.started == true ? Backbone.history.getFragment().split('/')[0] : '/');
+        },
+
+
+        menu: [
+            /*
+             {
+             "url": "",
+             "text": "Root"
+             },
+             */
+            {
+                "url": "archive",
+                "text": "Archive"
+            },
+            {
+                "url": "timeline",
+                "text": "Timeline"
+            },
+            {
+                "url": "exibitions",
+                "text": "Exibitions"
+            },
+            {
+                "url": "virtuallab",
+                "text": "Virtual Lab"
+            },
+            {
+                "url": "documentation",
+                "text": "Documentation"
+            }
+        ]
+
     },
 
     initialize: function (options) {
@@ -38,10 +76,7 @@ module.exports = Base.TemplateView.extend({
 
 
     onShow: function () {
-        this.$el.foundation();
-        //Foundation.reInit('dropdown-menu');
-        //Foundation.reInit($('.dropdown menu'));
-        console.log('onShow navigation');
+        console.log('onShow navigation', Backbone.history.getFragment());
     },
 
     events: {
@@ -58,7 +93,7 @@ module.exports = Base.TemplateView.extend({
         var v = $('input.search').val();
         if (v === '') return;
         $('input.search').blur(); // TODO loose focus on mobile only?
-        App.Router.r.navigate('/q=' + v, {trigger: true});
+        App.Router.r.navigate('/archive/q=' + v, {trigger: true});
     },
 
 })

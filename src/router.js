@@ -9,6 +9,7 @@ var entryController = require('./controllers/entry_controller');
 
 // views
 var LayoutView = require('./views/layout.js');
+var HomepageView = require('./views/homepage.js');
 var Error404View = require('./views/404.js');
 var NavigationView = require('./views/navigation.js');
 var EditorView = require('./views/editor.js');
@@ -24,7 +25,10 @@ ArchiveView.viewState.set('scrollPosition', 0);
 //EntryDetailView.viewState = new Backbone.Model();
 //EntryDetailView.viewState.set('scrollPosition', 0);
 
-
+var home = function() {
+    swap(Regions.content, new HomepageView({}));
+    App.currentView = HomepageView;
+};
 
 var defaultRoute = function (actions) {
     swap(Regions.content, new Error404View({}));
@@ -68,11 +72,12 @@ module.exports = Backbone.Router.extend({
         Regions.navigation = $('[data-js-region="navigation"]');
         Regions.content = $('[data-js-region="content"]');
         // render navigation
-        this.renderNavigation();
+        //this.renderNavigation();
     },
 
     routes: {
-        '(/)(q=:q)': entryController.List,
+        '(/)': home,
+        'archive(/)(q=:q)': entryController.Archive,
         'timeline(/)(q=:q)': entryController.Timeline,
         'editor(/)': editor,
         'diagrams/:doc_id(/)': entryController.Detail,
@@ -87,7 +92,7 @@ module.exports = Backbone.Router.extend({
     },
 
     renderNavigation: function () {
-        swap(Regions.navigation, new NavigationView({}));
+        //swap(Regions.navigation, new NavigationView({}));
     }
 });
 

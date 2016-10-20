@@ -10,18 +10,19 @@ var ArchiveView = require('../views/archive');
 var TimelineView = require('../views/timeline');
 var EntryDetailView = require('../views/entry_detail');
 
-// list
-module.exports.List = function (q) {
-    console.debug('##### Controller -> List');
+if (!App.entries)
+    App.entries = new Entries();
 
-    if (!App.entries)
-        App.entries = new Entries();
+// archive
+module.exports.Archive = function (q) {
 
     if (q) {
+        console.debug('##### Controller -> Archive with query', q);
         var entries = new Entries();
         swap(Regions.content, new ArchiveView({collection: entries, data: {query: q}}));
     }
     else {
+        console.debug('##### Controller -> Archive');
         // clear input
         $('input.search').val('');
         swap(Regions.content, new ArchiveView({collection: App.entries}));
@@ -30,11 +31,8 @@ module.exports.List = function (q) {
 };
 
 // timeline
-module.exports.Timeline = function(q)  {
+module.exports.Timeline = function (q) {
     console.debug('##### Controller -> Timeline');
-
-    if (!App.entries) // TODO maybe get rid of App.entries?
-        App.entries = new Entries();
 
     var entries = new Entries();
     swap(Regions.content, new TimelineView({collection: entries, data: {query: q}}));
