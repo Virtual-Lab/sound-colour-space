@@ -1,10 +1,7 @@
+<div id="entry_list_header" data-js-region="entry_list_header"></div>
+
 <div class="row">
-    <div class="column small-12 text-center">
-        {?query}<h5>Search results for: <b>{query}</b></h5>{/query}
-    </div>
-</div>
-<div class="row">
-    <div class="column small-12">
+    <div class="small-12 columns">
         <div id="entry_list" data-js-region="entry_list"></div>
     </div>
 </div>

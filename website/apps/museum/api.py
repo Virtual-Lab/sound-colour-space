@@ -127,13 +127,19 @@ class EntryResource(ModelResource):
         include_resource_uri = True # ATTENTION: This needs to be True for backbone-tastypie to work!!!
 
         filtering = {
-            #'author': ALL_WITH_RELATIONS,
+            'author': ALL_WITH_RELATIONS,
             'image': ALL_WITH_RELATIONS,
             'portrayed_object_date': ('icontains',),
             'title': ('icontains',),
             'subtitle': ('icontains',),
             'description': ('icontains',),
             'date': ['exact', 'gt', 'gte', 'lt', 'lte', 'range']
+        }
+
+        ordering = {
+            'title',
+            'author',
+            'date',
         }
 
     def dehydrate_uri(self, bundle):

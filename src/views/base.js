@@ -344,7 +344,7 @@ module.exports.ListView = Backbone.View.extend({
     },
 
     onRequest: function (collection, xhr, options) {
-        console.debug('request...', xhr.state());
+        //console.debug('request...', xhr.state());
     },
 
     onSync: function () {
@@ -369,7 +369,7 @@ module.exports.ListView = Backbone.View.extend({
     },
 
     removeOne: function (model, collection, options) {
-        console.debug('removed ' + model.id + ' from ' + collection.url());
+        //console.debug('removed ' + model.id + ' from ' + collection.url());
     },
 
     render: function () {

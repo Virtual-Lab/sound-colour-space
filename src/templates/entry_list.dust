@@ -1,15 +1,20 @@
 <section id="entries">
 
-    <div id="entry_list_header" data-js-region="entry_list_header"></div>
-
     <div class="row">
-        <div class="medium-12 columns">
-            <!--<div class="entries row small-up-1 medium-up-3 large-up-5 grid" style="margin-top: 50px;"></div>-->
-            <div class="entries grid" style="margin-top: 50px;"></div>
+        <div class="small-12 columns">
+            <table class="stack hover">
+                <thead>
+                <tr>
+                    <th width="30%">Title <i class="title-asc fi-arrow-up"></i><i class="title-desc fi-arrow-down"></i></th>
+                    <th>Author</th>
+                    <th width="20%">Date</th>
+                    <th>Diagram</th>
+                </tr>
+                </thead>
+                <tbody class="entries">
+                </tbody>
+            </table>
         </div>
-    </div>
-
-
     </div>
 
     <footer>

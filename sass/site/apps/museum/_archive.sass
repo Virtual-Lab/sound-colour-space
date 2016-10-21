@@ -1,0 +1,62 @@
+#entry_list_header
+  margin: 50px 0 20px 0
+
+///////////////////////////////////////// GRID
+.grid-sizer,
+.grid-item
+  @include breakpoint(medium down)
+    width: 100.0%
+  @include breakpoint(medium up)
+    width: 33.3%
+  @include breakpoint(large up)
+    width: 20%
+
+  .entry_wrapper
+    display: inline-block
+    padding: 5px
+    margin: 5px
+    border: 1px dashed lightgrey
+    //@include fadeIn( 1s )
+
+    img
+      display: block
+// could be optimized for high images
+
+.grow
+  transition: all .2s ease-in-out
+
+.grow:hover
+  transform: scale(1.02)
+
+.stencil .search
+  box-shadow: none
+  text-shadow: none
+  background-color: inherit
+
+///////////////////////////////////////// LIST
+
+table thead
+  background-color: $table-background
+  border: none
+  :hover
+    background-color: $table-background
+
+  i
+    cursor: pointer
+    color: $header-color
+    margin: 0 4px 0 0
+
+table thead th, table thead td, table tfoot th, table tfoot td
+  font-weight: 300
+
+.entry
+  .title
+    font-weight: 800
+  .diagram
+    background-color: rgba(1.0, 1.0, 1.0, 0.025)
+    img
+      max-height: 150px
+
+
+
+

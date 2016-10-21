@@ -17,7 +17,8 @@ var URLs = {
 
 // Helper for accessing the URL list.
 var apiUrl = function (type) {
-    return URLs[type] ? URLs[type].apply(this, [].slice.call(arguments, 1)) : undefined;
+    var url = URLs[type] ? URLs[type].apply(this, [].slice.call(arguments, 1)) : undefined;
+    return url;
 };
 
 module.exports = apiUrl;

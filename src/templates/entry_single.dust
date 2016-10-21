@@ -1,12 +1,8 @@
-<div class="entry grid-item {uuid}">
-    <!--<div class="entry column align-self-bottom grid-item">-->
-    <div class="entry_wrapper text-center grow">
-        <a href="{uri}">
-            <img src="{image.url}" height="200"/>
-            {#author}<span>{first_name} {last_name} {@sep} and {/sep}</span><br />{/author}
-            <span>{portrayed_object_date}</span>
-        </a>
-    </div>
-</div>
+<tr class="entry">
+    <td><a href="{uri}"><span class="title">{title}</span><br/></a>{subtitle}</td>
+    <td>{#author}{first_name} {last_name} {?pseudonym}({pseudonym}){/pseudonym}{/author}</td>
+    <td>{portrayed_object_date}</td>
+    <td class="diagram"><a href="{uri}"><img src="{image.url}" /></a></td>
+</tr>
 
 

@@ -20,4 +20,35 @@ module.exports = Backbone.Collection.extend({
         }
         return Backbone.Model.prototype.fetch.call(this, options);
     },
+
+    sortKey: 'date',
+    reverseSortDirection: true,
+
+    /*
+    // working but not used right now
+    comparator: function (a, b) {
+
+        var sampleDataA = a.get(this.sortKey),
+            sampleDataB = b.get(this.sortKey);
+
+        if (this.reverseSortDirection) {
+            if (sampleDataA > sampleDataB) {
+                return -1;
+            }
+            if (sampleDataB > sampleDataA) {
+                return 1;
+            }
+            return 0;
+        } else {
+            if (sampleDataA < sampleDataB) {
+                return -1;
+            }
+            if (sampleDataB < sampleDataA) {
+                return 1;
+            }
+            return 0;
+        }
+
+    },
+    */
 });

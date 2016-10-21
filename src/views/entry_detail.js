@@ -62,10 +62,8 @@ module.exports = Base.DetailView.extend({
     },
 
     onShow: function () {
-        console.log('onShow');
         // scroll to top
         $(window).scrollTop(0);
-
 
         this.mjBuffer = document.getElementById("marked-mathjax-preview-buffer");
         this.CreatePreview();

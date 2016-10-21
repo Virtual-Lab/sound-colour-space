@@ -76,24 +76,7 @@ module.exports = Base.TemplateView.extend({
 
 
     onShow: function () {
-        console.log('onShow navigation', Backbone.history.getFragment());
-    },
-
-    events: {
-        'click button.search': 'filter',
-        'keypress input[type=search]': 'filterOnEnter',
-        'search input[type=search]': 'filterOnEnter',
-    },
-
-    filterOnEnter: function (e) {
-        if (e.which !== 13) return;
-        this.filter(e);
-    },
-    filter: function (e) {
-        var v = $('input.search').val();
-        if (v === '') return;
-        $('input.search').blur(); // TODO loose focus on mobile only?
-        App.Router.r.navigate('/archive/q=' + v, {trigger: true});
+        //console.log('onShow navigation', Backbone.history.getFragment());
     },
 
 })

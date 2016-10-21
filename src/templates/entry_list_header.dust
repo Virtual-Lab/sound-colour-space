@@ -1,3 +1,57 @@
+<div class="row align-justify">
+    <div class="small-6 small-offset-3 column">
+        <div class="input-group" style="margin-bottom: 0;">
+            <input class="input-group-field search" type="search" placeholder="Search">
+            <div class="input-group-button">
+                <button class="button search"><i class="fi-magnifying-glass"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="small-2 columns">
+        <div class="button-group float-right">
+            <div class="button toggle-grid"><i class="fi-thumbnails"></i></div>
+            <div class="button toggle-list"><i class="fi-list-thumbnails"></i></div>
+        </div>
+    </div>
+</div>
+<div class="row align-center">
+    <div class="small-2 large-expand columns text-center">
+        <label>Select Type
+            <select class="type">
+                <option value="fulltext">Full text</option>
+                <option value="title">Title</option>
+                <option value="author">Author</option>
+            </select>
+        </label>
+    </div>
+    <div class="small-2 large-expand columns text-center">
+        <label>Sorty By
+            <select class="sort_by">
+                <option value="date">Date</option>
+                <option value="title">Title</option>
+                <option value="author__last_name">Author</option>
+            </select>
+        </label>
+    </div>
+    <div class="small-2 large-expand columns text-center">
+        <label>Sort Order
+            <select class="sort_order">
+                <option value="ascending">Ascending</option>
+                <option value="descending">Descending</option>
+            </select>
+        </label>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 large-expand columns text-center">
+        {#meta}
+        {?search_query}
+        <h5>Search results for: <b>{search_query}</b></h5>
+        {/search_query}
+        {/meta}
+    </div>
+</div>
 <div class="row">
     <div class="small-12 column text-center">
         {#meta}
@@ -14,3 +68,4 @@
     </div>
 </div>
 -->
+

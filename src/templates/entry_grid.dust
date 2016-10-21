@@ -1,0 +1,14 @@
+<section id="entries">
+    <div class="row">
+        <div class="medium-12 columns">
+            <div class="entries grid"></div>
+        </div>
+    </div>
+    <footer>
+        <div class="row">
+            <div class="large-12 medium-12 small-12 column text-center">
+                <!--<h4>List Footer</h4>-->
+            </div>
+        </div>
+    </footer>
+</section>

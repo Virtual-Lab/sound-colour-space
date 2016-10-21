@@ -10,22 +10,24 @@ var ArchiveView = require('../views/archive');
 var TimelineView = require('../views/timeline');
 var EntryDetailView = require('../views/entry_detail');
 
-if (!App.entries)
-    App.entries = new Entries();
-
 // archive
 module.exports.Archive = function (q) {
 
     if (q) {
         console.debug('##### Controller -> Archive with query', q);
-        var entries = new Entries();
-        swap(Regions.content, new ArchiveView({collection: entries, data: {query: q}}));
+        if (!App.QueryEntries)
+            App.QueryEntries = new Entries();
+        swap(Regions.content, new ArchiveView({collection: App.QueryEntries, data: {query: q}}));
     }
     else {
         console.debug('##### Controller -> Archive');
         // clear input
-        $('input.search').val('');
-        swap(Regions.content, new ArchiveView({collection: App.entries}));
+        //$('input.search').val('');
+
+        if (!App.ArchiveEntries)
+            App.ArchiveEntries = new Entries();
+
+        swap(Regions.content, new ArchiveView({collection: App.ArchiveEntries}));
     }
 
 };

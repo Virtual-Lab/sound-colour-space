@@ -1,0 +1,11 @@
+<div class="entry grid-item {uuid}">
+    <!--<div class="entry column align-self-bottom grid-item">-->
+    <div class="entry_wrapper text-center grow">
+        <a href="{uri}">
+            <img src="{image.url}" height="200"/> {! TODO !}
+            {#author}<span>{first_name} {last_name} {@sep} and {/sep}</span><br />{/author}
+            <span>{portrayed_object_date}</span>
+        </a>
+    </div>
+</div>
+
