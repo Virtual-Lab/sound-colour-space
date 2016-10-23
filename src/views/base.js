@@ -209,7 +209,7 @@ module.exports.TemplateView = Backbone.View.extend({
     },
 
     onRemove: function() {
-        console.log("onRemove");
+        //console.log("onRemove");
         //delete this.data;
     }
 

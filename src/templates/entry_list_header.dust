@@ -1,23 +1,11 @@
-<div class="row align-justify">
-    <div class="small-6 small-offset-3 column">
-        <div class="input-group" style="margin-bottom: 0;">
-            <input class="input-group-field search" type="search" placeholder="Search">
-            <div class="input-group-button">
-                <button class="button search"><i class="fi-magnifying-glass"></i></button>
-            </div>
-        </div>
-    </div>
-
-    <div class="small-2 columns">
-        <div class="button-group float-right">
-            <div class="button toggle-grid"><i class="fi-thumbnails"></i></div>
-            <div class="button toggle-list"><i class="fi-list-thumbnails"></i></div>
-        </div>
+<div class="row">
+    <div class="small-12 columns">
+        <h3><i class="fi-magnifying-glass"></i>&nbsp;Advanced Search</h3>
     </div>
 </div>
-<div class="row align-center">
-    <div class="small-2 large-expand columns text-center">
-        <label>Select Type
+<div class="row">
+    <div class="small-2 columns">
+        <label>
             <select class="type">
                 <option value="fulltext">Full text</option>
                 <option value="title">Title</option>
@@ -25,47 +13,85 @@
             </select>
         </label>
     </div>
-    <div class="small-2 large-expand columns text-center">
-        <label>Sorty By
-            <select class="sort_by">
-                <option value="date">Date</option>
-                <option value="title">Title</option>
-                <option value="author__last_name">Author</option>
+    <div class="small-6 column">
+        <div class="input-group" style="margin-bottom: 0;">
+            <input class="input-group-field search" type="search" placeholder="" {#meta}value={search_query}{/meta}>
+            <div class="input-group-button">
+                <button class="button search"><i class="fi-magnifying-glass"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="small-2 small-offset-2 columns">
+        <div class="button-group float-right">
+            <div class="button toggle-grid"><i class="fi-thumbnails"></i></div>
+            <div class="button toggle-list"><i class="fi-list-thumbnails"></i></div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns">
+        <h5><i class="fi-filter"></i>&nbsp;Refine Search</h5>
+    </div>
+</div>
+<div class="row">
+    <div class="small-5 columns">
+        <fieldset class="fieldset">
+            <legend>Select date range</legend>
+            <div class="row">
+                <div class="small-8 columns">
+                    <div id="date_slider" class="slider">
+                    <span class="slider-handle" data-slider-handle role="slider" tabindex="1"
+                          aria-controls="dateSliderStart"></span>
+                        <span class="slider-fill" data-slider-fill></span>
+                        <span class="slider-handle" data-slider-handle role="slider" tabindex="1"
+                              aria-controls="dateSliderEnd"></span>
+                        <input type="hidden">
+                        <input type="hidden">
+                    </div>
+                    <div class="row">
+                        <div class="small-5 columns align-left">
+                            <input type="number" class="float-left" id="dateSliderStart">
+                        </div>
+                        <div class="small-5 small-offset-2 columns align-right">
+                            <input type="number" class="float-right" id="dateSliderEnd">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="small-4 columns align-self-middle align-right">
+                    <div class="switch small">
+                        <input class="switch-input" id="date_range_toggle" type="checkbox"
+                               name="toggle date range filter">
+                        <label class="switch-paddle" for="date_range_toggle">
+                            <span class="show-for-sr">Filter by date range?</span>
+                            <span class="switch-active" aria-hidden="true">On</span>
+                            <span class="switch-inactive" aria-hidden="true">Off</span>
+                        </label>
+                    </div>
+                    <!--
+                    <div class="medium button-group">
+                        <button class="button apply_date__range"><i class="fi-filter"></i>&nbsp;Find</button>
+                        <button class="button secondary remove_date__range"><i class="fi-x"></i></button>
+                    </div>
+                    -->
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<div class="row align-right">
+    <div class="small-3 columns">
+        <label>Sorty by
+            <select class="order_by">
+                <option value="-date">Date (newest first)</option>
+                <option value="date">Date (oldest first)</option>
+                <option value="title">Title (A-Z)</option>
+                <option value="-title">Title (Z-A)</option>
+                <option value="author__last_name">Author (A-Z)</option>
+                <option value="-author__last_name">Author (Z-A)</option>
             </select>
         </label>
     </div>
-    <div class="small-2 large-expand columns text-center">
-        <label>Sort Order
-            <select class="sort_order">
-                <option value="ascending">Ascending</option>
-                <option value="descending">Descending</option>
-            </select>
-        </label>
-    </div>
 </div>
-<div class="row">
-    <div class="small-12 large-expand columns text-center">
-        {#meta}
-        {?search_query}
-        <h5>Search results for: <b>{search_query}</b></h5>
-        {/search_query}
-        {/meta}
-    </div>
-</div>
-<div class="row">
-    <div class="small-12 column text-center">
-        {#meta}
-        {?search_query}
-        <p>Found {total_count} diagrams.</p>
-        {/search_query}
-        {/meta}
-    </div>
-</div>
-<!--
-<div class="row">
-    <div class="small-12 column text-center">
-        <button class="button toggle_grid">Grid!</button>
-    </div>
-</div>
--->
+
 

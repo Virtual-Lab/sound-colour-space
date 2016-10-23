@@ -43,6 +43,11 @@ class AuthorResource(ModelResource):
             'date_of_death': ('icontains', 'startswith'),
         }
 
+        ordering = {
+            'first_name',
+            'last_name',
+        }
+
 
 class LicenseResource(ModelResource):
 
@@ -201,27 +206,32 @@ class EntryResource(ModelResource):
         self.is_authenticated(request)
         self.throttle_check(request)
 
+        # fulltext = SearchQuerySet().models(Entry).auto_query(query)
+        # t = SearchQuerySet().models(Entry).autocomplete(title_auto=query)
+        # a = SearchQuerySet().models(Entry).autocomplete(author_auto=query)
+        # ap = SearchQuerySet().models(Entry).autocomplete(pseudonym_auto=query)
+
         query = request.GET.get('q', None)
-        if not query:
-            raise BadRequest('Please supply the search parameter (e.g. "/api/' + settings.API_VERSION + '/entry/search/?q=Newton")')
+        order_by = request.GET.get('order_by', 'date')  # default is sort_by date
 
-        #fulltext = SearchQuerySet().models(Entry).auto_query(query)
-        #t = SearchQuerySet().models(Entry).autocomplete(title_auto=query)
-        #a = SearchQuerySet().models(Entry).autocomplete(author_auto=query)
-        #ap = SearchQuerySet().models(Entry).autocomplete(pseudonym_auto=query)
-
-        #results = t | a | ap
         filter = request.GET.get('date__range', None)
 
-        if not filter:
-            results = SearchQuerySet().models(Entry).order_by('date').filter(text=Raw(query))
+
+        if not query:
+            #raise BadRequest('Please supply the search parameter (e.g. "/api/' + settings.API_VERSION + '/entry/search/?q=Newton")')
+            if not filter:
+                results = SearchQuerySet().models(Entry).order_by(order_by)
+            else:
+                start = filter.split(',')[0]
+                end = filter.split(',')[1]
+                results = SearchQuerySet().models(Entry).filter(date__range=(start, end)).order_by(order_by)
         else:
-            start = filter.split(',')[0]
-            end = filter.split(',')[1]
-            print (start, end)
-            results = SearchQuerySet().models(Entry).filter(date__range=(start,end)).order_by('date').filter(text=Raw(query))
-
-
+            if not filter:
+                results = SearchQuerySet().models(Entry).order_by(order_by).filter(text=Raw(query))
+            else:
+                start = filter.split(',')[0]
+                end = filter.split(',')[1]
+                results = SearchQuerySet().models(Entry).filter(date__range=(start,end)).order_by(order_by).filter(text=Raw(query))
 
 
         if not results:

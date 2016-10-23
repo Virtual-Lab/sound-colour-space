@@ -39,18 +39,19 @@ module.exports = Base.ListView.extend({
 
     onSync: function () {
         //Base.ListView.prototype.onSync.call(this);
-        console.debug('############################################onSync list');
+        //console.debug('############################################onSync list');
         //swap($('[data-js-region="entry_list_header"]'), new MetaView({data: {meta: this.collection.meta}}));
     },
 
 
     onShow: function () {
-        console.debug("############################################onShow list");
+        //console.debug("############################################onShow list");
 
         this.collection.each(this.addOne, this);
     },
 
     events: {
+        /*
         'click .title-asc': function () {
             this.collection.reverseSortDirection = false;
             this.collection.sortKey = 'title';
@@ -61,6 +62,7 @@ module.exports = Base.ListView.extend({
             this.collection.sortKey = 'title';
             this.collection.sort(); this.render(); this.onShow();
         }
+        */
 
     }
 });

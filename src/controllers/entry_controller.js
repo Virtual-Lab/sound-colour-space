@@ -1,3 +1,6 @@
+var _ = require('underscore');
+var $ = require('jquery');
+
 var Regions = require('../views/regions.js');
 var swap = require('../views/swap.js');
 
@@ -10,25 +13,39 @@ var ArchiveView = require('../views/archive');
 var TimelineView = require('../views/timeline');
 var EntryDetailView = require('../views/entry_detail');
 
+function parseQueryString(queryString) {
+    var params = {};
+    if (queryString) {
+        _.each(
+            _.map(decodeURI(queryString).split(/&/g), function (el, i) {
+                var aux = el.split('='), o = {};
+                if (aux.length >= 1) {
+                    var val = undefined;
+                    if (aux.length == 2)
+                        val = aux[1];
+                    o[aux[0]] = val;
+                }
+                return o;
+            }),
+            function (o) {
+                _.extend(params, o);
+            }
+        );
+    }
+    return params;
+}
+
 // archive
-module.exports.Archive = function (q) {
+module.exports.Archive = function (query) {
 
-    if (q) {
-        console.debug('##### Controller -> Archive with query', q);
-        if (!App.QueryEntries)
-            App.QueryEntries = new Entries();
-        swap(Regions.content, new ArchiveView({collection: App.QueryEntries, data: {query: q}}));
-    }
-    else {
-        console.debug('##### Controller -> Archive');
-        // clear input
-        //$('input.search').val('');
+    //if (!App.ArchiveEntries)
+    App.ArchiveEntries = new Entries();
 
-        if (!App.ArchiveEntries)
-            App.ArchiveEntries = new Entries();
+    var params = parseQueryString(query);
 
-        swap(Regions.content, new ArchiveView({collection: App.ArchiveEntries}));
-    }
+    App.ArchiveEntries.query = _.defaults(params, {limit: 15, order_by: '-date'});
+
+    swap(Regions.content, new ArchiveView({collection: App.ArchiveEntries}));
 
 };
 

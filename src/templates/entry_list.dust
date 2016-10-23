@@ -5,9 +5,9 @@
             <table class="stack hover">
                 <thead>
                 <tr>
-                    <th width="30%">Title <i class="title-asc fi-arrow-up"></i><i class="title-desc fi-arrow-down"></i></th>
-                    <th>Author</th>
-                    <th width="20%">Date</th>
+                    <th width="30%">Title</th>
+                    <th width="25%">Author</th>
+                    <th width="10%">Date</th>
                     <th>Diagram</th>
                 </tr>
                 </thead>

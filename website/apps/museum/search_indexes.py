@@ -8,13 +8,14 @@ class EntryIndex(indexes.SearchIndex, indexes.Indexable):
 
     # We add this for autocomplete.
     title = indexes.CharField(model_attr='title', null=True)
-    title_auto = indexes.EdgeNgramField(model_attr='title', null=True)
+    #title_auto = indexes.EdgeNgramField(model_attr='title', null=True)
 
     portrayed_object_date = indexes.CharField(model_attr='portrayed_object_date', null=True)
     portrayed_object_date_auto = indexes.EdgeNgramField(model_attr='portrayed_object_date', null=True)
 
     date = indexes.DateTimeField(model_attr='date', null=True)
 
+    author__last_name = indexes.MultiValueField()
     #author = indexes.CharField(model_attr='author', null=True)
     #author_auto = indexes.EdgeNgramField(model_attr='author', null=True)
 
@@ -26,7 +27,8 @@ class EntryIndex(indexes.SearchIndex, indexes.Indexable):
     def get_model(self):
         return Entry
 
-    '''
+
+
     def prepare(self, object):
         self.prepared_data = super(EntryIndex, self).prepare(object)
 
@@ -37,25 +39,10 @@ class EntryIndex(indexes.SearchIndex, indexes.Indexable):
 
         return self.prepared_data
 
-    def prepare_author(self, obj):
+    def prepare_author__last_name(self, obj):
         if obj.author is not None:
-            return "%s" % (obj.author.get_full_name())
-        return ''
+            return [author.last_name for author in obj.author.order_by('-last_name')]
 
-    def prepare_author_auto(self, obj):
-        if obj.author is not None:
-            return "%s" % (obj.author.get_full_name())
-        return ''
-
-    def prepare_pseudonym(self, obj):
-        if obj.author is not None:
-            return "%s" % (obj.author.pseudonym)
-        return ''
-
-    def prepare_pseudonym_auto(self, obj):
-        if obj.author is not None:
-            return "%s" % (obj.author.pseudonym)
-    '''
 
     def index_queryset(self, using=None):
         """Used when the entire index for model is updated."""
