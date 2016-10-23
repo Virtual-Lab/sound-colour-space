@@ -13,6 +13,8 @@ var ArchiveView = require('../views/archive');
 var TimelineView = require('../views/timeline');
 var EntryDetailView = require('../views/entry_detail');
 
+var oldQuery = "";
+
 function parseQueryString(queryString) {
     var params = {};
     if (queryString) {
@@ -35,11 +37,15 @@ function parseQueryString(queryString) {
     return params;
 }
 
+
 // archive
 module.exports.Archive = function (query) {
 
     //if (!App.ArchiveEntries)
-    App.ArchiveEntries = new Entries();
+    if (oldQuery != query || !App.ArchiveEntries)
+        App.ArchiveEntries = new Entries();
+
+    oldQuery = query;
 
     var params = parseQueryString(query);
 
