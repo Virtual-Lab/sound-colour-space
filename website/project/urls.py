@@ -7,7 +7,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from tastypie.api import Api
-from museum.api import EntryResource, AuthorResource, LicenseResource
+from museum.api import EntryResource, AuthorResource, LicenseResource, ExperimentResource, CollectionResource
 
 admin.autodiscover()
 
@@ -15,6 +15,8 @@ v1_api = Api(api_name=settings.API_VERSION)
 v1_api.register(EntryResource())
 v1_api.register(AuthorResource())
 v1_api.register(LicenseResource())
+v1_api.register(ExperimentResource())
+v1_api.register(CollectionResource())
 
 urlpatterns = [
     url(r'^api/', include(v1_api.urls)),

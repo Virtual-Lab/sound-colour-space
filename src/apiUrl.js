@@ -4,9 +4,24 @@ var URLs = {
     entries: function () {
         return api_url + 'entry/';
     },
-    entry: function (uuid) {
-        return URLs.entries() + uuid;
+    entry: function (doc_id) {
+        return URLs.entries() + doc_id;
     },
+
+    experiments: function () {
+        return api_url + 'experiment/';
+    },
+    experiment: function (slug) {
+        return URLs.experiments() + slug;
+    },
+
+    sets: function () {
+        return api_url + 'collection/';      // CAUTION: API URI IS 'COLLECTION' NOT SET FOR DJANGO COMPATIBILITY
+    },
+    set: function (slug) {
+        return URLs.sets() + slug;
+    }
+
 
     /*
      subscriptions: function(userId, id) {

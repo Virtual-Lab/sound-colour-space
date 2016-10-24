@@ -101,6 +101,23 @@ class Attachment(Base):
         abstract = True
 
 
+class Experiment(Attachment):
+    slug = models.SlugField(_('slug'), allow_unicode=True)
+
+    class Meta:
+        verbose_name = _('experiment')
+        verbose_name_plural = _('experiments')
+        db_table = 'museum_experiment'
+        ordering = ('-title',)
+
+    def __unicode__(self):
+        return u'%s' % self.title
+
+    def get_absolute_url(self):
+        return 'virtuallab/%s' % self.slug
+
+
+
 class Link(Attachment):
     url = models.URLField(_('url'))
 
@@ -174,7 +191,7 @@ class Entry(Base):
 
 
     def get_absolute_url(self):
-        return 'diagrams/%s/' % self.doc_id
+        return 'diagrams/%s' % self.doc_id
 
     '''
     def fetch_from_api(self, override=False):
@@ -197,17 +214,43 @@ class Entry(Base):
 
 
         # bla
+
+    for r in api_results:
+
+        e = Entry(remote_uri=r.uri)
+        e.fetch_from_api()
+        e.save()
     '''
 
 
+class Collection(Base):
+    """
+    Set of entries
+    """
+    entry = models.ManyToManyField(Entry, related_name='museums_collections', blank=True)
 
-'''
-for r in api_results:
+    author = models.ManyToManyField(Author, related_name='museums_collections', blank=True)
+    title = models.CharField(_('title'), max_length=200, blank=True, null=True)
+    slug = models.SlugField(_('slug'), allow_unicode=True, blank=True, null=True)
+    subtitle = models.CharField(_('subtitle'), max_length=200, blank=True, null=True)
+    description = models.TextField(_('description'), blank=True, null=True)
 
-    e = Entry(remote_uri=r.uri)
-    e.fetch_from_api()
-    e.save()
-'''
+    remote_uuid = models.CharField(_('remote_uuid'), max_length=200, blank=True, null=True)
+    remote_href = models.CharField(_('remote_href'), max_length=200, blank=True, null=True)
+
+    class Meta:
+        app_label = 'museum'
+        verbose_name = _('Set')
+        verbose_name_plural = _('Sets')
+        db_table = 'museum_collection'
+        ordering = ('title',)
+
+    def __unicode__(self):
+        return u'%s' % (self.title)
+
+
+    def get_absolute_url(self):
+        return 'sets/%s' % self.slug
 
 
 

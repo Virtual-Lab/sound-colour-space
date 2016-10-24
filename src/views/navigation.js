@@ -48,6 +48,10 @@ module.exports = Base.TemplateView.extend({
                 "text": "Archive"
             },
             {
+                "url": "sets",
+                "text": "Sets"
+            },
+            {
                 "url": "timeline",
                 "text": "Timeline"
             },

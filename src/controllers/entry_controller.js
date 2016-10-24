@@ -42,17 +42,20 @@ function parseQueryString(queryString) {
 module.exports.Archive = function (query) {
 
     //if (!App.ArchiveEntries)
-    if (oldQuery != query || !App.ArchiveEntries)
+    if (oldQuery != query || !App.ArchiveEntries) {
+        console.log("create new ArchiveEntries");
         App.ArchiveEntries = new Entries();
+        var params = parseQueryString(query);
+        App.ArchiveEntries.query = _.defaults(params, {limit: 30, order_by: '-date'});
+    }
+
+    var archive = new ArchiveView({collection: App.ArchiveEntries});
+    swap(Regions.content, archive);
+
+    if (oldQuery != query)
+        archive.search();
 
     oldQuery = query;
-
-    var params = parseQueryString(query);
-
-    App.ArchiveEntries.query = _.defaults(params, {limit: 15, order_by: '-date'});
-
-    swap(Regions.content, new ArchiveView({collection: App.ArchiveEntries}));
-
 };
 
 // timeline

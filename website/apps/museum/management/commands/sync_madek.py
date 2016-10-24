@@ -12,7 +12,7 @@ import tempfile
 
 from django.core.files import File
 
-from museum.models import Entry, Author, License
+from museum.models import Entry, Author, License, Collection
 
 
 class Command(BaseCommand):
@@ -48,6 +48,32 @@ class Command(BaseCommand):
 
                 self.stdout.write(self.style.SUCCESS('########################'))
 
+            if (next_page == None):
+                break
+            else:
+                url = self.base + collection_data['next']['href']
+                self.stdout.write(self.style.SUCCESS('page at: %s' % url))
+
+        self.stdout.write(self.style.SUCCESS('Successfully synced collection.'))
+
+        # now go on for the sub sets aswell!
+        url = self.base + '/api/collections/?collection_id=' + options['collection_remote_id'][0]
+
+        while (True):
+            r = requests.get(url, auth=self.auth)
+
+            collection_data = r.json()['_json-roa']['collection']
+
+            relations = collection_data.get('relations')
+            next_page = collection_data.get('next')
+
+            # iterate page
+            for key, value in relations.iteritems():
+                # get_entry(key, value.get('href'))
+                self.get_collection(key, value.get('href'))
+
+                self.stdout.write(self.style.SUCCESS('########################'))
+
                 # sys.exit(0) # exit after first item (debugging)
 
             if (next_page == None):
@@ -56,7 +82,7 @@ class Command(BaseCommand):
                 url = self.base + collection_data['next']['href']
                 self.stdout.write(self.style.SUCCESS('page at: %s' % url))
 
-        self.stdout.write(self.style.SUCCESS('Successfully synced.'))
+        self.stdout.write(self.style.SUCCESS('Successfully synced subsets.'))
 
     def get_authors(self, relations):
         # for each author
@@ -179,6 +205,84 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Entry: %s' % obj))
         obj.license.set(license_objs)
         obj.author.set(author_objs)
+
+        return obj
+
+    def get_collection(self, key, href):
+        # get single entry
+        collection_request = requests.get(self.base + href, auth=self.auth)
+        collection = collection_request.json()
+
+        #print ('Madek: [%s] %s') % (key, collection.get('id'))
+
+        # the updated collection as dict
+        new_collection = {}
+
+        # get meta data
+        meta_data = requests.get(self.base + href + '/meta-data/', auth=self.auth)
+        meta_data = meta_data.json()
+
+        author_objs = []
+
+        # iterate over meta-data
+        for m in meta_data.get('meta-data'):
+            key = m.get('meta_key_id')
+            id = m.get('id')
+
+            if (key == 'madek_core:title'):
+                title = requests.get(self.base + '/api/meta-data/' + id, auth=self.auth).json().get('value')
+                # print('madek_core:title: %s') % title
+                new_collection['title'] = title
+            if (key == 'madek_core:subtitle'):
+                subtitle = requests.get(self.base + '/api/meta-data/' + id, auth=self.auth).json().get('value')
+                # print('madek_core:subtitle: %s') % subtitle
+                new_collection['subtitle'] = subtitle
+            if (key == 'madek_core:description'):
+                description = requests.get(self.base + '/api/meta-data/' + id, auth=self.auth).json().get('value')
+                # print('madek_core:description: %s') % description
+                new_collection['description'] = description
+            elif (key == 'madek_core:authors'):
+                authors = requests.get(self.base + '/api/meta-data/' + id, auth=self.auth).json().get('_json-roa')['collection']
+                # print('madek_core:authors: %s') % authors
+                author_objs = self.get_authors(authors['relations'])
+                for a in author_objs:
+                    print ("Author: %s") % a.get_full_name()
+
+        # print new_collection
+
+        # create or update set
+        obj, created = Collection.objects.update_or_create(
+            remote_uuid=collection.get('id'), defaults=new_collection)
+
+        obj.author.set(author_objs)
+
+        entry_objs = []
+
+        # get entries
+        url = self.base + '/api/media-entries/?collection_id=' + collection.get('id')
+        while (True):
+            r = requests.get(url, auth=self.auth)
+            entries_data = r.json()['_json-roa']['collection']
+
+            relations = entries_data.get('relations')
+            next_page = entries_data.get('next')
+
+            # iterate page
+            for key, value in relations.iteritems():
+                e = self.get_entry(key, value.get('href'))
+                entry_objs.append(e)
+                # print('########################')
+
+            if (next_page == None):
+                break
+            else:
+                url = self.base + entries_data['next']['href']
+                self.stdout.write(self.style.SUCCESS('page at: %s' % url))
+
+        obj.entry.set(entry_objs)
+
+        #print("Collection: %s") % (obj)
+        self.stdout.write(self.style.SUCCESS('Collection: %s' % obj))
 
 
 

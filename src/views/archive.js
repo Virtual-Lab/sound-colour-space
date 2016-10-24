@@ -11,8 +11,10 @@ var HeaderView = Base.TemplateView.extend({
 
     onShow: function () {
 
-        $(document).foundation();
-        console.log("HeaderView", this.data);
+        //$(document).foundation();
+
+        if (!_.isUndefined(this.options.parent.collection.query.type))
+            $('.type').val(this.options.parent.collection.query.type);
 
         if (!_.isUndefined(this.options.parent.collection.query.q))
             $("input.search[type=search]").val(this.options.parent.collection.query.q);
@@ -74,7 +76,7 @@ module.exports = Base.TemplateView.extend({
         swap($('[data-js-region="entry_list"]'), view);
 
         this.header();
-        this.search();
+        //this.search(); // this is called by the controller!
 
         // fetch on bottom
         $(window).on("scroll", _.bind(function () {
@@ -106,7 +108,11 @@ module.exports = Base.TemplateView.extend({
             data: params,
             success: function (collection, response, options) {
                 // console.warn("adding", collection.models.length, "total", this.collection.length);
-                this.entry_list_header_meta();
+                //this.entry_list_header_meta();
+                swap($('[data-js-region="entry_list_header_meta"]'), new MetaView({
+                    parent: this,
+                    data: {meta: _.extend(collection.meta, {numEntries: collection.length})}
+                }));
             }.bind(this)
         });
     },
@@ -121,7 +127,7 @@ module.exports = Base.TemplateView.extend({
     entry_list_header_meta: function () {
         swap($('[data-js-region="entry_list_header_meta"]'), new MetaView({
             parent: this,
-            data: {meta: _.extend(this.collection.meta, { numEntries: this.collection.length })}
+            data: {meta: _.extend(this.collection.meta, {numEntries: this.collection.length})}
         }));
     },
 
@@ -132,15 +138,21 @@ module.exports = Base.TemplateView.extend({
 
     query: function (opts) {
 
+        // navigate options
         var options = _.defaults(opts, {trigger: true, replace: false});
 
         //$('input.search').blur(); // TODO loose focus on mobile only?
-        var q = $('input.search').val();
-        //if (q === '') return;
-        this.collection.query.q = q;
 
+        // set search type
+        this.collection.query.type = $('.type').val();
+
+        // set term
+        this.collection.query.q = $('input.search').val();
+
+        // set date__range
         this.collection.query.date__range = $('#dateSliderStart').val() + ',' + $('#dateSliderEnd').val();
 
+        // remove date__range again, if not checked :P
         if (!$('#date_range_toggle').is(':checked')) {
             this.collection.query = _.omit(this.collection.query, 'date__range');
         }

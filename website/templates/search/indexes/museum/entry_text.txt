@@ -1,8 +1,8 @@
 {{ object.title }}
-{{ object.image }}
 {{ object.subtitle }}
 {{ object.portrayed_object_date }}
 {{ object.description }}
+{{ object.image }}
 {{ object.source }}
 {{ object.copyright_notice }}
 {% for tag in object.tags.all %} {{ tag.name }} {% endfor %}

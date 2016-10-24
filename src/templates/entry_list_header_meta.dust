@@ -2,7 +2,7 @@
 {@gt key=numEntries value="0"}
 <div class="row">
     <div class="small-12 large-expand columns text-center">
-        <h5>Search results for: <b>{search_query}</b></h5>
+        {#meta}{?search_query}<h5>Search results for: <b>{search_query}</b></h5>{/search_query}{/meta}
     </div>
 </div>
 <div class="row">

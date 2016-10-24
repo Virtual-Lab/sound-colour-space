@@ -107,7 +107,7 @@ $(function () {
 
     Backbone.history.bind('url-changed', function () {
         //console.warn("url-changed");
-        window.scrollTo(0, 0); // scroll to top on url change! TODO: finer control when to scroll top ie. when navigation from detail to list views that were scrolled before...
+        //window.scrollTo(0, 0); // scroll to top on url change! TODO: finer control when to scroll top ie. when navigation from detail to list views that were scrolled before...
 
 
         // if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {

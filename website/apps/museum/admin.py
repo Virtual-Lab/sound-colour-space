@@ -13,8 +13,6 @@ class AuthorAdmin(admin.ModelAdmin):
             'fields': ('first_name', 'last_name', 'pseudonym', 'date_of_birth', 'date_of_death')
         }),
     )
-
-
 admin.site.register(Author, AuthorAdmin)
 
 
@@ -25,8 +23,6 @@ class LicenseAdmin(admin.ModelAdmin):
             'fields': ('label', 'usage', 'url')
         }),
     )
-
-
 admin.site.register(License, LicenseAdmin)
 
 '''
@@ -51,9 +47,20 @@ class LinkAdmin(admin.ModelAdmin):
             'fields': ('title', 'url',)
         }),
     )
-
-
 admin.site.register(Link, LinkAdmin)
+
+
+class ExperimentAdmin(admin.ModelAdmin):
+    list_display = ('title', )
+    search_fields = ('title', )
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'slug', )
+        }),
+    )
+    prepopulated_fields = {"slug": ("title",)}
+admin.site.register(Experiment, ExperimentAdmin)
+
 
 
 class EntryAdmin(admin.ModelAdmin):
@@ -124,6 +131,47 @@ class EntryAdmin(admin.ModelAdmin):
         }),
 
     )
-
-
 admin.site.register(Entry, EntryAdmin)
+
+
+
+class CollectionAdmin(admin.ModelAdmin):
+
+    list_display = ('title', 'madek')
+    search_fields = ('title', )
+    readonly_fields = ('uuid', 'madek', 'created', 'modified', 'title', 'slug', 'subtitle', 'author', 'show_image')
+
+    fieldsets = (
+        (None, {
+            'fields': (
+                 'uuid', 'madek', 'title', 'slug', 'subtitle', 'description', 'author', 'show_image',
+            )
+        }),
+    )
+
+    def show_image(self, obj):
+        if obj.entry is not None:
+            html = ''
+            for e in obj.entry.all():
+                html += format_html(
+                    '<a href="/{}"><img src="{}" width=100px /></a>&nbsp;',
+                    e.get_absolute_url(),
+                    e.image.url
+                )
+            return format_html(html)
+        else:
+            return ''
+
+    show_image.short_description = 'Diagrams'
+
+    def madek(self, obj):
+        if obj.remote_uuid is not None:
+            return format_html(
+                '<a href="http://medienarchiv.zhdk.ch/sets/{}">{}</a>',
+                obj.remote_uuid,
+                obj.remote_uuid
+            )
+
+    madek.short_description = 'MAdeK'
+
+admin.site.register(Collection, CollectionAdmin)

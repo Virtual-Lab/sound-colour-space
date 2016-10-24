@@ -51429,9 +51429,24 @@ var URLs = {
     entries: function () {
         return api_url + 'entry/';
     },
-    entry: function (uuid) {
-        return URLs.entries() + uuid;
+    entry: function (doc_id) {
+        return URLs.entries() + doc_id;
     },
+
+    experiments: function () {
+        return api_url + 'experiment/';
+    },
+    experiment: function (slug) {
+        return URLs.experiments() + slug;
+    },
+
+    sets: function () {
+        return api_url + 'collection/';      // CAUTION: API URI IS 'COLLECTION' NOT SET FOR DJANGO COMPATIBILITY
+    },
+    set: function (slug) {
+        return URLs.sets() + slug;
+    }
+
 
     /*
      subscriptions: function(userId, id) {
@@ -51492,17 +51507,20 @@ function parseQueryString(queryString) {
 module.exports.Archive = function (query) {
 
     //if (!App.ArchiveEntries)
-    if (oldQuery != query || !App.ArchiveEntries)
+    if (oldQuery != query || !App.ArchiveEntries) {
+        console.log("create new ArchiveEntries");
         App.ArchiveEntries = new Entries();
+        var params = parseQueryString(query);
+        App.ArchiveEntries.query = _.defaults(params, {limit: 30, order_by: '-date'});
+    }
+
+    var archive = new ArchiveView({collection: App.ArchiveEntries});
+    swap(Regions.content, archive);
+
+    if (oldQuery != query)
+        archive.search();
 
     oldQuery = query;
-
-    var params = parseQueryString(query);
-
-    App.ArchiveEntries.query = _.defaults(params, {limit: 15, order_by: '-date'});
-
-    swap(Regions.content, new ArchiveView({collection: App.ArchiveEntries}));
-
 };
 
 // timeline
@@ -51529,7 +51547,91 @@ module.exports.Detail = function (doc_id) {
     entry.fetch();
 };
 
-},{"../models/entries":31,"../models/entry":32,"../views/archive":51,"../views/entry_detail":54,"../views/regions.js":62,"../views/swap.js":63,"../views/timeline":64,"jquery":12,"lodash":14}],29:[function(require,module,exports){
+},{"../models/entries":33,"../models/entry":34,"../views/archive":63,"../views/entry_detail":66,"../views/regions.js":77,"../views/swap.js":81,"../views/timeline":82,"jquery":12,"lodash":14}],29:[function(require,module,exports){
+var _ = require('lodash');
+var $ = require('jquery');
+
+var Regions = require('../views/regions.js');
+var swap = require('../views/swap.js');
+
+// models
+var Sets = require('../models/sets');
+var Set = require('../models/set');
+
+// views
+var SetListView = require('../views/set_list');
+var SetDetailView = require('../views/set_detail');
+
+
+module.exports.List = function () {
+    console.debug('##### Set Controller -> List');
+    if (!App.Sets)
+        App.Sets = new Sets();
+
+    swap(Regions.content, new SetListView({collection: App.Sets}));
+    App.Sets.fetch({
+        data: {
+            includes: 'cover',
+            limit: 100
+        }
+    });
+};
+
+
+module.exports.Detail = function (slug) {
+    console.debug('##### Virtual Lab Controller -> Detail', slug);
+
+    //var entry = new Entry({doc_id: doc_id});
+    var set = new Set({slug: slug});
+
+    // render
+    swap(Regions.content, new SetDetailView({model: set}));
+
+    // fetch
+    set.fetch();
+};
+
+},{"../models/set":37,"../models/sets":38,"../views/regions.js":77,"../views/set_detail":78,"../views/set_list":79,"../views/swap.js":81,"jquery":12,"lodash":14}],30:[function(require,module,exports){
+var _ = require('lodash');
+var $ = require('jquery');
+
+var Regions = require('../views/regions.js');
+var swap = require('../views/swap.js');
+
+// models
+var Experiments = require('../models/experiments');
+var Experiment = require('../models/experiment');
+
+// views
+var VirtualLabListView = require('../views/experiment_list');
+var VirtualLabDetailView = require('../views/experiment_detail');
+
+
+module.exports.List = function () {
+    console.debug('##### Virtual Lab Controller -> List');
+    if (!App.Experiments)
+        App.Experiments = new Experiments();
+
+    var virtuallab = new VirtualLabListView({collection: App.Experiments});
+    swap(Regions.content, virtuallab);
+    App.Experiments.fetch();
+};
+
+
+module.exports.Detail = function (slug) {
+    console.debug('##### Virtual Lab Controller -> Detail', slug);
+
+    //var entry = new Entry({doc_id: doc_id});
+    var experiment = new Experiment({ slug: slug });
+
+    // render
+    swap(Regions.content, new VirtualLabDetailView({model: experiment}));
+
+    // fetch
+    experiment.fetch();
+};
+
+},{"../models/experiment":35,"../models/experiments":36,"../views/experiment_detail":71,"../views/experiment_list":72,"../views/regions.js":77,"../views/swap.js":81,"jquery":12,"lodash":14}],31:[function(require,module,exports){
 // dust filters
 var dust = require('dustjs-linkedin');
 
@@ -51605,7 +51707,7 @@ dust.filters.hipster = function (text) {
         });
 };
 
-},{"dustjs-linkedin":5,"marked":15}],30:[function(require,module,exports){
+},{"dustjs-linkedin":5,"marked":15}],32:[function(require,module,exports){
 window.App = {
     Helper: {},
     Router: {},
@@ -51715,7 +51817,7 @@ $(function () {
 
     Backbone.history.bind('url-changed', function () {
         //console.warn("url-changed");
-        window.scrollTo(0, 0); // scroll to top on url change! TODO: finer control when to scroll top ie. when navigation from detail to list views that were scrolled before...
+        //window.scrollTo(0, 0); // scroll to top on url change! TODO: finer control when to scroll top ie. when navigation from detail to list views that were scrolled before...
 
 
         // if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
@@ -51761,7 +51863,7 @@ $(function () {
 
 
 
-},{"./dust-filters.js":29,"./router.js":33,"./views/navigation.js":61,"./views/regions.js":62,"./views/swap.js":63,"backbone":2,"dustjs-helpers":4,"keymaster":13}],31:[function(require,module,exports){
+},{"./dust-filters.js":31,"./router.js":39,"./views/navigation.js":76,"./views/regions.js":77,"./views/swap.js":81,"backbone":2,"dustjs-helpers":4,"keymaster":13}],33:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -51815,7 +51917,7 @@ module.exports = Backbone.Collection.extend({
      */
 });
 
-},{"../apiUrl":27,"./entry":32,"backbone":2,"jquery":12}],32:[function(require,module,exports){
+},{"../apiUrl":27,"./entry":34,"backbone":2,"jquery":12}],34:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -51834,7 +51936,81 @@ module.exports = Backbone.Model.extend({
 
 });
 
-},{"../apiUrl":27,"backbone":2,"jquery":12}],33:[function(require,module,exports){
+},{"../apiUrl":27,"backbone":2,"jquery":12}],35:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+Backbone.$ = $;
+var apiUrl = require('../apiUrl');
+
+module.exports = Backbone.Model.extend({
+
+    idAttribute: 'slug',
+
+    initialize: function() {
+    },
+
+    url: function() {
+        return apiUrl('experiment', this.id);
+    },
+
+});
+
+},{"../apiUrl":27,"backbone":2,"jquery":12}],36:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+Backbone.$ = $;
+var apiUrl = require('../apiUrl');
+
+var Experiment = require('./experiment');
+
+module.exports = Backbone.Collection.extend({
+
+    model: Experiment,
+
+    url: function () {
+        return apiUrl('experiments');
+    },
+
+});
+
+},{"../apiUrl":27,"./experiment":35,"backbone":2,"jquery":12}],37:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+Backbone.$ = $;
+var apiUrl = require('../apiUrl');
+
+module.exports = Backbone.Model.extend({
+
+    idAttribute: 'slug',
+
+    initialize: function() {
+    },
+
+    url: function() {
+        return apiUrl('set', this.id);
+    },
+
+});
+
+},{"../apiUrl":27,"backbone":2,"jquery":12}],38:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+Backbone.$ = $;
+var apiUrl = require('../apiUrl');
+
+var Set = require('./set');
+
+module.exports = Backbone.Collection.extend({
+
+    model: Set,
+
+    url: function () {
+        return apiUrl('sets');
+    },
+
+});
+
+},{"../apiUrl":27,"./set":37,"backbone":2,"jquery":12}],39:[function(require,module,exports){
 // Application router
 // ==================
 'use strict';
@@ -51843,6 +52019,8 @@ var $ = require('jquery');
 Backbone.$ = $;
 
 var entryController = require('./controllers/entry_controller');
+var setController = require('./controllers/set_controller');
+var virtualLabController = require('./controllers/virtual_lab_controller');
 
 // views
 var LayoutView = require('./views/layout.js');
@@ -51877,28 +52055,7 @@ var editor = function (actions) {
     App.currentView = EditorView;
 };
 
-/*
-var archive = function (q) {
-    if (q) {
-        swap(Regions.content, new ArchiveView({collection: App.entries, data: {query: q}}));
-    }
-    else {
-        // clear input
-        $('input.search').val('');
-        swap(Regions.content, new ArchiveView({}));
-    }
-    // scroll to position
-    //console.warn('scrolling archive to ', ArchiveView.viewState.get('scrollPosition'));
-    //var throttled = _.throttle(function() { return ArchiveView.viewState.get('scrollPosition'); }, 1000);
-    //$(document).scrollTop(throttled);
-    //$(document).scrollTop(throttled);
-    //$(document).scrollTop(throttled);
 
-    // set current view
-    App.currentView = ArchiveView;
-    App.currentView.viewState.set('view', 'ArchiveView');
-};
-*/
 module.exports = Backbone.Router.extend({
 
     initialize: function () {
@@ -51915,9 +52072,13 @@ module.exports = Backbone.Router.extend({
     routes: {
         '(/)': home,
         'archive(?*query)(/)': entryController.Archive,
+        'sets(/)': setController.List,
+        'sets/:slug(/)': setController.Detail,
         'timeline(/)(q=:q)': entryController.Timeline,
         'editor(/)': editor,
         'diagrams/:doc_id(/)': entryController.Detail,
+        'virtuallab(/)': virtualLabController.List,
+        'virtuallab/:slug(/)': virtualLabController.Detail,
         '*actions': defaultRoute
     },
 
@@ -51934,103 +52095,139 @@ module.exports = Backbone.Router.extend({
 });
 
 
-},{"./controllers/entry_controller":28,"./views/404.js":50,"./views/archive.js":51,"./views/editor.js":53,"./views/entry_detail.js":54,"./views/homepage.js":59,"./views/layout.js":60,"./views/navigation.js":61,"./views/regions.js":62,"./views/swap.js":63,"backbone":2,"jquery":12}],34:[function(require,module,exports){
+},{"./controllers/entry_controller":28,"./controllers/set_controller":29,"./controllers/virtual_lab_controller":30,"./views/404.js":62,"./views/archive.js":63,"./views/editor.js":65,"./views/entry_detail.js":66,"./views/homepage.js":74,"./views/layout.js":75,"./views/navigation.js":76,"./views/regions.js":77,"./views/swap.js":81,"backbone":2,"jquery":12}],40:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("404",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 column text-center\"><h1>404 Not Found</h1></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("404", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],35:[function(require,module,exports){
+},{"dustjs-linkedin":5}],41:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("archive",body_0);function body_0(chk,ctx){return chk.w("<div id=\"entry_list_header\" data-js-region=\"entry_list_header\"></div><div id=\"entry_list_header_meta\" data-js-region=\"entry_list_header_meta\"></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div><!--<div class=\"row\"><div class=\"column small-12 text-center\"><button class=\"button load\">load</button></div></div>-->");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("archive", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],36:[function(require,module,exports){
+},{"dustjs-linkedin":5}],42:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("base",body_0);function body_0(chk,ctx){return chk.w("<div data-js-region=\"base\"><div id=\"navigation\" data-js-region=\"navigation\"></div><div id=\"content\" data-js-region=\"content\"></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("base", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],37:[function(require,module,exports){
+},{"dustjs-linkedin":5}],43:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("editor",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row full align-stretch\"><div class=\"columns align-left\"><input type=\"search\" placeholder=\"search\" class=\"search\"><div id=\"stencil_holder\"></div></div><div class=\"columns align-self-stretch\"><div id=\"paper\"></div></div></div><div class=\"row full\"><div class=\"columns large-12 left\"><div id=\"selection-info\"></div><button type=\"button\" class=\"success button\" id=\"btn_open_svg\">Save SVG</button></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("editor", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],38:[function(require,module,exports){
+},{"dustjs-linkedin":5}],44:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h3>").f(ctx.get(["title"], false),ctx,"h").w("</h3><h6>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h6><h6><i>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</i></h6><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_3},{}).w("<img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div><div class=\"related text-left\">").x(ctx.get(["related"], false),ctx,{"block":body_6},{}).w("<ul>").s(ctx.get(["related"], false),ctx,{"block":body_7},{}).w("</ul></div><br/><div class=\"row\"><div class=\"large-12 medium-12 small-12 column text-left\">Source: ").f(ctx.get(["source"], false),ctx,"h").w("<br/>Copyright: ").f(ctx.get(["copyright_notice"], false),ctx,"h").w("<br/>License: ").s(ctx.get(["license"], false),ctx,{"block":body_8},{}).w("</div></div></div><div class=\"preview\" id=\"marked-mathjax-preview-buffer\"style=\"display:none; position:absolute; top:0; left: 0\"></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_4},{}).w("</h6>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(" <a href=\"/q=").f(ctx.getPath(true, []),ctx,"h").w("\">").f(ctx.getPath(true, []),ctx,"h").w("</a>").h("sep",ctx,{"block":body_5},{},"h");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w(",");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("See also:");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></li>\n");}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\" data-bypass target=\"_blank\">").f(ctx.get(["label"], false),ctx,"h").w("</a>");}body_8.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],39:[function(require,module,exports){
+},{"dustjs-linkedin":5}],45:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("entry_grid",body_0);function body_0(chk,ctx){return chk.w("<section id=\"entries\"><div class=\"row\"><div class=\"medium-12 columns\"><div class=\"entries grid\"></div></div></div><footer><div class=\"row\"><div class=\"large-12 medium-12 small-12 column text-center\"><!--<h4>List Footer</h4>--></div></div></footer></section>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_grid", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],40:[function(require,module,exports){
+},{"dustjs-linkedin":5}],46:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("entry_grid_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry grid-item ").f(ctx.get(["uuid"], false),ctx,"h").w("\"><!--<div class=\"entry column align-self-bottom grid-item\">--><div class=\"entry_wrapper text-center grow\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" height=\"200\"/> ").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("<span>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</span></a></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br />");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_grid_single", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],41:[function(require,module,exports){
+},{"dustjs-linkedin":5}],47:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("entry_list",body_0);function body_0(chk,ctx){return chk.w("<section id=\"entries\"><div class=\"row\"><div class=\"small-12 columns\"><table class=\"stack hover\"><thead><tr><th width=\"30%\">Title</th><th width=\"25%\">Author</th><th width=\"10%\">Date</th><th>Diagram</th></tr></thead><tbody class=\"entries\"></tbody></table></div></div><footer><div class=\"row\"><div class=\"large-12 medium-12 small-12 column text-center\"><!--<h4>List Footer</h4>--></div></div></footer></section>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],42:[function(require,module,exports){
+},{"dustjs-linkedin":5}],48:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("entry_list_header",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><h3><i class=\"fi-magnifying-glass\"></i>&nbsp;Advanced Search</h3></div></div><div class=\"row\"><div class=\"small-2 columns\"><label><select class=\"type\"><option value=\"fulltext\">Full text</option><option value=\"title\">Title</option><option value=\"author\">Author</option></select></label></div><div class=\"small-6 column\"><div class=\"input-group\" style=\"margin-bottom: 0;\"><input class=\"input-group-field search\" type=\"search\" placeholder=\"\" ").s(ctx.get(["meta"], false),ctx,{"block":body_1},{}).w("><div class=\"input-group-button\"><button class=\"button search\"><i class=\"fi-magnifying-glass\"></i></button></div></div></div><div class=\"small-2 small-offset-2 columns\"><div class=\"button-group float-right\"><div class=\"button toggle-grid\"><i class=\"fi-thumbnails\"></i></div><div class=\"button toggle-list\"><i class=\"fi-list-thumbnails\"></i></div></div></div></div><div class=\"row\"><div class=\"small-12 columns\"><h5><i class=\"fi-filter\"></i>&nbsp;Refine Search</h5></div></div><div class=\"row\"><div class=\"small-5 columns\"><fieldset class=\"fieldset\"><legend>Select date range</legend><div class=\"row\"><div class=\"small-8 columns\"><div id=\"date_slider\" class=\"slider\"><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"aria-controls=\"dateSliderStart\"></span><span class=\"slider-fill\" data-slider-fill></span><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"aria-controls=\"dateSliderEnd\"></span><input type=\"hidden\"><input type=\"hidden\"></div><div class=\"row\"><div class=\"small-5 columns align-left\"><input type=\"number\" class=\"float-left\" id=\"dateSliderStart\"></div><div class=\"small-5 small-offset-2 columns align-right\"><input type=\"number\" class=\"float-right\" id=\"dateSliderEnd\"></div></div></div><div class=\"small-4 columns align-self-middle align-right\"><div class=\"switch small\"><input class=\"switch-input\" id=\"date_range_toggle\" type=\"checkbox\"name=\"toggle date range filter\"><label class=\"switch-paddle\" for=\"date_range_toggle\"><span class=\"show-for-sr\">Filter by date range?</span><span class=\"switch-active\" aria-hidden=\"true\">On</span><span class=\"switch-inactive\" aria-hidden=\"true\">Off</span></label></div><!--<div class=\"medium button-group\"><button class=\"button apply_date__range\"><i class=\"fi-filter\"></i>&nbsp;Find</button><button class=\"button secondary remove_date__range\"><i class=\"fi-x\"></i></button></div>--></div></div></fieldset></div></div><div class=\"row align-right\"><div class=\"small-3 columns\"><label>Sorty by<select class=\"order_by\"><option value=\"-date\">Date (newest first)</option><option value=\"date\">Date (oldest first)</option><option value=\"title\">Title (A-Z)</option><option value=\"-title\">Title (Z-A)</option><option value=\"author__last_name\">Author (A-Z)</option><option value=\"-author__last_name\">Author (Z-A)</option></select></label></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("value=").f(ctx.get(["search_query"], false),ctx,"h");}body_1.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_header", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],43:[function(require,module,exports){
+},{"dustjs-linkedin":5}],49:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_list_header_meta",body_0);function body_0(chk,ctx){return chk.s(ctx.get(["meta"], false),ctx,{"block":body_1},{});}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.h("gt",ctx,{"else":body_2,"block":body_3},{"key":ctx.get(["numEntries"], false),"value":"0"},"h");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 large-expand columns text-center\"><h5>Nothing found for ").f(ctx.get(["search_query"], false),ctx,"h").w("</h5></div></div>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 large-expand columns text-center\"><h5>Search results for: <b>").f(ctx.get(["search_query"], false),ctx,"h").w("</b></h5></div></div><div class=\"row\"><div class=\"small-12 column text-center\">").s(ctx.get(["meta"], false),ctx,{"block":body_4},{}).w("</div></div>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w("<p>Showing ").f(ctx.get(["numEntries"], false),ctx,"h").w("/").f(ctx.get(["total_count"], false),ctx,"h").w(" diagrams.</p>");}body_4.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_header_meta", context || {}, callback); };
+(function(dust){dust.register("entry_list_header_meta",body_0);function body_0(chk,ctx){return chk.s(ctx.get(["meta"], false),ctx,{"block":body_1},{});}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.h("gt",ctx,{"else":body_2,"block":body_3},{"key":ctx.get(["numEntries"], false),"value":"0"},"h");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 large-expand columns text-center\"><h5>Nothing found for ").f(ctx.get(["search_query"], false),ctx,"h").w("</h5></div></div>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 large-expand columns text-center\">").s(ctx.get(["meta"], false),ctx,{"block":body_4},{}).w("</div></div><div class=\"row\"><div class=\"small-12 column text-center\">").s(ctx.get(["meta"], false),ctx,{"block":body_6},{}).w("</div></div>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.x(ctx.get(["search_query"], false),ctx,{"block":body_5},{});}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w("<h5>Search results for: <b>").f(ctx.get(["search_query"], false),ctx,"h").w("</b></h5>");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("<p>Showing ").f(ctx.get(["numEntries"], false),ctx,"h").w("/").f(ctx.get(["total_count"], false),ctx,"h").w(" diagrams.</p>");}body_6.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_header_meta", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],44:[function(require,module,exports){
+},{"dustjs-linkedin":5}],50:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("entry_single",body_0);function body_0(chk,ctx){return chk.w("<tr class=\"entry\"><td><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><span class=\"title\">").f(ctx.get(["title"], false),ctx,"h").w("</span><br/></a>").f(ctx.get(["subtitle"], false),ctx,"h").w("</td><td>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</td><td>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</td><td class=\"diagram\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" /></a></td></tr>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_single", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],45:[function(require,module,exports){
+},{"dustjs-linkedin":5}],51:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("experiment_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\">").f(ctx.get(["title"], false),ctx,"h").w("</div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_detail", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":5}],52:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("experiment_list",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><h1>Experiments</h1><div class=\"row entries\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_list", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":5}],53:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("experiment_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-12 column experiment\"><h2><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></h2></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_single", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":5}],54:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("homepage",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"column\"><h1>Sound Colour Space – A Virtual Museum</h1><img src=\"").f(ctx.get(["STATIC_URL"], false),ctx,"h").w("img/fig_0_head_1456_464.jpg\"/><br/><br/><p>Im Zentrum des Projekts Sound Colour Space – A Virtual Museum steht das Begriffsfeld Klang, Ton, Tonhöhe,Klangfarbe in seiner Beziehung zu visuellen Phänomenen und geometrischen Konzepten. Das Vorhaben verstehtsich als Beitrag zu einem interdisziplinären Forschungsgebiet und erforscht seine adäquaten Darstellungs-und Vermittlungsformen.</p><p>Zahlreiche Wissenschaftler und Philosophen von der Antike bis zur heutigen Zeit haben die Beziehungenzwischen Ton, Farbe und Geometrie untersucht. Viele ihrer Visualisierungen zu akustischen, optischen undwahrnehmungsbezogenen Themen sprechen zu den Augen und sollen vergleichend studiert werden. Da ein gegebenesBild oder Diagramm in verschiedenen Kontexten und mit unterschiedlichen Implikationen auftreten kann,erlaubt eine ausgeprägte Netzwerkarchitektur eine redundanzfreie Darstellung der betreffenden Inhalte. Nebender Entwicklung einer exemplarischen Webanwendung, wird das Themengebiet mit Beiträgen aus unterschiedlichenDisziplinen und mit künstlerischen Anwendungen bearbeitet und in einen aktuellen Forschungskontext gestellt.</p></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("homepage", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],46:[function(require,module,exports){
+},{"dustjs-linkedin":5}],55:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("navigation",body_0);function body_0(chk,ctx){return chk.w("<nav><div class=\"row\"><div class=\"shrink column\"><ul class=\"menu\"><li><a href=\"/\">Sound Colour Space</a></li></ul></div><div class=\"shrink column\"><ul class=\"menu\">").s(ctx.get(["menu"], false),ctx,{"block":body_1},{"current":ctx.get(["currentUrl"], false)}).w("</ul></div></div></nav>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<li ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["url"], false),"value":ctx.get(["current"], false)},"h").w("><a href=\"/").f(ctx.get(["url"], false),ctx,"h").w("\">").f(ctx.get(["text"], false),ctx,"h").w("</a></li>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("class=\"active\"");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("navigation", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],47:[function(require,module,exports){
+},{"dustjs-linkedin":5}],56:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("set_detail",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1><h4>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h4></div></div><div class=\"row\"><div class=\"small-12 columns\"><p>").f(ctx.get(["description"], false),ctx,"h").w("</p></div></div><div class=\"row align-self-middle\">").s(ctx.get(["entry"], false),ctx,{"block":body_1},{}).w("</div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<div class=\"small-3 columns text-center\" style=\"margin-bottom: 40px;\"><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" style=\"max-height: 200px;\" /></a></div>");}body_1.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_detail", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":5}],57:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("set_list",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><div class=\"row entries\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_list", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":5}],58:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("set_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-2 column set align-self-middle\" style=\"margin-bottom: 40px;\"><div class=\"row text-center\"><div class=\"small-12 columns\"><span><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></span></div></div><div class=\"row\"><div class=\"small-12 column set description\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.get(["cover"], false),ctx,"h").w("\"/></a></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_single", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":5}],59:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("timeline",body_0);function body_0(chk,ctx){return chk.w("<div><div id=\"timeline_header\" data-js-region=\"timeline_header\"></div><div id=\"timeline_wrapper\"><div id=\"timeline\"></div><div id=\"timeline_content\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],48:[function(require,module,exports){
+},{"dustjs-linkedin":5}],60:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("timeline_header",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 column text-center\"><h1>Timeline</h1><div id=\"date_slider\" class=\"slider\"><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"></span><span class=\"slider-fill\" data-slider-fill></span><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"></span><input type=\"hidden\"><input type=\"hidden\"></div><div class=\"clearfix\"><div class=\"float-left\" id=\"dateSliderStart\"></div><div class=\"float-right\" id=\"dateSliderEnd\"></div></div>").s(ctx.get(["meta"], false),ctx,{"block":body_1},{}).w("</div></div><!--<div class=\"row\"><div class=\"small-12 column text-center\"><button class=\"button toggle_grid\">Grid!</button></div></div>-->");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.x(ctx.get(["search_query"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<p>Found ").f(ctx.get(["total_count"], false),ctx,"h").w(" diagrams for <b>").f(ctx.get(["search_query"], false),ctx,"h").w("</b>.</p><button class=\"button small radius\">Clear Filter</button>");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_header", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],49:[function(require,module,exports){
+},{"dustjs-linkedin":5}],61:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("timeline_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry\"><div class=\"wrapper\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"overlay\"></div><div class=\"eye\"><i class=\"fi-eye\"></i></div><div class=\"description\"><h7>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</h7><h4>").f(ctx.get(["title"], false),ctx,"h").w("</h4><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6><p>").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</p></div></div><div class=\"connector\"><div class=\"circle\"></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br/>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_single", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],50:[function(require,module,exports){
+},{"dustjs-linkedin":5}],62:[function(require,module,exports){
 var Base = require('./base.js');
 
 // layout template
@@ -52041,7 +52238,7 @@ module.exports = Base.TemplateView.extend({
 
     }
 });
-},{"../templates/404.dust":34,"./base.js":52}],51:[function(require,module,exports){
+},{"../templates/404.dust":40,"./base.js":64}],63:[function(require,module,exports){
 var Base = require('./base');
 
 var EntryListView = require('./entry_list');
@@ -52055,8 +52252,10 @@ var HeaderView = Base.TemplateView.extend({
 
     onShow: function () {
 
-        $(document).foundation();
-        console.log("HeaderView", this.data);
+        //$(document).foundation();
+
+        if (!_.isUndefined(this.options.parent.collection.query.type))
+            $('.type').val(this.options.parent.collection.query.type);
 
         if (!_.isUndefined(this.options.parent.collection.query.q))
             $("input.search[type=search]").val(this.options.parent.collection.query.q);
@@ -52118,7 +52317,7 @@ module.exports = Base.TemplateView.extend({
         swap($('[data-js-region="entry_list"]'), view);
 
         this.header();
-        this.search();
+        //this.search(); // this is called by the controller!
 
         // fetch on bottom
         $(window).on("scroll", _.bind(function () {
@@ -52150,7 +52349,11 @@ module.exports = Base.TemplateView.extend({
             data: params,
             success: function (collection, response, options) {
                 // console.warn("adding", collection.models.length, "total", this.collection.length);
-                this.entry_list_header_meta();
+                //this.entry_list_header_meta();
+                swap($('[data-js-region="entry_list_header_meta"]'), new MetaView({
+                    parent: this,
+                    data: {meta: _.extend(collection.meta, {numEntries: collection.length})}
+                }));
             }.bind(this)
         });
     },
@@ -52165,7 +52368,7 @@ module.exports = Base.TemplateView.extend({
     entry_list_header_meta: function () {
         swap($('[data-js-region="entry_list_header_meta"]'), new MetaView({
             parent: this,
-            data: {meta: _.extend(this.collection.meta, { numEntries: this.collection.length })}
+            data: {meta: _.extend(this.collection.meta, {numEntries: this.collection.length})}
         }));
     },
 
@@ -52176,15 +52379,21 @@ module.exports = Base.TemplateView.extend({
 
     query: function (opts) {
 
+        // navigate options
         var options = _.defaults(opts, {trigger: true, replace: false});
 
         //$('input.search').blur(); // TODO loose focus on mobile only?
-        var q = $('input.search').val();
-        //if (q === '') return;
-        this.collection.query.q = q;
 
+        // set search type
+        this.collection.query.type = $('.type').val();
+
+        // set term
+        this.collection.query.q = $('input.search').val();
+
+        // set date__range
         this.collection.query.date__range = $('#dateSliderStart').val() + ',' + $('#dateSliderEnd').val();
 
+        // remove date__range again, if not checked :P
         if (!$('#date_range_toggle').is(':checked')) {
             this.collection.query = _.omit(this.collection.query, 'date__range');
         }
@@ -52223,7 +52432,7 @@ module.exports = Base.TemplateView.extend({
 });
 
 
-},{"../templates/archive.dust":35,"../templates/entry_list_header.dust":42,"../templates/entry_list_header_meta.dust":43,"../views/swap.js":63,"./base":52,"./entry_grid":55,"./entry_list":57}],52:[function(require,module,exports){
+},{"../templates/archive.dust":41,"../templates/entry_list_header.dust":48,"../templates/entry_list_header_meta.dust":49,"../views/swap.js":81,"./base":64,"./entry_grid":67,"./entry_list":69}],64:[function(require,module,exports){
 /* Base Views */
 'use strict';
 
@@ -52624,7 +52833,7 @@ module.exports.ListView = Backbone.View.extend({
     },
 });
 
-},{"backbone":2,"jquery":12,"lodash":14}],53:[function(require,module,exports){
+},{"backbone":2,"jquery":12,"lodash":14}],65:[function(require,module,exports){
  /*
  var Backbone = require('backbone');
  var $ = require('jquery');
@@ -52857,7 +53066,7 @@ module.exports = Base.TemplateView.extend({
 
     }
 });
-},{"../models/entries":31,"../templates/editor.dust":37,"./base.js":52}],54:[function(require,module,exports){
+},{"../models/entries":33,"../templates/editor.dust":43,"./base.js":64}],66:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -52997,7 +53206,7 @@ module.exports = Base.DetailView.extend({
 });
 
 
-},{"../templates/entry_detail.dust":38,"./base":52,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14,"marked":15}],55:[function(require,module,exports){
+},{"../templates/entry_detail.dust":44,"./base":64,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14,"marked":15}],67:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -53086,7 +53295,7 @@ module.exports = Base.ListView.extend({
     }
 
 });
-},{"../templates/entry_grid.dust":39,"../views/swap.js":63,"./base":52,"./entry_grid_single":56,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":14,"packery":21}],56:[function(require,module,exports){
+},{"../templates/entry_grid.dust":45,"../views/swap.js":81,"./base":64,"./entry_grid_single":68,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":14,"packery":21}],68:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -53143,7 +53352,7 @@ module.exports = Base.SingleView.extend({
 
     events: {}
 });
-},{"../templates/entry_grid_single.dust":40,"./base":52,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":14,"packery":21,"velocity-animate":25,"velocity-animate/velocity.ui":26}],57:[function(require,module,exports){
+},{"../templates/entry_grid_single.dust":46,"./base":64,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":14,"packery":21,"velocity-animate":25,"velocity-animate/velocity.ui":26}],69:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -53212,7 +53421,7 @@ module.exports = Base.ListView.extend({
 
     }
 });
-},{"../templates/entry_list.dust":41,"../views/swap.js":63,"./base":52,"./entry_single":58,"backbone":2,"jquery":12,"lodash":14}],58:[function(require,module,exports){
+},{"../templates/entry_list.dust":47,"../views/swap.js":81,"./base":64,"./entry_single":70,"backbone":2,"jquery":12,"lodash":14}],70:[function(require,module,exports){
 var $ = require('jquery');
 var _ = require('lodash');
 var Backbone = require('backbone');
@@ -53240,7 +53449,104 @@ module.exports = Base.SingleView.extend({
 
     events: {}
 });
-},{"../templates/entry_single.dust":44,"./base":52,"backbone":2,"jquery":12,"lodash":14}],59:[function(require,module,exports){
+},{"../templates/entry_single.dust":50,"./base":64,"backbone":2,"jquery":12,"lodash":14}],71:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var _ = require('lodash');
+var foundation = require('foundation-sites');
+Backbone.$ = $;
+
+var Base = require('./base');
+
+
+module.exports = Base.DetailView.extend({
+
+    template: require('../templates/experiment_detail.dust'),
+
+    data: {
+
+    },
+
+    onShow: function () {
+        // scroll to top
+        $(window).scrollTop(0);
+    },
+
+    events: {},
+
+
+
+
+});
+
+
+},{"../templates/experiment_detail.dust":51,"./base":64,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14}],72:[function(require,module,exports){
+var Backbone = require('backbone');
+var _ = require('lodash');
+var $ = require('jquery');
+Backbone.$ = $;
+
+
+var Base = require('./base');
+var ExperimentSingleView = require('./experiment_single');
+
+var swap = require('../views/swap.js');
+
+
+module.exports = Base.ListView.extend({
+
+    template: require('../templates/experiment_list.dust'),
+
+    addOne: function (model) {
+        console.log('adding', model.id);
+        var view = new ExperimentSingleView({model: model});
+        this.$(".entries").append(view.render().el);
+        view.onShow();
+    },
+
+    onSync: function () {
+        //Base.ListView.prototype.onSync.call(this);
+        console.debug('############################################onSync list');
+    },
+
+
+    onShow: function () {
+        console.debug("############################################onShow list");
+        this.collection.each(this.addOne, this);
+    },
+
+    events: {
+    }
+});
+},{"../templates/experiment_list.dust":52,"../views/swap.js":81,"./base":64,"./experiment_single":73,"backbone":2,"jquery":12,"lodash":14}],73:[function(require,module,exports){
+var $ = require('jquery');
+var _ = require('lodash');
+var Backbone = require('backbone');
+Backbone.$ = $;
+
+var Base = require('./base');
+
+module.exports = Base.SingleView.extend({
+
+    data: {},
+
+    template: require('../templates/experiment_single.dust'),
+
+    onShow: function () {
+
+        this.$el.on({
+            mouseenter: function () {
+                $(this).addClass("active");
+            },
+            mouseleave: function () {
+                $(this).removeClass("active");
+            }
+        });
+    },
+
+    events: {}
+});
+},{"../templates/experiment_single.dust":53,"./base":64,"backbone":2,"jquery":12,"lodash":14}],74:[function(require,module,exports){
 var Base = require('./base.js');
 
 // layout template
@@ -53254,7 +53560,7 @@ module.exports = Base.TemplateView.extend({
     onShow: function () {
     }
 });
-},{"../templates/homepage.dust":45,"./base.js":52}],60:[function(require,module,exports){
+},{"../templates/homepage.dust":54,"./base.js":64}],75:[function(require,module,exports){
 var Base = require('./base.js');
 
 // layout template
@@ -53267,7 +53573,7 @@ module.exports = Base.TemplateView.extend({
     }
 });
 
-},{"../templates/base.dust":36,"./base.js":52}],61:[function(require,module,exports){
+},{"../templates/base.dust":42,"./base.js":64}],76:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -53319,6 +53625,10 @@ module.exports = Base.TemplateView.extend({
                 "text": "Archive"
             },
             {
+                "url": "sets",
+                "text": "Sets"
+            },
+            {
                 "url": "timeline",
                 "text": "Timeline"
             },
@@ -53357,9 +53667,102 @@ module.exports = Base.TemplateView.extend({
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../apiUrl":27,"../templates/navigation.dust":46,"./base.js":52,"backbone":2,"backbone-nprogress":1,"foundation-sites":8,"jquery":12,"lodash":14,"nprogress":16}],62:[function(require,module,exports){
+},{"../apiUrl":27,"../templates/navigation.dust":55,"./base.js":64,"backbone":2,"backbone-nprogress":1,"foundation-sites":8,"jquery":12,"lodash":14,"nprogress":16}],77:[function(require,module,exports){
 module.exports = {};
-},{}],63:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var _ = require('lodash');
+var foundation = require('foundation-sites');
+Backbone.$ = $;
+
+var Base = require('./base');
+
+module.exports = Base.DetailView.extend({
+
+    template: require('../templates/set_detail.dust'),
+
+    data: {
+
+    },
+
+    onShow: function () {
+        // scroll to top
+        $(window).scrollTop(0);
+    },
+
+    events: {},
+
+});
+
+
+},{"../templates/set_detail.dust":56,"./base":64,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14}],79:[function(require,module,exports){
+var Backbone = require('backbone');
+var _ = require('lodash');
+var $ = require('jquery');
+Backbone.$ = $;
+
+
+var Base = require('./base');
+var SetSingleView = require('./set_single');
+
+var swap = require('../views/swap.js');
+
+
+module.exports = Base.ListView.extend({
+
+    template: require('../templates/set_list.dust'),
+
+    addOne: function (model) {
+        console.log('adding', model.id);
+        var view = new SetSingleView({model: model});
+        this.$(".entries").append(view.render().el);
+        view.onShow();
+    },
+
+    onSync: function () {
+        //Base.ListView.prototype.onSync.call(this);
+        console.debug('############################################onSync list');
+    },
+
+
+    onShow: function () {
+        console.debug("############################################onShow list");
+        this.collection.each(this.addOne, this);
+    },
+
+    events: {
+    }
+});
+},{"../templates/set_list.dust":57,"../views/swap.js":81,"./base":64,"./set_single":80,"backbone":2,"jquery":12,"lodash":14}],80:[function(require,module,exports){
+var $ = require('jquery');
+var _ = require('lodash');
+var Backbone = require('backbone');
+Backbone.$ = $;
+
+var Base = require('./base');
+
+module.exports = Base.SingleView.extend({
+
+    data: {},
+
+    template: require('../templates/set_single.dust'),
+
+    onShow: function () {
+
+        this.$el.on({
+            mouseenter: function () {
+                $(this).addClass("active");
+            },
+            mouseleave: function () {
+                $(this).removeClass("active");
+            }
+        });
+    },
+
+    events: {}
+});
+},{"../templates/set_single.dust":58,"./base":64,"backbone":2,"jquery":12,"lodash":14}],81:[function(require,module,exports){
 module.exports = function(region, newView) {
 
     // if there's an old View in the region, grab a reference to it
@@ -53397,7 +53800,7 @@ module.exports = function(region, newView) {
     }
 
 };
-},{}],64:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 (function (global){
 var Backbone = require('backbone');
 var _ = require('lodash');
@@ -53591,7 +53994,7 @@ module.exports = Base.TemplateView.extend({
 });
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../templates/timeline.dust":47,"../templates/timeline_header.dust":48,"../views/swap.js":63,"./base":52,"./timeline_single":65,"backbone":2,"foundation-sites":8,"imagesloaded":10,"jquery":12,"lodash":14}],65:[function(require,module,exports){
+},{"../templates/timeline.dust":59,"../templates/timeline_header.dust":60,"../views/swap.js":81,"./base":64,"./timeline_single":83,"backbone":2,"foundation-sites":8,"imagesloaded":10,"jquery":12,"lodash":14}],83:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -53650,7 +54053,7 @@ module.exports = Base.SingleView.extend({
 });
 
 
-},{"../templates/timeline_single.dust":49,"./base":52,"backbone":2,"imagesloaded":10,"jquery":12,"lodash":14,"velocity-animate":25,"velocity-animate/velocity.ui":26}]},{},[30])
+},{"../templates/timeline_single.dust":61,"./base":64,"backbone":2,"imagesloaded":10,"jquery":12,"lodash":14,"velocity-animate":25,"velocity-animate/velocity.ui":26}]},{},[32])
 
 
 //# sourceMappingURL=bundle.js.map

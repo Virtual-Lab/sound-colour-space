@@ -1,0 +1,3 @@
+<div class="small-12 column experiment">
+    <h2><a href="{uri}">{title}</a></h2>
+</div>

@@ -6,6 +6,8 @@ var $ = require('jquery');
 Backbone.$ = $;
 
 var entryController = require('./controllers/entry_controller');
+var setController = require('./controllers/set_controller');
+var virtualLabController = require('./controllers/virtual_lab_controller');
 
 // views
 var LayoutView = require('./views/layout.js');
@@ -40,28 +42,7 @@ var editor = function (actions) {
     App.currentView = EditorView;
 };
 
-/*
-var archive = function (q) {
-    if (q) {
-        swap(Regions.content, new ArchiveView({collection: App.entries, data: {query: q}}));
-    }
-    else {
-        // clear input
-        $('input.search').val('');
-        swap(Regions.content, new ArchiveView({}));
-    }
-    // scroll to position
-    //console.warn('scrolling archive to ', ArchiveView.viewState.get('scrollPosition'));
-    //var throttled = _.throttle(function() { return ArchiveView.viewState.get('scrollPosition'); }, 1000);
-    //$(document).scrollTop(throttled);
-    //$(document).scrollTop(throttled);
-    //$(document).scrollTop(throttled);
 
-    // set current view
-    App.currentView = ArchiveView;
-    App.currentView.viewState.set('view', 'ArchiveView');
-};
-*/
 module.exports = Backbone.Router.extend({
 
     initialize: function () {
@@ -78,9 +59,13 @@ module.exports = Backbone.Router.extend({
     routes: {
         '(/)': home,
         'archive(?*query)(/)': entryController.Archive,
+        'sets(/)': setController.List,
+        'sets/:slug(/)': setController.Detail,
         'timeline(/)(q=:q)': entryController.Timeline,
         'editor(/)': editor,
         'diagrams/:doc_id(/)': entryController.Detail,
+        'virtuallab(/)': virtualLabController.List,
+        'virtuallab/:slug(/)': virtualLabController.Detail,
         '*actions': defaultRoute
     },
 
