@@ -32,6 +32,10 @@ module.exports = function(region, newView) {
 
     if (newView.onShow){
         newView.onShow();
+
+        if ($(document).find('#date_slider').length)
+            Foundation.reInit('slider');
+
     }
 
 };

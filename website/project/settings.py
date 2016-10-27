@@ -108,6 +108,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 DIAGRAMS_ROOT = os.path.join(BASE_DIR, 'media/diagrams')
 DIAGRAMS_URL = '/media/diagrams/'
+EXPERIMENTS_ROOT = os.path.join(BASE_DIR, 'media/experiments')
+EXPERIMENTS_URL = '/media/experiments/'
 
 # easy_thumbnails
 THUMBNAIL_QUALITY = 95

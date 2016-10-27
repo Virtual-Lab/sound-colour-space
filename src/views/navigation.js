@@ -56,8 +56,8 @@ module.exports = Base.TemplateView.extend({
                 "text": "Timeline"
             },
             {
-                "url": "exibitions",
-                "text": "Exibitions"
+                "url": "exhibitions",
+                "text": "Exhibitions"
             },
             {
                 "url": "virtuallab",

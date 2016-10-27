@@ -10,6 +10,10 @@ from taggit.managers import TaggableManager
 
 from common.storage import DataStorage
 
+# generic data path based on uuid for folder and filename for file
+def generate_data_path(obj, filename):
+    path = "%s/%s" % (obj.uuid, filename)
+    return path.replace('-', '/')
 
 class Base(models.Model):
     """Base model."""
@@ -100,9 +104,18 @@ class Attachment(Base):
     class Meta:
         abstract = True
 
+experiment_store = DataStorage(location=settings.EXPERIMENTS_ROOT, base_url=settings.EXPERIMENTS_URL)
 
 class Experiment(Attachment):
+    # slug for url
     slug = models.SlugField(_('slug'), allow_unicode=True)
+
+    cover = models.ImageField(_('cover'), upload_to=generate_data_path, storage=experiment_store, null=True,
+                              blank=True)
+    # iframe url
+    url = models.URLField(_('url'), null=True, blank=True)
+
+    description = models.TextField(_('description'), blank=True, null=True)
 
     class Meta:
         verbose_name = _('experiment')
@@ -133,11 +146,6 @@ class Link(Attachment):
 
 
 museum_store = DataStorage(location=settings.DIAGRAMS_ROOT, base_url=settings.DIAGRAMS_URL)
-
-
-def generate_data_path(obj, filename):
-    path = "%s/%s" % (obj.uuid, filename)
-    return path.replace('-', '/')
 
 ACCURACY_CHOICES = (
     (1, _("exact")),
@@ -235,8 +243,12 @@ class Collection(Base):
     subtitle = models.CharField(_('subtitle'), max_length=200, blank=True, null=True)
     description = models.TextField(_('description'), blank=True, null=True)
 
+    # madek uuid
     remote_uuid = models.CharField(_('remote_uuid'), max_length=200, blank=True, null=True)
     remote_href = models.CharField(_('remote_href'), max_length=200, blank=True, null=True)
+
+    # word document id for annotaions
+    doc_id = models.IntegerField(unique=True, null=True, blank=True)
 
     class Meta:
         app_label = 'museum'

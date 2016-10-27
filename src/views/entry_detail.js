@@ -14,10 +14,17 @@ var renderer = new marked.Renderer();
 
 // override link rendering
 renderer.link = function (href, title, text) {
-    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
-        return '<a href="' + href + '" title="' + title + '" target="_blank" data-bypass>' + text + '</a>';
-    else
-        return '<a href="/diagrams/' + href + '" title="' + title + '">' + text + '</a>';
+
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
+    } else {
+        if (href.split('/')[0].indexOf('diagram') === 0) {
+            return '<a href="/diagrams/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
+        } else if (href.split('/')[0].indexOf('set') === 0) {
+            return '<a href="/sets/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
+        }
+    }
+
 };
 
 
@@ -124,7 +131,7 @@ module.exports = Base.DetailView.extend({
         // with > again, so Markdown blockquotes are handled correctly
         text = text.replace(/^&gt;/mg, '>');
 
-        this.mjBuffer.innerHTML = marked(text,  {renderer: renderer});
+        this.mjBuffer.innerHTML = marked(text, {renderer: renderer});
 
         //this.SwapBuffers();
 

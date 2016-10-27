@@ -11,26 +11,35 @@ var renderer = new marked.Renderer();
 
 // override link rendering
 renderer.link = function (href, title, text) {
-    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
-        return '<a href="' + href + '" title="' + (title!=null? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
-    else
-        return '<a href="/diagrams/' + href + '" title="' + (title!=null? title : "") + '" target="_blank">' + text + '</a>';
+
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
+    }
+    else if (href.split('/')[0].indexOf('diagram') === 0) {
+        return '<a href="/diagrams/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
+    }
+    else if (href.split('/')[0].indexOf('set') === 0) {
+        return '<a href="/sets/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
+    }
+    else {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '">' + text + '</a>';
+    }
 };
 
 
 /*
-marked.setOptions({
-    renderer: renderer,
-    gfm: true,
-    tables: true,
-    breaks: false,
-    pedantic: false,
-    sanitize: false, // IMPORTANT, because we do MathJax before markdown,
-                     //            however we do escaping in 'CreatePreview'.
-    smartLists: true,
-    smartypants: false
-});
-*/
+ marked.setOptions({
+ renderer: renderer,
+ gfm: true,
+ tables: true,
+ breaks: false,
+ pedantic: false,
+ sanitize: false, // IMPORTANT, because we do MathJax before markdown,
+ //            however we do escaping in 'CreatePreview'.
+ smartLists: true,
+ smartypants: false
+ });
+ */
 
 // markdown filter
 dust.filters.markdown = function (text) {

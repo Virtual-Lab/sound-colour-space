@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="column">
+    <div class="small-8 column">
         <h1>Sound Colour Space – A Virtual Museum</h1>
         <img src="{STATIC_URL}img/fig_0_head_1456_464.jpg"/>
         <br/><br/>

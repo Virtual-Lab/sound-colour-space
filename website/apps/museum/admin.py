@@ -51,11 +51,11 @@ admin.site.register(Link, LinkAdmin)
 
 
 class ExperimentAdmin(admin.ModelAdmin):
-    list_display = ('title', )
+    list_display = ('title', 'url',)
     search_fields = ('title', )
     fieldsets = (
         (None, {
-            'fields': ('title', 'slug', )
+            'fields': ('title', 'slug', 'url', 'cover', 'description')
         }),
     )
     prepopulated_fields = {"slug": ("title",)}
@@ -137,14 +137,14 @@ admin.site.register(Entry, EntryAdmin)
 
 class CollectionAdmin(admin.ModelAdmin):
 
-    list_display = ('title', 'madek')
+    list_display = ('title', 'madek', 'doc_id')
     search_fields = ('title', )
-    readonly_fields = ('uuid', 'madek', 'created', 'modified', 'title', 'slug', 'subtitle', 'author', 'show_image')
+    readonly_fields = ('uuid', 'madek', 'doc_id', 'created', 'modified', 'title', 'slug', 'subtitle', 'author', 'show_image')
 
     fieldsets = (
         (None, {
             'fields': (
-                 'uuid', 'madek', 'title', 'slug', 'subtitle', 'description', 'author', 'show_image',
+                 'uuid', 'madek', 'doc_id', 'title', 'slug', 'subtitle', 'description', 'author', 'show_image',
             )
         }),
     )

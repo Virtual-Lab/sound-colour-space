@@ -51463,8 +51463,14 @@ var apiUrl = function (type) {
 
 module.exports = apiUrl;
 },{}],28:[function(require,module,exports){
+(function (global){
+'use strict';
+
+global.$ = global.jQuery = require('jquery');
 var _ = require('lodash');
-var $ = require('jquery');
+
+// foundation needs global.$ because it doesn't "require" jquery for some reason
+require('foundation-sites');
 
 var Regions = require('../views/regions.js');
 var swap = require('../views/swap.js');
@@ -51547,7 +51553,9 @@ module.exports.Detail = function (doc_id) {
     entry.fetch();
 };
 
-},{"../models/entries":33,"../models/entry":34,"../views/archive":63,"../views/entry_detail":66,"../views/regions.js":77,"../views/swap.js":81,"../views/timeline":82,"jquery":12,"lodash":14}],29:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"../models/entries":33,"../models/entry":34,"../views/archive":63,"../views/entry_detail":66,"../views/regions.js":77,"../views/swap.js":81,"../views/timeline":82,"foundation-sites":8,"jquery":12,"lodash":14}],29:[function(require,module,exports){
 var _ = require('lodash');
 var $ = require('jquery');
 
@@ -51645,26 +51653,35 @@ var renderer = new marked.Renderer();
 
 // override link rendering
 renderer.link = function (href, title, text) {
-    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
-        return '<a href="' + href + '" title="' + (title!=null? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
-    else
-        return '<a href="/diagrams/' + href + '" title="' + (title!=null? title : "") + '" target="_blank">' + text + '</a>';
+
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
+    }
+    else if (href.split('/')[0].indexOf('diagram') === 0) {
+        return '<a href="/diagrams/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
+    }
+    else if (href.split('/')[0].indexOf('set') === 0) {
+        return '<a href="/sets/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
+    }
+    else {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '">' + text + '</a>';
+    }
 };
 
 
 /*
-marked.setOptions({
-    renderer: renderer,
-    gfm: true,
-    tables: true,
-    breaks: false,
-    pedantic: false,
-    sanitize: false, // IMPORTANT, because we do MathJax before markdown,
-                     //            however we do escaping in 'CreatePreview'.
-    smartLists: true,
-    smartypants: false
-});
-*/
+ marked.setOptions({
+ renderer: renderer,
+ gfm: true,
+ tables: true,
+ breaks: false,
+ pedantic: false,
+ sanitize: false, // IMPORTANT, because we do MathJax before markdown,
+ //            however we do escaping in 'CreatePreview'.
+ smartLists: true,
+ smartypants: false
+ });
+ */
 
 // markdown filter
 dust.filters.markdown = function (text) {
@@ -51808,17 +51825,17 @@ $(function () {
         // After event
         Backbone.history.trigger('url-changed');
         // Return original result
+
         return res;
     });
 
     Backbone.history.bind('before:url-change', function (path, e) {
-        //console.log("before url change", path, e);
+        // console.log("before url change", path, e);
     });
 
     Backbone.history.bind('url-changed', function () {
         //console.warn("url-changed");
         //window.scrollTo(0, 0); // scroll to top on url change! TODO: finer control when to scroll top ie. when navigation from detail to list views that were scrolled before...
-
 
         // if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
         //$(document).scrollTop(App.currentView.viewState.get('scrollPosition'));
@@ -52164,25 +52181,25 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],51:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("experiment_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\">").f(ctx.get(["title"], false),ctx,"h").w("</div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_detail", context || {}, callback); };
+(function(dust){dust.register("experiment_detail",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns\"><h4>").f(ctx.get(["title"], false),ctx,"h").w("</h4></div></div><div class=\"row\"><div class=\"small-12 columns\">").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</div></div><div class=\"row iframe\"><div class=\"small-12 columns\"><iframe width=\"100%\" height=\"1000px\" style=\"border: none;\" src=\"").f(ctx.get(["url"], false),ctx,"h").w("\"></iframe></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_detail", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],52:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("experiment_list",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><h1>Experiments</h1><div class=\"row entries\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_list", context || {}, callback); };
+(function(dust){dust.register("experiment_list",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><div class=\"row entries\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_list", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],53:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("experiment_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-12 column experiment\"><h2><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></h2></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_single", context || {}, callback); };
+(function(dust){dust.register("experiment_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-4 column experiment text-center\"><h4><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></h4><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.get(["cover"], false),ctx,"h").w("\" /></a></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_single", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],54:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("homepage",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"column\"><h1>Sound Colour Space – A Virtual Museum</h1><img src=\"").f(ctx.get(["STATIC_URL"], false),ctx,"h").w("img/fig_0_head_1456_464.jpg\"/><br/><br/><p>Im Zentrum des Projekts Sound Colour Space – A Virtual Museum steht das Begriffsfeld Klang, Ton, Tonhöhe,Klangfarbe in seiner Beziehung zu visuellen Phänomenen und geometrischen Konzepten. Das Vorhaben verstehtsich als Beitrag zu einem interdisziplinären Forschungsgebiet und erforscht seine adäquaten Darstellungs-und Vermittlungsformen.</p><p>Zahlreiche Wissenschaftler und Philosophen von der Antike bis zur heutigen Zeit haben die Beziehungenzwischen Ton, Farbe und Geometrie untersucht. Viele ihrer Visualisierungen zu akustischen, optischen undwahrnehmungsbezogenen Themen sprechen zu den Augen und sollen vergleichend studiert werden. Da ein gegebenesBild oder Diagramm in verschiedenen Kontexten und mit unterschiedlichen Implikationen auftreten kann,erlaubt eine ausgeprägte Netzwerkarchitektur eine redundanzfreie Darstellung der betreffenden Inhalte. Nebender Entwicklung einer exemplarischen Webanwendung, wird das Themengebiet mit Beiträgen aus unterschiedlichenDisziplinen und mit künstlerischen Anwendungen bearbeitet und in einen aktuellen Forschungskontext gestellt.</p></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("homepage", context || {}, callback); };
+(function(dust){dust.register("homepage",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-8 column\"><h1>Sound Colour Space – A Virtual Museum</h1><img src=\"").f(ctx.get(["STATIC_URL"], false),ctx,"h").w("img/fig_0_head_1456_464.jpg\"/><br/><br/><p>Im Zentrum des Projekts Sound Colour Space – A Virtual Museum steht das Begriffsfeld Klang, Ton, Tonhöhe,Klangfarbe in seiner Beziehung zu visuellen Phänomenen und geometrischen Konzepten. Das Vorhaben verstehtsich als Beitrag zu einem interdisziplinären Forschungsgebiet und erforscht seine adäquaten Darstellungs-und Vermittlungsformen.</p><p>Zahlreiche Wissenschaftler und Philosophen von der Antike bis zur heutigen Zeit haben die Beziehungenzwischen Ton, Farbe und Geometrie untersucht. Viele ihrer Visualisierungen zu akustischen, optischen undwahrnehmungsbezogenen Themen sprechen zu den Augen und sollen vergleichend studiert werden. Da ein gegebenesBild oder Diagramm in verschiedenen Kontexten und mit unterschiedlichen Implikationen auftreten kann,erlaubt eine ausgeprägte Netzwerkarchitektur eine redundanzfreie Darstellung der betreffenden Inhalte. Nebender Entwicklung einer exemplarischen Webanwendung, wird das Themengebiet mit Beiträgen aus unterschiedlichenDisziplinen und mit künstlerischen Anwendungen bearbeitet und in einen aktuellen Forschungskontext gestellt.</p></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("homepage", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],55:[function(require,module,exports){
@@ -52194,7 +52211,7 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],56:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("set_detail",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1><h4>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h4></div></div><div class=\"row\"><div class=\"small-12 columns\"><p>").f(ctx.get(["description"], false),ctx,"h").w("</p></div></div><div class=\"row align-self-middle\">").s(ctx.get(["entry"], false),ctx,{"block":body_1},{}).w("</div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<div class=\"small-3 columns text-center\" style=\"margin-bottom: 40px;\"><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" style=\"max-height: 200px;\" /></a></div>");}body_1.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_detail", context || {}, callback); };
+(function(dust){dust.register("set_detail",body_0);function body_0(chk,ctx){return chk.w("<div id=\"set\"><div class=\"row\"><div class=\"small-12 columns\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1><h4>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h4></div></div><div class=\"row description\"><div class=\"small-12 columns\"><p>").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</p></div></div><div class=\"row align-self-middle\">").s(ctx.get(["entry"], false),ctx,{"block":body_1},{}).w("</div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<div class=\"small-3 columns text-center\" style=\"margin-bottom: 40px;\"><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" style=\"max-height: 200px;\" /></a></div>");}body_1.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_detail", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],57:[function(require,module,exports){
@@ -52317,6 +52334,7 @@ module.exports = Base.TemplateView.extend({
         swap($('[data-js-region="entry_list"]'), view);
 
         this.header();
+
         //this.search(); // this is called by the controller!
 
         // fetch on bottom
@@ -53083,10 +53101,17 @@ var renderer = new marked.Renderer();
 
 // override link rendering
 renderer.link = function (href, title, text) {
-    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0)
-        return '<a href="' + href + '" title="' + title + '" target="_blank" data-bypass>' + text + '</a>';
-    else
-        return '<a href="/diagrams/' + href + '" title="' + title + '">' + text + '</a>';
+
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
+    } else {
+        if (href.split('/')[0].indexOf('diagram') === 0) {
+            return '<a href="/diagrams/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
+        } else if (href.split('/')[0].indexOf('set') === 0) {
+            return '<a href="/sets/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
+        }
+    }
+
 };
 
 
@@ -53193,7 +53218,7 @@ module.exports = Base.DetailView.extend({
         // with > again, so Markdown blockquotes are handled correctly
         text = text.replace(/^&gt;/mg, '>');
 
-        this.mjBuffer.innerHTML = marked(text,  {renderer: renderer});
+        this.mjBuffer.innerHTML = marked(text, {renderer: renderer});
 
         //this.SwapBuffers();
 
@@ -53633,8 +53658,8 @@ module.exports = Base.TemplateView.extend({
                 "text": "Timeline"
             },
             {
-                "url": "exibitions",
-                "text": "Exibitions"
+                "url": "exhibitions",
+                "text": "Exhibitions"
             },
             {
                 "url": "virtuallab",
@@ -53797,6 +53822,10 @@ module.exports = function(region, newView) {
 
     if (newView.onShow){
         newView.onShow();
+
+        if ($(document).find('#date_slider').length)
+            Foundation.reInit('slider');
+
     }
 
 };

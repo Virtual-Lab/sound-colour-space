@@ -1,5 +1,10 @@
+'use strict';
+
+global.$ = global.jQuery = require('jquery');
 var _ = require('underscore');
-var $ = require('jquery');
+
+// foundation needs global.$ because it doesn't "require" jquery for some reason
+require('foundation-sites');
 
 var Regions = require('../views/regions.js');
 var swap = require('../views/swap.js');

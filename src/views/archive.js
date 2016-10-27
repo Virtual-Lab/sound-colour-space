@@ -76,6 +76,7 @@ module.exports = Base.TemplateView.extend({
         swap($('[data-js-region="entry_list"]'), view);
 
         this.header();
+
         //this.search(); // this is called by the controller!
 
         // fetch on bottom
