@@ -1,5 +1,5 @@
 // map-get($foundation-palette, primary)
-$timeline_color: #666
+$timeline_color: $primary-color
 
 #timeline_header
   display: block
@@ -137,8 +137,8 @@ $timeline_color: #666
       
       top: 0px
       bottom: auto
-      left: 70px
-      width: 80%
+      left: 60px
+      //width: 80%
       height: 95%
       z-index: 100
 
@@ -155,6 +155,19 @@ $timeline_color: #666
         color: #ddd
       a
         color: lighten($timeline_color, 20)
+
+    .description::-webkit-scrollbar-thumb:vertical
+      width: 10px
+      height: 10px
+      background-color: $timeline_color
+
+
+    .description::-webkit-scrollbar
+      width: 5px
+      height: 5px
+      background: #FFF
+      margin-right: 5px
+
 
   // left columnt adjustments
   .entry.left-col

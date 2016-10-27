@@ -115,7 +115,7 @@ module.exports = Base.TemplateView.extend({
 
     doQuery: function () {
 
-        console.log('doQuery');
+        //console.log('doQuery');
 
         var self = this;
         if (this.data.query) {
@@ -160,6 +160,7 @@ module.exports = Base.TemplateView.extend({
 
         this.listenTo(this.options.collection, 'add', this.addOne);
         this.listenTo(this.options.collection, 'remove', this.removeOne);
+
 
         this.doQuery();
 

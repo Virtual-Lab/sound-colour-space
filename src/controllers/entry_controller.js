@@ -67,8 +67,10 @@ module.exports.Archive = function (query) {
 module.exports.Timeline = function (q) {
     console.debug('##### Controller -> Timeline');
 
-    var entries = new Entries();
-    swap(Regions.content, new TimelineView({collection: entries, data: {query: q}}));
+    if (!App.TimelineEntries) {
+        App.TimelineEntries = new Entries();
+    }
+    swap(Regions.content, new TimelineView({collection: App.TimelineEntries, data: {query: q}}));
 
 };
 

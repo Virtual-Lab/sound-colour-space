@@ -10,36 +10,44 @@ var setController = require('./controllers/set_controller');
 var virtualLabController = require('./controllers/virtual_lab_controller');
 
 // views
+var Base = require('./views/base.js');
+var swap = require('./views/swap.js');
+var Regions = require('./views/regions.js');
+
 var LayoutView = require('./views/layout.js');
 var HomepageView = require('./views/homepage.js');
 var Error404View = require('./views/404.js');
-var NavigationView = require('./views/navigation.js');
 var EditorView = require('./views/editor.js');
 var ArchiveView = require('./views/archive.js');
-var EntryDetailView = require('./views/entry_detail.js');
 
-var swap = require('./views/swap.js');
-var Regions = require('./views/regions.js');
 
 ArchiveView.viewState = new Backbone.Model();
 ArchiveView.viewState.set('scrollPosition', 0);
 
-//EntryDetailView.viewState = new Backbone.Model();
-//EntryDetailView.viewState.set('scrollPosition', 0);
-
-var home = function() {
-    swap(Regions.content, new HomepageView({}));
-    App.currentView = HomepageView;
-};
-
 var defaultRoute = function (actions) {
     swap(Regions.content, new Error404View({}));
-    App.currentView = Error404View;
+};
+
+var home = function () {
+    swap(Regions.content, new HomepageView({}));
+};
+
+var exhibitions = function () {
+    var ExhibitionsView = Base.TemplateView.extend({
+        template: require('./templates/exhibitions.dust'),
+    });
+    swap(Regions.content, new ExhibitionsView({}));
+};
+
+var documentation = function () {
+    var DocumentationView = Base.TemplateView.extend({
+        template: require('./templates/documentation.dust'),
+    });
+    swap(Regions.content, new DocumentationView({}));
 };
 
 var editor = function (actions) {
     swap(Regions.content, new EditorView({}));
-    App.currentView = EditorView;
 };
 
 
@@ -64,8 +72,10 @@ module.exports = Backbone.Router.extend({
         'timeline(/)(q=:q)': entryController.Timeline,
         'editor(/)': editor,
         'diagrams/:doc_id(/)': entryController.Detail,
+        'exhibitions(/)': exhibitions,
         'virtuallab(/)': virtualLabController.List,
         'virtuallab/:slug(/)': virtualLabController.Detail,
+        'documentation(/)': documentation,
         '*actions': defaultRoute
     },
 

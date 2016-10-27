@@ -1,0 +1,58 @@
+<div>
+    <div class="row">
+        <div class="small-8 columns">
+            <h1>About</h1>
+            <p>
+                The research project Sound Colour Space – A Virtual Museum is based at ZHdK
+                (Zurich University of the Arts), ICST (Institute for Computer Music and Sound Technology)
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-8 columns">
+            <h1>Project Team</h1>
+            <dl>
+                <dt>Applicants</dt>
+                <dd>Prof. Dr. Martin Neukom, ICST, ZHdK</dd>
+                <dd>Prof. Dr. Dieter Mersch, ith, ZHdK</dd>
+            </dl>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-8 columns">
+            <dl>
+                <dt>Project Management</dt>
+                <dd>Dr. Daniel Muzzulini, ICST, ZHdK</dd>
+            </dl>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-8 columns">
+            <dl>
+                <dt>Team</dt>
+                <dd>Jeroen Visser, ith, ZHdK</dd>
+                <dd>Philippe Kocher, ICST, ZHdK</dd>
+                <dd>Raimund Vogtenhuber, ICST, ZHdK</dd>
+                <dd>Susanne Schumacher, MIZ, ZHdK</dd>
+                <dd>Christoph Stähli, ICST, ZHdK</dd>
+            </dl>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-8 columns">
+            <dl>
+                <dt>Partners</dt>
+                <dd>Prof. Dr. Christoph Reuter, Institut für Systematische Musikwissenschaft, Universität Wien</dd>
+                <dd>Prof. Dr. Benjamin Wardhaugh, All Souls College, Oxford</dd>
+            </dl>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-8 columns">
+            <dl>
+                <dt>Funding</dt>
+                <dd>Schweizerischer Nationalfond (SNF)</dd>
+            </dl>
+        </div>
+    </div>
+</div>
