@@ -136,6 +136,10 @@ class ExperimentResource(ModelResource):
             'title': ('icontains',),
         }
 
+        ordering = {
+            'title',
+        }
+
     def dehydrate_uri(self, bundle):
         return bundle.obj.get_absolute_url()
 

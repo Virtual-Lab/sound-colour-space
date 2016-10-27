@@ -51,7 +51,7 @@ admin.site.register(Link, LinkAdmin)
 
 
 class ExperimentAdmin(admin.ModelAdmin):
-    list_display = ('title', 'url',)
+    list_display = ('title', 'view', 'url',)
     search_fields = ('title', )
     fieldsets = (
         (None, {
@@ -59,6 +59,15 @@ class ExperimentAdmin(admin.ModelAdmin):
         }),
     )
     prepopulated_fields = {"slug": ("title",)}
+
+    def view(self, obj):
+        if obj.slug is not None:
+            return format_html(
+                '<a href="/{}">{}</a>',
+                obj.get_absolute_url(),
+                obj.get_absolute_url()
+            )
+
 admin.site.register(Experiment, ExperimentAdmin)
 
 
@@ -137,7 +146,7 @@ admin.site.register(Entry, EntryAdmin)
 
 class CollectionAdmin(admin.ModelAdmin):
 
-    list_display = ('title', 'madek', 'doc_id')
+    list_display = ('title', 'view', 'madek', 'doc_id')
     search_fields = ('title', )
     readonly_fields = ('uuid', 'madek', 'doc_id', 'created', 'modified', 'title', 'slug', 'subtitle', 'author', 'show_image')
 
@@ -148,6 +157,14 @@ class CollectionAdmin(admin.ModelAdmin):
             )
         }),
     )
+
+    def view(self, obj):
+        if obj.slug is not None:
+            return format_html(
+                '<a href="/{}">{}</a>',
+                obj.get_absolute_url(),
+                obj.get_absolute_url()
+            )
 
     def show_image(self, obj):
         if obj.entry is not None:

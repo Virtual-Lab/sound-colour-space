@@ -121,7 +121,7 @@ class Experiment(Attachment):
         verbose_name = _('experiment')
         verbose_name_plural = _('experiments')
         db_table = 'museum_experiment'
-        ordering = ('-title',)
+        ordering = ('title',)
 
     def __unicode__(self):
         return u'%s' % self.title
