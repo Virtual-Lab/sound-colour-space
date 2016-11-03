@@ -1,5 +1,13 @@
 <div class="row">
     <div class="small-12 columns">
-        <a href="https://virtual-lab.github.io/presentation2_impress" target="_blank" data-bypass>Chromatic Scales</a>
+        <a href="https://virtual-lab.github.io/presentation2_impress" target="_self" data-bypass>
+            <img src="{MEDIA_URL}exhibitions/chromatic_scale.jpg" width="1330"/>
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-12 columns">
+        <video src="{MEDIA_URL}videos/2016_SoCoSpa_Präsentation_kurz_1440x1080.m4v" width="1300" controls></video>
     </div>
 </div>

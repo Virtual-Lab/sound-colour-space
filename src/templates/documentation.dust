@@ -2,6 +2,10 @@
     <div class="row">
         <div class="small-8 columns">
             <h1>About</h1>
+            </div>
+        </div>
+    <div class="row">
+        <div class="small-8 columns">
             <p>
                 The research project Sound Colour Space – A Virtual Museum is based at ZHdK
                 (Zurich University of the Arts), ICST (Institute for Computer Music and Sound Technology)
@@ -11,6 +15,10 @@
     <div class="row">
         <div class="small-8 columns">
             <h1>Project Team</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-8 columns">
             <dl>
                 <dt>Applicants</dt>
                 <dd>Prof. Dr. Martin Neukom, ICST, ZHdK</dd>
@@ -30,6 +38,7 @@
         <div class="small-8 columns">
             <dl>
                 <dt>Team</dt>
+                <dd>Lucas Bennett, ICST, ZHdK</dd>
                 <dd>Jeroen Visser, ith, ZHdK</dd>
                 <dd>Philippe Kocher, ICST, ZHdK</dd>
                 <dd>Raimund Vogtenhuber, ICST, ZHdK</dd>
@@ -53,6 +62,25 @@
                 <dt>Funding</dt>
                 <dd>Schweizerischer Nationalfond (SNF)</dd>
             </dl>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-8 columns">
+            <h1>Inhalte vernetzen</h1>
+            <h4>Diagrammatische Modelle der Vermittlung im Projekt "Sound Colour Space"</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-8 columns">
+            <iframe src="https://player.vimeo.com/video/190070646?color=559e7a&byline=0" width="640" height="360"
+                    frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+        </div>
+    </div>
+    s
+    <div class="row">
+        <div class="small-8 columns">
+            <iframe src="https://player.vimeo.com/video/190072380?color=559e7a&byline=0" width="640" height="360"
+                    frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
         </div>
     </div>
 </div>

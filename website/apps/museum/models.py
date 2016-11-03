@@ -1,11 +1,11 @@
 import os
+import uuid
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from django.db.models import permalink
 
-from django_extensions.db.fields import UUIDField
 from taggit.managers import TaggableManager
 
 from common.storage import DataStorage
@@ -17,7 +17,7 @@ def generate_data_path(obj, filename):
 
 class Base(models.Model):
     """Base model."""
-    uuid = UUIDField(auto=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     created = models.DateTimeField(_('created'), auto_now_add=True)
     modified = models.DateTimeField(_('modified'), auto_now=True)
 

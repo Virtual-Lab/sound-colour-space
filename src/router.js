@@ -34,6 +34,9 @@ var home = function () {
 
 var exhibitions = function () {
     var ExhibitionsView = Base.TemplateView.extend({
+        data: {
+          MEDIA_URL: MEDIA_URL,
+        },
         template: require('./templates/exhibitions.dust'),
     });
     swap(Regions.content, new ExhibitionsView({}));
