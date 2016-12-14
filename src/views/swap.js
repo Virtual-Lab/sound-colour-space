@@ -20,7 +20,7 @@ module.exports = function(region, newView) {
         // remove references to the el DOM nodes
         delete oldView.$el;
         delete oldView.el;
-        //delete oldView.data;
+        delete oldView.data;
     }
 
     // save a reference to the new View on the Region itself
@@ -33,8 +33,12 @@ module.exports = function(region, newView) {
     if (newView.onShow){
         newView.onShow();
 
+        /*
         if ($(document).find('#date_slider').length)
             Foundation.reInit('slider');
+        */
+
+
 
     }
 

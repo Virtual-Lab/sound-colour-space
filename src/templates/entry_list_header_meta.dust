@@ -1,21 +1,25 @@
 {#meta}
 {@gt key=numEntries value="0"}
-<div class="row">
-    <div class="small-12 large-expand columns text-center">
-        {#meta}{?search_query}<h5>Search results for: <b>{search_query}</b></h5>{/search_query}{/meta}
+<div>
+    <div class="row">
+        <div class="small-12 large-expand columns text-center">
+            <h5>Search results for: <b>{#meta.search_query}{term}{@sep}, {/sep}{/meta.search_query}</b></h5>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="small-12 column text-center">
-        {#meta}
-        <p>Showing {numEntries}/{total_count} diagrams.</p>
-        {/meta}
+    <div class="row">
+        <div class="small-12 column text-center">
+            {#meta}
+            <p>Showing {numEntries}/{total_count} diagrams.</p>
+            {/meta}
+        </div>
     </div>
 </div>
 {:else}
-<div class="row">
-    <div class="small-12 large-expand columns text-center">
-        <h5>Nothing found for {search_query}</h5>
+<div>
+    <div class="row">
+        <div class="small-12 large-expand columns text-center">
+            {#meta.search_query}<h5>Nothing found for: <b>{#term}{.}{@sep}, {/sep}{/term}</b></h5>{/meta.search_query}
+        </div>
     </div>
 </div>
 {/gt}

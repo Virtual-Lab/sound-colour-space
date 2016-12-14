@@ -119,6 +119,10 @@ THUMBNAIL_MEDIA_URL = DIAGRAMS_URL
 
 THUMBNAIL_ALIASES = {
     'museum.Entry.image': {
+        'x-small': {
+            'quality': 95,
+            'size': (271, 0),
+        },
         'small': {
             'quality': 95,
             'size': (400, 0),

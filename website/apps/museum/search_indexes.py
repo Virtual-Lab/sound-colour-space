@@ -20,22 +20,11 @@ class EntryIndex(indexes.SearchIndex, indexes.Indexable):
     author__last_name = indexes.MultiValueField()
 
 
-    #pseudonym = indexes.CharField(model_attr='author', null=True)
-    #pseudonym_auto = indexes.EdgeNgramField(model_attr='author', null=True)
-
-    #pub_date = indexes.DateTimeField(model_attr='pub_date')
-
     def get_model(self):
         return Entry
 
-
-
     def prepare(self, object):
         self.prepared_data = super(EntryIndex, self).prepare(object)
-
-        # Add in tags (assuming there's a M2M relationship to Tag on the model).
-        # Note that this would NOT get picked up by the automatic
-        # schema tools provided by Haystack.
         self.prepared_data['tags'] = [tag.name for tag in object.tags.all()]
 
         return self.prepared_data
@@ -47,7 +36,6 @@ class EntryIndex(indexes.SearchIndex, indexes.Indexable):
     def prepare_author__last_name(self, obj):
         if obj.author is not None:
             return [author.last_name for author in obj.author.order_by('-last_name')]
-
 
     def index_queryset(self, using=None):
         """Used when the entire index for model is updated."""

@@ -49,6 +49,7 @@ module.exports = Base.SingleView.extend({
 
     events: {
         "click .eye": function () {
+            this.$el.find('img').toggleClass('active');
             this.$el.find('.description').toggleClass('active');
             this.$el.find('.overlay').toggleClass('active');
         }

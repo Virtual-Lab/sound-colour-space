@@ -12,7 +12,7 @@ import tempfile
 
 from django.core.files import File
 
-from museum.models import Entry, Author, License, Collection
+from museum.models import Keyword, Entry, Author, License, Collection
 
 
 class Command(BaseCommand):
@@ -117,6 +117,20 @@ class Command(BaseCommand):
 
         return license_objs
 
+    def get_keywords(self, relations):
+        # for each keyword
+        keyword_objs = []
+        for key, values in relations.iteritems():
+            l = requests.get(self.base + values.get('href'), auth=self.auth).json()
+
+            new_tag = {'remote_uuid': l.get('id'), 'name': l.get('term')}
+            # create or update keyword
+            obj, created = Keyword.objects.update_or_create(
+                remote_uuid=l.get('id'), defaults=new_tag)
+            keyword_objs.append(obj)  # add to list for update even if existing
+
+        return keyword_objs
+
     def get_entry(self, key, href):
         # get single entry
         entry_request = requests.get(self.base + href, auth=self.auth)
@@ -133,6 +147,7 @@ class Command(BaseCommand):
 
         author_objs = []
         license_objs = []
+        keywords_objs = []
 
         # iterate over meta-data
         for m in meta_data.get('meta-data'):
@@ -174,6 +189,10 @@ class Command(BaseCommand):
                 # print('madek_core:copyright_notice: %s') % copyright_notice
                 new_entry['copyright_notice'] = copyright_notice
 
+            elif (key == 'madek_core:keywords'):
+                keywords = requests.get(self.base + '/api/meta-data/' + id, auth=self.auth).json().get('_json-roa')['collection']
+                keywords_objs = self.get_keywords(keywords['relations'])
+
         # create or update entry
         obj, created = Entry.objects.update_or_create(
             remote_uuid=entry.get('id'), defaults=new_entry)
@@ -185,26 +204,29 @@ class Command(BaseCommand):
         image_data_request = requests.get(self.base + image['_json-roa']['relations']['data-stream']['href'], stream=True,
                                           auth=self.auth)
 
-        if image_data_request.status_code == 200:
-            f = tempfile.NamedTemporaryFile(delete=False)
-            with open(f.name, 'wb') as f:
-                image_data_request.raw.decode_content = True
-                shutil.copyfileobj(image_data_request.raw, f)
-                # for chunk in image_data_request:
-                #    f.write(chunk)
-                f.close()
-            # save entry
-            with open(f.name, 'r') as f:
-                self.stdout.write(self.style.SUCCESS(image.get('filename')))
-                obj.image.save(image.get('filename'), File(f), save=True)
+        if not obj.image:
+            if image_data_request.status_code == 200:
+                f = tempfile.NamedTemporaryFile(delete=False)
+                with open(f.name, 'wb') as f:
+                    image_data_request.raw.decode_content = True
+                    shutil.copyfileobj(image_data_request.raw, f)
+                    # for chunk in image_data_request:
+                    #    f.write(chunk)
+                    f.close()
+                # save entry
+                with open(f.name, 'r') as f:
+                    self.stdout.write(self.style.SUCCESS(image.get('filename')))
+                    obj.image.save(image.get('filename'), File(f), save=True)
 
-            f.close()
-            os.unlink(f.name)
+                f.close()
+                os.unlink(f.name)
 
         # set licenses, authors
         self.stdout.write(self.style.SUCCESS('Entry: %s' % obj))
         obj.license.set(license_objs)
         obj.author.set(author_objs)
+        for keyword in keywords_objs:
+            obj.tags.add(keyword)
 
         return obj
 

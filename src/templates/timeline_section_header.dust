@@ -1,0 +1,7 @@
+<div id="{class}" class="section">
+    <h1>{title}</h1>
+    <div class="connector">
+        <div class="circle"></div>
+    </div>
+</div>
+

@@ -21,14 +21,16 @@ li
 
 ///////////////////////////////// NAVIGATION
 #navigation
-  position: absolute
+  position: fixed
   top: 0
+  height: 80px
   z-index: 1000
   width: 100%
 
   nav
     background-color: darken($body-background, 3%)
-    font-size: 0.8125rem !important
+    font-size: 0.83rem
+    //font-size: 0.9rem
     font-weight: bold
     padding: 0.75rem 0.0rem 0.0rem 0.0rem
 
@@ -36,16 +38,17 @@ li
       @include breakpoint(medium down)
         //display: none
 
+    .menu > li > a
+      color: #666
+
     .menu .active > a
       background: $body-background
 
 
+////////////////////////////////////////// CONTENT
 #content
-  margin-top: 80px
+  margin-top: 100px
   margin-bottom: 50px
-
-
-
 
 ///////////////////////////////////////// IMPORT APPS
 @import site/apps/museum/base

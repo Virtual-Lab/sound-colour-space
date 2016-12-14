@@ -1,8 +1,10 @@
-<div id="entry_list_header" data-js-region="entry_list_header"></div>
-<div id="entry_list_header_meta" data-js-region="entry_list_header_meta"></div>
-<div class="row">
-    <div class="small-12 columns">
-        <div id="entry_list" data-js-region="entry_list"></div>
+<div>
+    <div id="entry_list_header" data-js-region="entry_list_header"></div>
+    <div id="entry_list_header_meta" data-js-region="entry_list_header_meta"></div>
+    <div class="row">
+        <div class="small-12 columns">
+            <div id="entry_list" data-js-region="entry_list"></div>
+        </div>
     </div>
 </div>
 <!--

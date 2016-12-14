@@ -196,8 +196,9 @@ module.exports.TemplateView = Backbone.View.extend({
                 console.error(err);
             }
             else {
-                this.$el.html(out);
-                //this.$el.attr($(out).attr());
+                //this.$el.html(out);
+                this.$el.html($(out).html());
+                this.$el.attr($(out).attr());
             }
         }.bind(this));
 
@@ -299,6 +300,8 @@ module.exports.SingleView = Backbone.View.extend({
             else {
                 this.$el.html($(out).html());
                 this.$el.attr($(out).attr());
+                //this.$el.attr($(out).data());
+
             }
         }.bind(this));
 

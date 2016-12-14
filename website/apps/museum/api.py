@@ -1,20 +1,38 @@
-from easy_thumbnails.files import get_thumbnailer
-from tastypie import fields
-from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
-from tastypie.authentication import SessionAuthentication, Authentication
-from tastypie.authorization import Authorization
+import operator
 
-from django.conf.urls import *
-from tastypie.paginator import Paginator
-from tastypie.exceptions import BadRequest
-from tastypie.resources import ModelResource
-from tastypie.utils import trailing_slash
-
-from haystack.query import SearchQuerySet, EmptySearchQuerySet
-from haystack.inputs import Raw
-
-from museum.models import Entry, Author, License, Link, Experiment, Collection
 from django.conf import settings
+from django.conf.urls import *
+from easy_thumbnails.files import get_thumbnailer
+from haystack.inputs import Raw, AutoQuery
+from haystack.query import SearchQuerySet, EmptySearchQuerySet, SQ
+from museum.models import Entry, Author, License, Experiment, Collection
+from tastypie import fields
+from tastypie.authentication import Authentication
+from tastypie.authorization import Authorization
+from tastypie.paginator import Paginator
+from tastypie.resources import ALL_WITH_RELATIONS
+from tastypie.resources import ModelResource
+
+from django.utils.translation import ugettext as _
+
+SEARCH_SCOPES = {
+    'fulltext': {
+        'title': _('Fulltext'),
+        'query_class': AutoQuery
+    },
+    'title': {
+        'title': _('Title'),
+        'query_class': AutoQuery
+    },
+    'author': {
+        'title': _('Author'),
+        'query_class': AutoQuery
+    },
+}
+
+def get_query_class_for_item(item):
+    query_class = SEARCH_SCOPES[item['scope']]['query_class']
+    return query_class(item['term'])
 
 
 class AuthorResource(ModelResource):
@@ -47,48 +65,6 @@ class AuthorResource(ModelResource):
             'last_name',
         }
 
-    # Custom search endpoint
-    def override_urls(self):
-        return [
-            url(r"^(?P<resource_name>%s)/search/?$" % (self._meta.resource_name), self.wrap_view('get_author_search'),
-                name="api_get_author_search"),
-        ]
-
-    # Custom endpoint for search
-    def get_author_search(self, request, **kwargs):
-
-        self.method_check(request, allowed=['get'])
-        self.is_authenticated(request)
-        self.throttle_check(request)
-
-        query = request.GET.get('q', None)
-        order_by = request.GET.get('order_by', 'last_name')  # default is sort_by last_name
-
-        if not query:
-            results = SearchQuerySet().models(Author).order_by(order_by)
-        else:
-            results = SearchQuerySet().models(Author).order_by(order_by).filter(text=Raw(query))
-
-        if not results:
-            results = EmptySearchQuerySet()
-
-        paginator = Paginator(request.GET, results,
-                              resource_uri='/api/' + settings.API_VERSION + '/' + 'author' + '/search/')
-
-        bundles = []
-        for result in paginator.page()['objects']:
-            bundle = self.build_bundle(obj=result.object, request=request)
-            bundles.append(self.full_dehydrate(bundle))
-
-        object_list = {
-            'meta': paginator.page()['meta'],
-            'objects': bundles
-        }
-        object_list['meta']['search_query'] = query
-
-        self.log_throttled_access(request)
-        return self.create_response(request, object_list)
-
 
 class LicenseResource(ModelResource):
     class Meta:
@@ -113,7 +89,6 @@ class LicenseResource(ModelResource):
 
 
 class ExperimentResource(ModelResource):
-
     uri = fields.CharField(blank=True, readonly=True)
 
     class Meta:
@@ -142,8 +117,6 @@ class ExperimentResource(ModelResource):
 
     def dehydrate_uri(self, bundle):
         return bundle.obj.get_absolute_url()
-
-
 
 
 class EntryResource(ModelResource):
@@ -226,9 +199,6 @@ class EntryResource(ModelResource):
 
         return related_entries
 
-
-
-
     def save_m2m(self, bundle):
         """
         Save tags through the TagManager
@@ -254,49 +224,70 @@ class EntryResource(ModelResource):
         self.is_authenticated(request)
         self.throttle_check(request)
 
-        # fulltext = SearchQuerySet().models(Entry).auto_query(query)
-        # t = SearchQuerySet().models(Entry).autocomplete(title_auto=query)
-        # a = SearchQuerySet().models(Entry).autocomplete(author_auto=query)
-        # ap = SearchQuerySet().models(Entry).autocomplete(pseudonym_auto=query)
+        #####################################################################
+        #  get query for multiple time used key, like:
+        # ?q=author::peter&q=fulltext::blabla&tags=foo,bar,etc
+        #####################################################################
 
-        type = request.GET.get('type', 'fulltext')
-        query = request.GET.get('q', None)
-        order_by = request.GET.get('order_by', 'date')  # default is date because in model it's by doc_id (for admin)
+        query = None
 
-        filter = request.GET.get('date__range', None)
+        for x in request.GET.lists():
+            if x[0] == 'q':
+                query = x[1]
+
+        order_by = request.GET.get('order_by', 'date')
+
+
+        search_items = []
 
         if not query:
-            # raise BadRequest('Please supply the search parameter (e.g. "/api/' + settings.API_VERSION + '/entry/search/?q=Newton")')
-            if not filter:
-                results = SearchQuerySet().models(Entry).order_by(order_by)
-            else:
-                start = filter.split(',')[0]
-                end = filter.split(',')[1]
-                results = SearchQuerySet().models(Entry).filter(date__range=(start, end)).order_by(order_by)
+            # raise BadRequest('Please supply the search parameter (e.g. "/api/' + settings.API_VERSION + '/entry/search/?q=Term::Newton")')
+            results = SearchQuerySet().models(Entry).all().order_by(order_by)
+
         else:
-            if not filter:
-                if type == 'fulltext':
-                    results = SearchQuerySet().models(Entry).order_by(order_by).filter(text=Raw(query))
-                elif type == 'title':
-                    results = SearchQuerySet().models(Entry).order_by(order_by).filter(title__icontains=Raw(query))
-                elif type == 'author':
-                    results = SearchQuerySet().models(Entry).order_by(order_by).filter(author__icontains=Raw(query))
-            else:
-                start = filter.split(',')[0]
-                end = filter.split(',')[1]
-                if type == 'fulltext':
-                    results = SearchQuerySet().models(Entry).filter(date__range=(start, end)).order_by(order_by).filter(
-                        text=Raw(query))
-                elif type == 'title':
-                    results = SearchQuerySet().models(Entry).filter(date__range=(start, end)).order_by(order_by).filter(
-                        title__icontains=Raw(query))
-                elif type == 'author':
-                    results = SearchQuerySet().models(Entry).filter(date__range=(start, end)).order_by(order_by).filter(
-                        author__icontains=Raw(query))
+            '''
+            search_items = [
+                {
+                    'scope': 'author',
+                    'term': 'Zarlino'
+                },
+                {
+                    'scope': 'fulltext',
+                    'term': 'blabla'
+                },
+            ]
+            '''
 
+            for item in query:
+                search_item = item.split('::')
+                search_items.append({'scope': search_item[0], 'term': search_item[1]})
 
-        if not results:
-            results = EmptySearchQuerySet()
+            print (search_items)
+
+            # narrow down tags
+            # if search_items['Tag']:
+            #    results = results.filter(reduce(operator.and_, [SQ(tags=tag_name) for tag_name in search_items['Tag']]))
+
+            # filter search masks
+            match = request.GET.get('match', 'OR')
+            op = SQ.OR if (match == 'OR') else SQ.AND
+
+            sq = SQ()
+
+            for item in search_items:
+                # print (item['scope'])
+                kwargs = {
+                    # ie: author=AutoQuery
+                    item['scope']: get_query_class_for_item(item),
+                }
+                print (kwargs)
+
+                sq.add(SQ(**kwargs), op)
+
+            results = SearchQuerySet().models(Entry).filter(sq).order_by(order_by)
+
+            if not results:
+                results = EmptySearchQuerySet()
 
         paginator = Paginator(request.GET, results, resource_uri='/api/' + settings.API_VERSION + '/entry/search/')
 
@@ -309,20 +300,20 @@ class EntryResource(ModelResource):
             'meta': paginator.page()['meta'],
             'objects': bundles
         }
-        object_list['meta']['search_query'] = query
+
+        #object_list['meta']['search_scope'] = SEARCH_SCOPES
+        object_list['meta']['search_query'] = search_items
+        object_list['meta']['order_by'] = order_by
+
+
+        # object_list['meta']['search_query'] = {"Type": search_items['Type'], "Term": search_items['Term'], "Tag": search_items['Tag']}
 
         self.log_throttled_access(request)
+
         return self.create_response(request, object_list)
 
 
-'''
-TODO: create new query system like
-/api/v1/entry/search?q=Author::Fludd&q=tags::hali,gali&q=date__range::1200,1700&q=order_by::-date
-'''
-
-
 class CollectionResource(ModelResource):
-
     uri = fields.CharField(blank=True, readonly=True)
     entry = fields.ToManyField(EntryResource, 'entry', use_in='detail', full=True, blank=True, null=True)
 
@@ -359,17 +350,23 @@ class CollectionResource(ModelResource):
         # includes=tescription+date+obj.image
         includes = bundle.request.GET.get('includes')
         if includes:
+
+            entry_qs = obj.entry.all()
+
             includes = includes.split('+')
 
             for key in includes:
 
                 # description -> obj.description
-                #bundle.data[key] = get_data_for(obj, key)
+                # bundle.data[key] = get_data_for(obj, key)
+
+                # entry_qs = entry_qs.filter(size=1223)
 
                 if key == 'cover':
-                    bundle.data[key] = obj.entry.all()[0].image.url
+
+                    if entry_qs.exists():
+                        bundle.data[key] = obj.entry.all()[0].image.url
                 else:
                     bundle.data[key] = getattr(obj, key)
 
         return bundle
-

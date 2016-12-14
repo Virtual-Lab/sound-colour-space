@@ -1,0 +1,19 @@
+<div class="row search_field_mask">
+    <div class="small-2 columns">
+        <label>
+            <select class="type">
+                {@eq key=scope value="fulltext"}<option selected value="fulltext">Fulltext</option>{:else}<option value="fulltext">Fulltext</option>{/eq}
+                {@eq key=scope value="title"}<option selected value="title">Title</option>{:else}<option value="title">Title</option>{/eq}
+                {@eq key=scope value="author"}<option selected value="author">Author</option>{:else}<option value="author">Author</option>{/eq}
+            </select>
+        </label>
+    </div>
+    <div class="small-6 column">
+        <div class="input-group">
+            <input class="input-group-field search" type="search" placeholder="" value="{term}">
+            <div class="input-group-button">
+                <button class="radius secondary button remove_search_field"><i class="fi-x"></i></button>
+            </div>
+        </div>
+    </div>
+</div>

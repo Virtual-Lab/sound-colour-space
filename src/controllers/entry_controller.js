@@ -9,6 +9,8 @@ require('foundation-sites');
 var Regions = require('../views/regions.js');
 var swap = require('../views/swap.js');
 
+var URI = require('urijs');
+
 // models
 var Entries = require('../models/entries');
 var Entry = require('../models/entry');
@@ -45,16 +47,21 @@ function parseQueryString(queryString) {
 
 // archive
 module.exports.Archive = function (query) {
+    console.debug('##### Controller -> Archive');
 
-    //if (!App.ArchiveEntries)
     if (oldQuery != query || !App.ArchiveEntries) {
-        console.log("create new ArchiveEntries");
         App.ArchiveEntries = new Entries();
-        var params = parseQueryString(query);
-        App.ArchiveEntries.query = _.defaults(params, {limit: 30, order_by: '-date'});
+
+        //var params = parseQueryString(query);
+        var params = URI.parseQuery(query);
+        App.params = params;
+
+        App.ArchiveEntries.query = _.defaults(params, {limit: 30, order_by: 'date', match: 'OR', image_size: 'x-small'});
     }
 
     var archive = new ArchiveView({collection: App.ArchiveEntries});
+    App.View.archive = archive;
+
     swap(Regions.content, archive);
 
     if (oldQuery != query)
@@ -64,13 +71,17 @@ module.exports.Archive = function (query) {
 };
 
 // timeline
-module.exports.Timeline = function (q) {
+module.exports.Timeline = function (query) {
     console.debug('##### Controller -> Timeline');
 
-    if (!App.TimelineEntries) {
-        App.TimelineEntries = new Entries();
-    }
-    swap(Regions.content, new TimelineView({collection: App.TimelineEntries, data: {query: q}}));
+
+    App.TimelineEntries = new Entries();
+    App.TimelineEntries.query = { limit: 30, order_by: 'date', image_size: 'medium' };
+
+    var timeline = new TimelineView({collection: App.TimelineEntries});
+    swap(Regions.content, timeline);
+
+    App.View.timeline = timeline; // for debug only
 
 };
 

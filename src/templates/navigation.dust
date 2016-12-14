@@ -1,29 +1,31 @@
-<nav>
-    <div class="row">
-        <div class="shrink column">
-            <ul class="menu">
-                <li><a href="/">Sound Colour Space</a></li>
-            </ul>
-        </div>
+<div>
+    <nav>
+        <div class="row">
+            <div class="shrink column">
+                <ul class="menu">
+                    <li><a href="/">Sound Colour Space</a></li>
+                </ul>
+            </div>
 
-        <div class="shrink column">
-            <ul class="menu">
-                {#menu current=currentUrl}
-                <li {@eq key=url value=current}class="active"{/eq}><a href="/{url}">{text}</a></li>
-                {/menu}
-            </ul>
-        </div>
+            <div class="shrink column">
+                <ul class="menu">
+                    {#menu current=currentUrl}
+                    <li {@eq key=url value=current}class="active"{/eq}><a href="/{url}">{text}</a></li>
+                    {/menu}
+                </ul>
+            </div>
 
-        {!
-        <div class="column">
-            <div class="input-group" style="margin-bottom: 0;">
-                <input class="input-group-field search" type="search" placeholder="Search">
-                <div class="input-group-button">
-                    <button class="button search"><i class="fi-magnifying-glass"></i></button>
+            {!
+            <div class="column">
+                <div class="input-group" style="margin-bottom: 0;">
+                    <input class="input-group-field search" type="search" placeholder="Search">
+                    <div class="input-group-button">
+                        <button class="button search"><i class="fi-magnifying-glass"></i></button>
+                    </div>
                 </div>
             </div>
-        </div>
-        !}
+            !}
 
-    </div>
-</nav>
+        </div>
+    </nav>
+</div>

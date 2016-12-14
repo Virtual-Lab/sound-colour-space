@@ -7,6 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import permalink
 
 from taggit.managers import TaggableManager
+from taggit.models import TagBase, GenericTaggedItemBase
+
 
 from common.storage import DataStorage
 
@@ -25,6 +27,19 @@ class Base(models.Model):
         abstract = True
         ordering = ('-created',)
         get_latest_by = 'created'
+
+
+class Keyword(Base, TagBase):
+    description = models.TextField(_('description'), blank=True, null=True)
+    remote_uuid = models.CharField(_('remote_uuid'), max_length=200, blank=True, null=True)
+
+    class Meta:
+        verbose_name = _("keyword")
+        verbose_name_plural = _("keywords")
+
+
+class TaggedObject(GenericTaggedItemBase):
+    tag = models.ForeignKey(Keyword, related_name="museums_tagged_objects")
 
 
 class License(Base):
@@ -169,7 +184,7 @@ class Entry(Base):
     title = models.CharField(_('title'), max_length=200, blank=True, null=True)
     subtitle = models.CharField(_('subtitle'), max_length=200, blank=True, null=True)
     description = models.TextField(_('description'), blank=True, null=True)
-    tags = TaggableManager(blank=True)
+    tags = TaggableManager(blank=True, through=TaggedObject)
     uploader = models.ForeignKey(settings.AUTH_USER_MODEL, models.SET_NULL, related_name='museums_entries', null=True, blank=True)
 
     #source = models.ManyToManyField(Source, related_name='museums_entries', blank=True)
@@ -191,7 +206,7 @@ class Entry(Base):
         verbose_name = _('diagram')
         verbose_name_plural = _('diagrams')
         db_table = 'museum_entry'
-        ordering = ('doc_id', 'date',)
+        ordering = ('date',)  # 'doc_id',
         get_latest_by = 'created'
 
     def __unicode__(self):
@@ -200,35 +215,6 @@ class Entry(Base):
 
     def get_absolute_url(self):
         return 'diagrams/%s' % self.doc_id
-
-    '''
-    def fetch_from_api(self, override=False):
-
-
-        r = requests.get(self.remote_uri)
-
-        if r.sratus_code == 200:
-
-            data = r.json()
-
-            self.description = data['descreiption']
-
-            self.remote_last_updated = timezone.now()
-
-            self.save()
-
-            pass
-
-
-
-        # bla
-
-    for r in api_results:
-
-        e = Entry(remote_uri=r.uri)
-        e.fetch_from_api()
-        e.save()
-    '''
 
 
 class Collection(Base):
@@ -243,6 +229,8 @@ class Collection(Base):
     subtitle = models.CharField(_('subtitle'), max_length=200, blank=True, null=True)
     description = models.TextField(_('description'), blank=True, null=True)
 
+    tags = TaggableManager(blank=True, through=TaggedObject)
+
     # madek uuid
     remote_uuid = models.CharField(_('remote_uuid'), max_length=200, blank=True, null=True)
     remote_href = models.CharField(_('remote_href'), max_length=200, blank=True, null=True)
@@ -252,8 +240,8 @@ class Collection(Base):
 
     class Meta:
         app_label = 'museum'
-        verbose_name = _('Set')
-        verbose_name_plural = _('Sets')
+        verbose_name = _('collection')
+        verbose_name_plural = _('collections')
         db_table = 'museum_collection'
         ordering = ('title',)
 

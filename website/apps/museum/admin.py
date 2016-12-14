@@ -2,8 +2,37 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.core import urlresolvers
 from django.utils.html import format_html
+#from django.urls import reverse
+from django.core import urlresolvers
 from museum.models import *
 
+
+class KeywordAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description',)
+    readonly_fields = ('name', 'remote_uuid', 'tagged')
+    search_fields = ('name',)
+    fieldsets = (
+        (None, {
+            'fields': (
+                'name', 'remote_uuid', 'description', 'tagged',
+            )
+        }),
+    )
+
+    def tagged(self,obj):
+        html = ''
+
+        for e in Entry.objects.filter(tags__name__in=[obj.name]):
+            html += format_html(
+                '<a href="{}"><img src="{}" width=100px /></a>&nbsp;',
+                urlresolvers.reverse('admin:museum_entry_change', args=(e.id,)),
+                e.image.url
+            )
+        return format_html(html)
+
+    tagged.short_description = 'Tagged entries'
+
+admin.site.register(Keyword, KeywordAdmin)
 
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'first_name', 'last_name', 'pseudonym', 'date_of_birth', 'date_of_death')
@@ -74,12 +103,27 @@ admin.site.register(Experiment, ExperimentAdmin)
 
 class EntryAdmin(admin.ModelAdmin):
     list_display = (
-    'title', 'doc_id', 'subtitle', 'portrayed_object_date', 'date', 'uuid', 'madek', 'show_image')  # 'show_image', 'link_to_author', 'source'
+    'title', 'doc_id', 'subtitle', 'portrayed_object_date', 'date', 'uuid', 'madek', 'show_image', 'tag_list')  # 'show_image', 'link_to_author', 'source'
     list_filter = ('author', 'portrayed_object_date', 'tags', 'license',)
     search_fields = (
     'uuid', 'image', 'title', 'description', 'portrayed_object_date', 'author__first_name', 'author__last_name', 'author__pseudonym')
-    readonly_fields = ('uuid', 'created', 'modified', 'title', 'subtitle', 'portrayed_object_date', 'source',
+    readonly_fields = ('show_image', 'uuid', 'created', 'modified', 'title', 'subtitle', 'tags', 'portrayed_object_date', 'source',
                        'copyright_notice', 'author', 'license')
+
+    fieldsets = (
+        (None, {
+            'fields': (
+                'doc_id', 'uuid', 'show_image', 'author', 'portrayed_object_date', 'date', 'date_accuracy',
+                'title', 'subtitle', 'description', 'tags', 'source',
+                'copyright_notice', 'license', 'related', 'link')
+        }),
+
+        ('Advanced options', {
+            'classes': ('collapse',),
+            'fields': ('uploader',)
+        }),
+
+    )
 
     # prepopulated_fields = {'Tetraktys squareslug': ('title',)}
 
@@ -88,6 +132,12 @@ class EntryAdmin(admin.ModelAdmin):
     filter_horizontal = [
         'related',
     ]
+
+    def get_queryset(self, request):
+        return super(EntryAdmin, self).get_queryset(request).prefetch_related('tags')
+
+    def tag_list(self, obj):
+        return u", ".join(o.name for o in obj.tags.all())
 
     def madek(self, obj):
         if obj.remote_uuid is not None:
@@ -127,19 +177,7 @@ class EntryAdmin(admin.ModelAdmin):
             kwargs['initial'] = request.user.id
         return super(EntryAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-    fieldsets = (
-        (None, {
-            'fields': (
-                'doc_id', 'uuid', 'image', 'author', 'portrayed_object_date', 'date', 'date_accuracy', 'title', 'subtitle', 'description', 'tags', 'source',
-                'copyright_notice', 'license', 'related', 'link')
-        }),
 
-        ('Advanced options', {
-            'classes': ('collapse',),
-            'fields': ('uploader',)
-        }),
-
-    )
 admin.site.register(Entry, EntryAdmin)
 
 
@@ -153,7 +191,7 @@ class CollectionAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': (
-                 'uuid', 'madek', 'doc_id', 'title', 'slug', 'subtitle', 'description', 'author', 'show_image',
+                 'uuid', 'madek', 'doc_id', 'title', 'slug', 'subtitle', 'description', 'author', 'show_image', 'tags',
             )
         }),
     )

@@ -1,6 +1,7 @@
 {{ object.title }}
 {{ object.subtitle }}
 {{ object.portrayed_object_date }}
+{{ object.date }}
 {{ object.description }}
 {{ object.image }}
 {{ object.source }}

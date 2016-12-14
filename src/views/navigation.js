@@ -1,15 +1,12 @@
 'use strict';
 
-//var $ = require('jquery');
 global.$ = global.jQuery = require('jquery');
+
 var _ = require('underscore');
 
-var Backbone = require('backbone');
-Backbone.$ = $;
+var Backbone = require('backbone'); Backbone.$ = $;
 
-// foundation needs global.$ because it doesn't "require" jquery for some reason
-
-require('foundation-sites');
+var foundation = require('foundation-sites');
 
 // configure nprogress
 var nprogress = require('nprogress');
@@ -20,6 +17,8 @@ nprogress.configure({
 // patch backbone
 require('backbone-nprogress');
 
+
+//var sticky = require('../helpers/sticky-kit');
 
 var Base = require('./base.js');
 var apiUrl = require('../apiUrl');
@@ -81,6 +80,10 @@ module.exports = Base.TemplateView.extend({
 
     onShow: function () {
         //console.log('onShow navigation', Backbone.history.getFragment());
+
+        // initialize foundation on $el
+        this.$el.foundation();
+
     },
 
 })

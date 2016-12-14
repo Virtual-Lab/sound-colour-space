@@ -72,7 +72,7 @@ module.exports = Backbone.Router.extend({
         'archive(?*query)(/)': entryController.Archive,
         'sets(/)': setController.List,
         'sets/:slug(/)': setController.Detail,
-        'timeline(/)(q=:q)': entryController.Timeline,
+        'timeline(?*query)(/)': entryController.Timeline,
         'editor(/)': editor,
         'diagrams/:doc_id(/)': entryController.Detail,
         'exhibitions(/)': exhibitions,

@@ -1,5 +1,5 @@
 // map-get($foundation-palette, primary)
-$timeline_color: $primary-color
+$timeline_color: #333
 
 #timeline_header
   display: block
@@ -7,13 +7,14 @@ $timeline_color: $primary-color
   z-index: 100000
   left: calc(50% - 189px)
 
-  background-color: white
+  //background-color: white
 
   #date_slider
     margin-bottom: 1.25rem
 
 // wrapper could be used together with section classes for different colors etc.
 #timeline_wrapper
+
   .entry
     .connector
       background-color: $timeline_color
@@ -32,6 +33,8 @@ $timeline_color: $primary-color
   transition: background-color 3000ms
   z-index: 1
 
+  //margin-bottom: 600px
+
   @media screen
     @include breakpoint(medium up)
       left: 50%
@@ -45,6 +48,41 @@ $timeline_color: $primary-color
   margin: 0 auto
   position: relative
   z-index: 1
+
+  // date section header
+  .section
+    position: absolute
+    left: 27px
+    width: calc(100% - 57px)
+
+    h1
+      font-size: 1.125rem
+      padding: 20px
+
+      background-color: darken($body-background, 3)
+      border: 1px lighten($timeline_color, 20) dashed
+
+    .connector
+
+      width: 16px
+      height: 1px
+      display: block
+      position: absolute
+      left: 50%
+      top: 0%
+      //background-color: transparent
+
+      .circle
+        background-color: $timeline_color
+        content: ' '
+        width: 6px
+        height: 6px
+        display: block
+        position: absolute
+        left: -2px
+        top: 0%
+        margin-top: -3px
+        border-radius: 50%
 
   .entry
     width: calc(100% - 15px)
@@ -104,55 +142,60 @@ $timeline_color: $primary-color
       display: inline-block
       position: relative
       z-index: 1
-      border: 1px solid $timeline_color
 
     img:hover
-      //filter: grayscale(0)
+    //filter: grayscale(0)
+    //filter: blur(5px)
 
     .wrapper
       height: 100%
       z-index: 10
       position: relative
       display: inline-block
+      border: 1px dashed $timeline_color
 
     .overlay
       opacity: 0.0
     .overlay.active
-      transition: opacity 0.5s
       display: block
-      background-color: #333
-      opacity: 0.8
-      z-index: 50
       position: absolute
       width: 100%
       height: 100%
       top: 0
-    
+      z-index: 50
+
+      background-color: #eee
+      opacity: 0.7
+      transition: opacity 0.5s
+
     .description
       display: none
+
+    img.active
+      filter: blur(2px)
 
     .description.active
       display: block
       position: absolute
-      
+
       top: 0px
       bottom: auto
       left: 60px
-      //width: 80%
+      max-width: 87%
       height: 95%
       z-index: 100
 
       overflow-y: auto
       overflow-x: hidden
-    
+
       text-align: left
-      color: #fff  
+      color: #222
 
       margin: 5px
-      padding: 10px
+      padding: 10px 20px 10px 10px
 
       h1, h2, h3, h4, h5, h6
-        color: #ddd
+        color: #222
       a
         color: lighten($timeline_color, 20)
 
@@ -161,15 +204,13 @@ $timeline_color: $primary-color
       height: 10px
       background-color: $timeline_color
 
-
     .description::-webkit-scrollbar
       width: 5px
       height: 5px
       background: #FFF
       margin-right: 5px
 
-
-  // left columnt adjustments
+  // left column adjustments
   .entry.left-col
     text-align: right
 
@@ -190,6 +231,21 @@ $timeline_color: $primary-color
     .description.active
       left: 65px
 
+// quick navigation
+#timeline_navigator_sizer
+  position: absolute
+  left: 550px
+  width: 100px
+  height: 500px
+  background-color: transparent
 
+  #timeline_navigator
+    //background-color: darken($body-background, 5%)
+    //padding: 10px
 
+    .menu > li > a
+      color: $timeline_color
+      padding: 0.5rem 0.0rem 0.0rem 0.0rem
 
+    .menu .active > a
+      font-weight: bold

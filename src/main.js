@@ -7,13 +7,8 @@ window.App = {
     Form: {}
 };
 
+global.$ = global.jQuery = require('jquery');
 var Backbone = require('backbone');
-/*
- // foundation needs global.$ because it doesn't "require" jquery for some reason
- global.$ = global.jQuery = require('jquery');
- require('foundation-sites');
- */
-
 Backbone.$ = $;
 
 // we do need this for dustjs helpers!!!
@@ -47,6 +42,20 @@ key('t', function () {
     App.Router.r.navigate('/timeline', {trigger: true});
 });
 
+
+(function($) {
+    $.QueryString = (function(a) {
+        if (a == "") return {};
+        var b = {};
+        for (var i = 0; i < a.length; ++i)
+        {
+            var p=a[i].split('=', 2);
+            if (p.length != 2) continue;
+            b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+        }
+        return b;
+    })(window.location.search.substr(1).split('&'))
+})(jQuery);
 
 // jquery attr() functionality
 // usage:
@@ -84,8 +93,6 @@ $(function () {
         }
     });
 
-    var navigation = new NavigationView({});
-
     Backbone.History.prototype.navigate = _.wrap(Backbone.History.prototype.navigate, function () {
         // Get arguments as an array
         var args = _.toArray(arguments);
@@ -108,7 +115,7 @@ $(function () {
 
     Backbone.history.bind('url-changed', function () {
         //console.warn("url-changed");
-        //window.scrollTo(0, 0); // scroll to top on url change! TODO: finer control when to scroll top ie. when navigation from detail to list views that were scrolled before...
+        window.scrollTo(0, 0); // scroll to top on url change! TODO: finer control when to scroll top ie. when navigation from detail to list views that were scrolled before...
 
         // if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
         //$(document).scrollTop(App.currentView.viewState.get('scrollPosition'));
@@ -139,13 +146,16 @@ $(function () {
         }
     });
 
+
     App.Router.r = new Router();
+    var navigation = new NavigationView({});
 
     App.Router.r.on('route', function (route, params) {
         navigation.render();
         navigation.onShow();
     });
     Backbone.history.start({pushState: true});
+
 
     swap(Regions.navigation, navigation);
 

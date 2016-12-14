@@ -3,27 +3,40 @@ var Base = require('./base');
 var EntryListView = require('./entry_list');
 var EntryGridView = require('./entry_grid');
 
+var apiUrl = require('../apiUrl');
 var swap = require('../views/swap.js');
 
+var URI = require('urijs');
+
+
+var MaskView = Base.TemplateView.extend({
+    template: require('../templates/search_field_mask.dust'),
+
+
+});
 
 var HeaderView = Base.TemplateView.extend({
     template: require('../templates/entry_list_header.dust'),
 
     onShow: function () {
 
-        //$(document).foundation();
-
-        if (!_.isUndefined(this.options.parent.collection.query.type))
-            $('.type').val(this.options.parent.collection.query.type);
-
-        if (!_.isUndefined(this.options.parent.collection.query.q))
-            $("input.search[type=search]").val(this.options.parent.collection.query.q);
+        /*
+         if (this.options.data.meta) {
+         if (this.options.data.meta.search_query.length == 0) {
+         var m = new MaskView({});
+         $('#search_field_masks').append(m.render().$el);
+         }
+         }
+         */
 
         if (!_.isUndefined(this.options.parent.collection.query.order_by))
             $('.order_by').val(this.options.parent.collection.query.order_by);
 
-        if (!_.isUndefined(this.options.parent.collection.query.date__range))
-            $('#date_range_toggle').prop('checked', true);
+        /*
+
+         if (!_.isUndefined(this.options.parent.collection.query.date__range))
+         $('#date_range_toggle').prop('checked', true);
+         */
 
         this.date_slider = new Foundation.Slider($('#date_slider'), {
             start: 800,
@@ -39,6 +52,11 @@ var HeaderView = Base.TemplateView.extend({
         });
     },
 
+    keyPressed: function (e) {
+        if (e.which !== 13) return;  // return if not RETURN pressed
+        this.options.parent.query(e); // call query function
+    },
+
     events: {
         'moved.zf.slider #date_slider': function () {
             $('#dateSliderStart').val(this.date_slider.$input.val());
@@ -46,13 +64,30 @@ var HeaderView = Base.TemplateView.extend({
         },
         'changed.zf.slider #date_slider': function () {
 
-        }
+        },
+        'click .add_search_field': function () {
+            var m = new MaskView({});
+            $('#search_field_masks').append(m.render().$el);
+        },
+
+
+        'click .remove_search_field': function (e) {
+            console.log(e.target.closest(".row.search_field_mask").remove());
+        },
+
+        'click button.search': function () {
+            this.options.parent.query();
+        },
+        'keypress input[type=search]': 'keyPressed',
+        'search input[type=search]': 'keyPressed',
+
     }
 });
 
 var MetaView = Base.TemplateView.extend({
     template: require('../templates/entry_list_header_meta.dust'),
 });
+
 
 module.exports = Base.TemplateView.extend({
 
@@ -63,7 +98,6 @@ module.exports = Base.TemplateView.extend({
     },
 
     onShow: function () {
-
         // render and fetch entries
         if (!App.preferredView)
             App.preferredView = 'list';
@@ -75,8 +109,7 @@ module.exports = Base.TemplateView.extend({
 
         swap($('[data-js-region="entry_list"]'), view);
 
-        this.header();
-
+        //this.header(); // we could render, but looks nicer when render is done on sync
         //this.search(); // this is called by the controller!
 
         // fetch on bottom
@@ -100,20 +133,17 @@ module.exports = Base.TemplateView.extend({
     },
 
     search: function () {
-        //console.log('DO THE TWIST...', this.collection.query);
 
-        var params = _.extend({}, this.collection.query);
+        var uri = new URI(apiUrl('entries') + 'search?' + URI.buildQuery(this.collection.query, true)).readable();
 
         this.collection.search({
             reset: true,
-            data: params,
+            //data: params,
+            url: uri,
             success: function (collection, response, options) {
                 // console.warn("adding", collection.models.length, "total", this.collection.length);
-                //this.entry_list_header_meta();
-                swap($('[data-js-region="entry_list_header_meta"]'), new MetaView({
-                    parent: this,
-                    data: {meta: _.extend(collection.meta, {numEntries: collection.length})}
-                }));
+                this.header();
+                this.entry_list_header_meta();
             }.bind(this)
         });
     },
@@ -132,23 +162,19 @@ module.exports = Base.TemplateView.extend({
         }));
     },
 
-    keyPressed: function (e) {
-        if (e.which !== 13) return;
-        this.query(e);
-    },
-
     query: function (opts) {
 
-        // navigate options
         var options = _.defaults(opts, {trigger: true, replace: false});
 
         //$('input.search').blur(); // TODO loose focus on mobile only?
 
-        // set search type
-        this.collection.query.type = $('.type').val();
+        this.collection.query.q = [];
 
-        // set term
-        this.collection.query.q = $('input.search').val();
+        var that = this;
+
+        $('.search_field_mask').each(function (i, obj) {
+            that.collection.query.q.push($(this).find('.type').val() + "::" + $(this).find('input.search').val());
+        });
 
         // set date__range
         this.collection.query.date__range = $('#dateSliderStart').val() + ',' + $('#dateSliderEnd').val();
@@ -158,13 +184,12 @@ module.exports = Base.TemplateView.extend({
             this.collection.query = _.omit(this.collection.query, 'date__range');
         }
 
-        App.Router.r.navigate('/archive?' + $.param(this.collection.query), opts);
+        var params = URI.buildQuery(this.collection.query, true);
+        var uri = new URI('/archive?' + params).readable();
+        App.Router.r.navigate(uri, options);
     },
 
     events: {
-        'click button.search': 'query',
-        'keypress input[type=search]': 'keyPressed',
-        'search input[type=search]': 'keyPressed',
 
         'click #date_range_toggle': function (e) {
             this.query({trigger: true, replace: true});

@@ -164,9 +164,26 @@ gulp.task('admin-styles', function () {
 //         .pipe($.size({title: 'styles'}));
 // });
 
+/*
 gulp.task('babel', function () {
     return gulp.src([
-        'node_modules/foundation-sites/js/*.js'
+        './node_modules/foundation-sites/js/foundation.core.js',
+        //'./node_modules/foundation-sites/js/foundation.dropdown.js',
+        //'./node_modules/foundation-sites/js/foundation.magellan.js',
+        //'./node_modules/foundation-sites/js/foundation.dropdownMenu.js',
+        //'./node_modules/foundation-sites/js/foundation.responsiveMenu.js',
+        //'./node_modules/foundation-sites/js/foundation.responsiveToggle.js',
+        //'./node_modules/foundation-sites/js/foundation.toggler.js',
+        //'./node_modules/foundation-sites/js/foundation.sticky.js',
+        //'./node_modules/foundation-sites/js/foundation.orbit.js',
+        //'./node_modules/foundation-sites/js/foundation.util.keyboard.js',
+        //'./node_modules/foundation-sites/js/foundation.util.box.js',
+        //'./node_modules/foundation-sites/js/foundation.util.motion.js',
+        //'./node_modules/foundation-sites/js/foundation.util.touch.js',
+        //'./node_modules/foundation-sites/js/foundation.util.timerAndImageLoader.js',
+        //'./node_modules/foundation-sites/js/foundation.util.nest.js',
+        //'./node_modules/foundation-sites/js/foundation.util.triggers.js',
+        //'./node_modules/foundation-sites/js/foundation.util.mediaQuery.js'
     ])
     //.pipe($.sourcemaps.init())
         .pipe($.babel({
@@ -175,6 +192,7 @@ gulp.task('babel', function () {
         .pipe(gulp.dest('website/site-static/js/fd-6.2/'))
         .pipe($.size({title: 'babel'}));
 });
+*/
 
 // gulp.task('scripts', function() {
 //     return gulp.src([
