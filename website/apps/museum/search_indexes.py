@@ -5,7 +5,7 @@ from museum.models import Entry, Author
 
 class EntryIndex(indexes.SearchIndex, indexes.Indexable):
 
-    text = indexes.EdgeNgramField(document=True, use_template=True)
+    fulltext = indexes.CharField(document=True, use_template=True)
 
     title = indexes.CharField(model_attr='title', null=True)
 
@@ -26,6 +26,7 @@ class EntryIndex(indexes.SearchIndex, indexes.Indexable):
     def prepare(self, object):
         self.prepared_data = super(EntryIndex, self).prepare(object)
         self.prepared_data['tags'] = [tag.name for tag in object.tags.all()]
+        #print ([tag.name for tag in object.tags.all()])
 
         return self.prepared_data
 
@@ -41,22 +42,4 @@ class EntryIndex(indexes.SearchIndex, indexes.Indexable):
         """Used when the entire index for model is updated."""
         # filter left for example, would make sense for blog with publish__lte
         return self.get_model().objects.filter(created__lte=datetime.datetime.now())
-
-
-class AuthorIndex(indexes.SearchIndex, indexes.Indexable):
-
-    text = indexes.EdgeNgramField(document=True, use_template=True)
-
-    first_name = indexes.CharField(model_attr='first_name', null=True)
-    last_name = indexes.CharField(model_attr='last_name', null=True)
-    pseudonym = indexes.CharField(model_attr='pseudonym', null=True)
-    date_of_birth = indexes.CharField(model_attr='date_of_birth', null=True)
-    date_of_death = indexes.CharField(model_attr='date_of_death', null=True)
-
-    def get_model(self):
-        return Author
-
-    def index_queryset(self, using=None):
-        """Used when the entire index for model is updated."""
-        return self.get_model().objects.all()
 

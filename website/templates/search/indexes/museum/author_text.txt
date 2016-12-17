@@ -1,5 +1,0 @@
-{{ object.first_name }}
-{{ object.last_name }}
-{{ object.pseudonym }}
-{{ object.date_of_birth }}
-{{ object.date_of_death }}

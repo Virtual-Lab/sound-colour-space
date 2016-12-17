@@ -20,23 +20,13 @@ var HeaderView = Base.TemplateView.extend({
 
     onShow: function () {
 
-        /*
-         if (this.options.data.meta) {
-         if (this.options.data.meta.search_query.length == 0) {
-         var m = new MaskView({});
-         $('#search_field_masks').append(m.render().$el);
-         }
-         }
-         */
-
         if (!_.isUndefined(this.options.parent.collection.query.order_by))
             $('.order_by').val(this.options.parent.collection.query.order_by);
 
-        /*
 
-         if (!_.isUndefined(this.options.parent.collection.query.date__range))
-         $('#date_range_toggle').prop('checked', true);
-         */
+        if (!_.isUndefined(this.options.parent.collection.query.date__range))
+            $('#date_range_toggle').prop('checked', true);
+
 
         this.date_slider = new Foundation.Slider($('#date_slider'), {
             start: 800,
@@ -63,16 +53,17 @@ var HeaderView = Base.TemplateView.extend({
             $('#dateSliderEnd').val(this.date_slider.$input2.val());
         },
         'changed.zf.slider #date_slider': function () {
-
+            this.options.parent.query();
         },
+
         'click .add_search_field': function () {
             var m = new MaskView({});
             $('#search_field_masks').append(m.render().$el);
         },
 
-
         'click .remove_search_field': function (e) {
-            console.log(e.target.closest(".row.search_field_mask").remove());
+            if ($(".row.search_field_mask").length > 1)
+                e.target.closest(".row.search_field_mask").remove();
         },
 
         'click button.search': function () {
@@ -109,8 +100,7 @@ module.exports = Base.TemplateView.extend({
 
         swap($('[data-js-region="entry_list"]'), view);
 
-        //this.header(); // we could render, but looks nicer when render is done on sync
-        //this.search(); // this is called by the controller!
+        this.header();
 
         // fetch on bottom
         $(window).on("scroll", _.bind(function () {
@@ -141,9 +131,10 @@ module.exports = Base.TemplateView.extend({
             //data: params,
             url: uri,
             success: function (collection, response, options) {
-                // console.warn("adding", collection.models.length, "total", this.collection.length);
+                //console.warn("adding", collection.models.length, "total", this.collection.length);
                 this.header();
                 this.entry_list_header_meta();
+                //console.log(this.collection.meta);
             }.bind(this)
         });
     },
@@ -158,13 +149,11 @@ module.exports = Base.TemplateView.extend({
     entry_list_header_meta: function () {
         swap($('[data-js-region="entry_list_header_meta"]'), new MetaView({
             parent: this,
-            data: {meta: _.extend(this.collection.meta, {numEntries: this.collection.length})}
+            data: {meta: _.extend(this.collection.meta, {totalItems: this.collection.length})}
         }));
     },
 
     query: function (opts) {
-
-        var options = _.defaults(opts, {trigger: true, replace: false});
 
         //$('input.search').blur(); // TODO loose focus on mobile only?
 
@@ -173,8 +162,12 @@ module.exports = Base.TemplateView.extend({
         var that = this;
 
         $('.search_field_mask').each(function (i, obj) {
-            that.collection.query.q.push($(this).find('.type').val() + "::" + $(this).find('input.search').val());
+            if ($(this).find('input.search').val() != '')
+                that.collection.query.q.push($(this).find('.type').val() + "::" + $(this).find('input.search').val());
         });
+
+        // get match
+        this.collection.query.match = $('.match').val();
 
         // set date__range
         this.collection.query.date__range = $('#dateSliderStart').val() + ',' + $('#dateSliderEnd').val();
@@ -186,7 +179,7 @@ module.exports = Base.TemplateView.extend({
 
         var params = URI.buildQuery(this.collection.query, true);
         var uri = new URI('/archive?' + params).readable();
-        App.Router.r.navigate(uri, options);
+        App.Router.r.navigate(uri, {trigger: true, replace: false});
     },
 
     events: {

@@ -51,11 +51,7 @@ module.exports.Archive = function (query) {
 
     if (oldQuery != query || !App.ArchiveEntries) {
         App.ArchiveEntries = new Entries();
-
-        //var params = parseQueryString(query);
         var params = URI.parseQuery(query);
-        App.params = params;
-
         App.ArchiveEntries.query = _.defaults(params, {limit: 30, order_by: 'date', match: 'OR', image_size: 'x-small'});
     }
 

@@ -151,6 +151,8 @@ LOGIN_URL = '/login'
 LOGOUT_URL = '/logout'
 
 # haystack
+HAYSTACK_DOCUMENT_FIELD = 'fulltext'
+#HAYSTACK_DEFAULT_OPERATOR = 'OR'
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',

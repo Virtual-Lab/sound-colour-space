@@ -205,7 +205,7 @@ class EntryResource(ModelResource):
         """
         super(EntryResource, self).save_m2m(bundle)
 
-        # Add the tags if any are present
+        # 283 the tags if any are present
         tags = bundle.data.get('tags', [])
         if tags:
             bundle.obj.tags.set(*bundle.data['tags'])  # could also 'add' instead of set
@@ -230,19 +230,24 @@ class EntryResource(ModelResource):
         #####################################################################
 
         query = None
-
         for x in request.GET.lists():
             if x[0] == 'q':
                 query = x[1]
 
         order_by = request.GET.get('order_by', 'date')
+        date_range = request.GET.get('date__range', None)
+        tags = request.GET.get('tags', [])
 
+        match = request.GET.get('match', 'OR')
+        operator = SQ.OR if (match == 'OR') else SQ.AND
 
         search_items = []
 
+        results = SearchQuerySet().models(Entry).all()
+
         if not query:
             # raise BadRequest('Please supply the search parameter (e.g. "/api/' + settings.API_VERSION + '/entry/search/?q=Term::Newton")')
-            results = SearchQuerySet().models(Entry).all().order_by(order_by)
+            pass
 
         else:
             '''
@@ -264,36 +269,46 @@ class EntryResource(ModelResource):
 
             print (search_items)
 
-            # narrow down tags
-            # if search_items['Tag']:
-            #    results = results.filter(reduce(operator.and_, [SQ(tags=tag_name) for tag_name in search_items['Tag']]))
 
             # filter search masks
-            match = request.GET.get('match', 'OR')
-            op = SQ.OR if (match == 'OR') else SQ.AND
-
             sq = SQ()
 
             for item in search_items:
-                # print (item['scope'])
                 kwargs = {
                     # ie: author=AutoQuery
                     item['scope']: get_query_class_for_item(item),
                 }
-                print (kwargs)
 
-                sq.add(SQ(**kwargs), op)
+                sq.add(SQ(**kwargs), operator)
 
-            results = SearchQuerySet().models(Entry).filter(sq).order_by(order_by)
+            results = results.filter(sq)
 
             if not results:
                 results = EmptySearchQuerySet()
+
+        if date_range:
+            start = date_range.split(',')[0]
+            end = date_range.split(',')[1]
+            results = results.filter(date__range=(start, end))
+
+        if tags:
+            # narrow down tags
+            qs = Entry.objects.filter(pk__in=results.values_list('pk', flat=True))
+            qs = qs.filter(tags__name__in=tags.split(',')).distinct()
+            results = qs
+
+        results = results.order_by(order_by)
 
         paginator = Paginator(request.GET, results, resource_uri='/api/' + settings.API_VERSION + '/entry/search/')
 
         bundles = []
         for result in paginator.page()['objects']:
-            bundle = self.build_bundle(obj=result.object, request=request)
+
+            if not tags:
+                bundle = self.build_bundle(obj=result.object, request=request)
+            else: # we have a normal queryset, not search queryset
+                bundle = self.build_bundle(obj=result, request=request)
+
             bundles.append(self.full_dehydrate(bundle))
 
         object_list = {
@@ -304,9 +319,8 @@ class EntryResource(ModelResource):
         #object_list['meta']['search_scope'] = SEARCH_SCOPES
         object_list['meta']['search_query'] = search_items
         object_list['meta']['order_by'] = order_by
+        object_list['meta']['match'] = match
 
-
-        # object_list['meta']['search_query'] = {"Type": search_items['Type'], "Term": search_items['Term'], "Tag": search_items['Tag']}
 
         self.log_throttled_access(request)
 

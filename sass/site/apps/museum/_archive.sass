@@ -5,7 +5,7 @@
   min-height: 440px
 
 #entry_list_header_meta
-  min-height: 150px
+  min-height: 100px
 
 ///////////////////////////////////////// GRID
 .grid-sizer,
@@ -65,13 +65,19 @@ table thead th, table thead td, table tfoot th, table tfoot td
     img
       max-height: 150px
 
-/////////// CSS Trick to cut text /////////////////////
 .truncate
-  width: 650px
-  white-space: nowrap
+  width: 450px
   overflow: hidden
   text-overflow: ellipsis
+  white-space: nowrap
 
+  @supports (-webkit-line-clamp: 3)
+    white-space: normal
+    display: -webkit-box
+    -webkit-line-clamp: 3
+    -webkit-box-orient: vertical
+
+/////////// CSS Trick to cut text /////////////////////
 //.ellipsis
   overflow: hidden
   height: 50px

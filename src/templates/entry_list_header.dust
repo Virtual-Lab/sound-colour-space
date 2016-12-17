@@ -1,13 +1,18 @@
 <div>
     <div class="row">
         <div class="small-8 columns">
-            <h3><i class="fi-magnifying-glass"></i>&nbsp;Advanced Search</h3>
+            <h1>Advanced Search</h1>
         </div>
-        <div class="small-2 small-offset-2 columns">
-            <div class="button-group float-right">
-                <div class="button toggle-grid"><i class="fi-thumbnails"></i></div>
-                <div class="button toggle-list"><i class="fi-list-thumbnails"></i></div>
-            </div>
+    </div>
+
+    <div class="row">
+        <div class="small-1 shrink columns">
+            <label>Match:
+                <select class="match">
+                    <option {@eq key=meta.match value="OR"}selected{/eq} value="OR">Any of the terms</option>
+                    <option {@eq key=meta.match value="AND"}selected{/eq} value="AND">All of the terms</option>
+                </select>
+            </label>
         </div>
     </div>
 
@@ -22,9 +27,15 @@
     </div>
 
     <div class="row">
-        <div class="small-12 columns">
+        <div class="small-6 columns">
             <h5>
-                <button class="small radius button add_search_field"><i class="fi-plus"></i>&nbsp;Add search field
+                <button class="tiny secondary radius button add_search_field">Add search field
+                </button>
+            </h5>
+        </div>
+        <div class="small-2 columns">
+            <h5>
+                <button class="button normal radius float-right search"><i class="fi-magnifying-glass"></i>&nbsp;Search
                 </button>
             </h5>
         </div>
@@ -82,31 +93,21 @@
         </div>
     </div>
     <div class="row align-right">
-        {!
-        <div class="small-2 columns">
-            <label>Results per page
-                <select class="limit">
-                    <option value="5">5</option>
-                    <option value="15">15</option>
-                    <option value="30">30</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
-            </label>
-        </div>
-        !}
         <div class="small-3 columns">
-            <label>Sorty by
-                <select class="order_by">
-                    <option value="relevance">Relevance</option>
-                    <option value="-date">Date (newest first)</option>
-                    <option value="date">Date (oldest first)</option>
-                    <option value="title">Title (A-Z)</option>
-                    <option value="-title">Title (Z-A)</option>
-                    <option value="author__last_name">Author (A-Z)</option>
-                    <option value="-author__last_name">Author (Z-A)</option>
-                </select>
-            </label>
+            <select class="order_by">
+                <option value="-date">Date (newest first)</option>
+                <option value="date">Date (oldest first)</option>
+                <option value="title">Title (A-Z)</option>
+                <option value="-title">Title (Z-A)</option>
+                <option value="author__last_name">Author (A-Z)</option>
+                <option value="-author__last_name">Author (Z-A)</option>
+            </select>
+        </div>
+        <div class="small-2 shrink columns">
+            <div class="button-group float-right">
+                <div class="button toggle-grid"><i class="fi-thumbnails"></i></div>
+                <div class="button toggle-list"><i class="fi-list-thumbnails"></i></div>
+            </div>
         </div>
     </div>
 </div>
