@@ -53,7 +53,7 @@ var HeaderView = Base.TemplateView.extend({
             $('#dateSliderEnd').val(this.date_slider.$input2.val());
         },
         'changed.zf.slider #date_slider': function () {
-            //this.options.parent.query();
+            //this.options.parent.query(); // TODO
         },
 
         'click .add_search_field': function () {
@@ -188,6 +188,8 @@ module.exports = Base.TemplateView.extend({
         });
         if (!_.isEmpty(tags))
             this.collection.query.tags = tags.join(',');
+        else
+            this.collection.query = _.omit(this.collection.query, 'tags');
 
         var params = URI.buildQuery(this.collection.query, true);
         var uri = new URI('/archive?' + params).readable();

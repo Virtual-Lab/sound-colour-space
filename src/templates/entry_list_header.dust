@@ -95,7 +95,7 @@
             <fieldset class="fieldset">
                 <legend><i class="fi-filter"></i> Keywords</legend>
                 <div>
-                    {#meta}{#tags}<span class="tag label {?selected}selected{:else}secondary{/selected}" data-slug={slug}>{name}</span>{@sep}&nbsp;{/sep}{/tags}{/meta}
+                    {#meta}{#tags}<span class="tag label {?selected}selected{/selected}" data-slug={slug}>{name}</span>{@sep}&nbsp;{/sep}{/tags}{/meta}
                 </div>
             </fieldset>
         </div>
