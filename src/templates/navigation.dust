@@ -10,7 +10,7 @@
             <div class="shrink column">
                 <ul class="menu">
                     {#menu current=currentUrl}
-                    <li {@eq key=url value=current}class="active"{/eq}><a href="/{url}">{text}</a></li>
+                    <li {@eq key=url value=current}class="active"{/eq}><a href="{url}">{text}</a></li>
                     {/menu}
                 </ul>
             </div>

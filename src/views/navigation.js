@@ -2,6 +2,7 @@
 
 global.$ = global.jQuery = require('jquery');
 
+var URI = require('urijs');
 var _ = require('underscore');
 
 var Backbone = require('backbone'); Backbone.$ = $;
@@ -31,7 +32,11 @@ module.exports = Base.TemplateView.extend({
         STATIC_URL: STATIC_URL,
 
         "currentUrl": function () {
-            return (Backbone.History.started == true ? Backbone.history.getFragment().split('/')[0] : '/');
+            //console.log(Backbone.history.getFragment().split('/')[0]);
+            //return (Backbone.History.started == true ? Backbone.history.getFragment().split('/')[0] : '/');
+
+            console.log(URI(window.location.href).path());
+            return (Backbone.History.started == true ? URI(window.location.href).path(): '/');
         },
 
 
@@ -43,27 +48,27 @@ module.exports = Base.TemplateView.extend({
              },
              */
             {
-                "url": "archive",
+                "url": "/archive",
                 "text": "Archive"
             },
             {
-                "url": "sets",
+                "url": "/sets",
                 "text": "Sets"
             },
             {
-                "url": "timeline",
+                "url": "/timeline",
                 "text": "Timeline"
             },
             {
-                "url": "exhibitions",
+                "url": "/exhibitions",
                 "text": "Exhibitions"
             },
             {
-                "url": "virtuallab",
+                "url": "/virtuallab",
                 "text": "Virtual Lab"
             },
             {
-                "url": "documentation",
+                "url": "/documentation",
                 "text": "Documentation"
             }
         ]
