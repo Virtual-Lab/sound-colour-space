@@ -9,8 +9,8 @@
         <div class="small-1 shrink columns">
             <label>Match:
                 <select class="match">
-                    <option {@eq key=meta.match value="OR"}selected{/eq} value="OR">Any of the terms</option>
-                    <option {@eq key=meta.match value="AND"}selected{/eq} value="AND">All of the terms</option>
+                    <option {@eq key=meta.match value="OR" }selected{/eq} value="OR">Any of the terms</option>
+                    <option {@eq key=meta.match value="AND" }selected{/eq} value="AND">All of the terms</option>
                 </select>
             </label>
         </div>
@@ -43,13 +43,13 @@
 
     <div class="row">
         <div class="small-12 columns">
-            <h5><i class="fi-filter"></i>&nbsp;Refine Search</h5>
+            <h5>Refine Search</h5>
         </div>
     </div>
     <div class="row">
         <div class="small-5 columns">
             <fieldset class="fieldset">
-                <legend>Select date range</legend>
+                <legend><i class="fi-filter"></i> Select date range</legend>
                 <div class="row">
                     <div class="small-8 columns">
                         <div id="date_slider" class="slider">
@@ -88,6 +88,14 @@
                         </div>
                         -->
                     </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="small-12 columns">
+            <fieldset class="fieldset">
+                <legend><i class="fi-filter"></i> Keywords</legend>
+                <div>
+                    {#meta}{#tags}<span class="tag label {?selected}selected{:else}secondary{/selected}" data-slug={slug}>{name}</span>{@sep}&nbsp;{/sep}{/tags}{/meta}
                 </div>
             </fieldset>
         </div>

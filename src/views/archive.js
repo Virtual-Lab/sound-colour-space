@@ -53,7 +53,7 @@ var HeaderView = Base.TemplateView.extend({
             $('#dateSliderEnd').val(this.date_slider.$input2.val());
         },
         'changed.zf.slider #date_slider': function () {
-            this.options.parent.query();
+            //this.options.parent.query();
         },
 
         'click .add_search_field': function () {
@@ -64,6 +64,11 @@ var HeaderView = Base.TemplateView.extend({
         'click .remove_search_field': function (e) {
             if ($(".row.search_field_mask").length > 1)
                 e.target.closest(".row.search_field_mask").remove();
+        },
+
+        'click .tag': function (e) {
+            $(e.currentTarget).toggleClass('selected');
+            this.options.parent.query();
         },
 
         'click button.search': function () {
@@ -176,6 +181,13 @@ module.exports = Base.TemplateView.extend({
         if (!$('#date_range_toggle').is(':checked')) {
             this.collection.query = _.omit(this.collection.query, 'date__range');
         }
+
+        var tags = [];
+        $('.tag.selected').each(function () {
+            tags.push($(this).attr('data-slug'));
+        });
+        if (!_.isEmpty(tags))
+            this.collection.query.tags = tags.join(',');
 
         var params = URI.buildQuery(this.collection.query, true);
         var uri = new URI('/archive?' + params).readable();

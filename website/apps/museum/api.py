@@ -5,7 +5,7 @@ from django.conf.urls import *
 from easy_thumbnails.files import get_thumbnailer
 from haystack.inputs import Raw, AutoQuery
 from haystack.query import SearchQuerySet, EmptySearchQuerySet, SQ
-from museum.models import Entry, Author, License, Experiment, Collection
+from museum.models import Keyword, Entry, Author, License, Experiment, Collection
 from tastypie import fields
 from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
@@ -29,6 +29,7 @@ SEARCH_SCOPES = {
         'query_class': AutoQuery
     },
 }
+
 
 def get_query_class_for_item(item):
     query_class = SEARCH_SCOPES[item['scope']]['query_class']
@@ -269,7 +270,6 @@ class EntryResource(ModelResource):
 
             print (search_items)
 
-
             # filter search masks
             sq = SQ()
 
@@ -291,24 +291,37 @@ class EntryResource(ModelResource):
             end = date_range.split(',')[1]
             results = results.filter(date__range=(start, end))
 
+        selected_tags = []
         if tags:
-            # narrow down tags
-            qs = Entry.objects.filter(pk__in=results.values_list('pk', flat=True))
-            qs = qs.filter(tags__name__in=tags.split(',')).distinct()
-            results = qs
+            selected_tags = [t.strip() for t in tags.split(',')]
+            for tag in selected_tags:
+                results = results.filter(SQ(tags=tag))
 
+
+
+        # if we filter tags OR have a search query, get the possible tags, otherwise return all tags
+        if tags or query:
+            possible_tags = []
+            for r in results.all():
+                possible_tags += [t.pk for t in r.object.tags.all()]
+            possible_tags = set(possible_tags)  # convert to set removes duplicates
+            tags = Keyword.objects.filter(pk__in=possible_tags).order_by('name')
+        else:
+            tags = Keyword.objects.all()
+
+        tag_objects = []
+        for t in tags: tag_objects.append(
+            {"name": t.name, "slug": t.slug, "selected": True if t.slug in selected_tags else False})
+
+        # apply ordering
         results = results.order_by(order_by)
 
+        # paginate
         paginator = Paginator(request.GET, results, resource_uri='/api/' + settings.API_VERSION + '/entry/search/')
 
         bundles = []
         for result in paginator.page()['objects']:
-
-            if not tags:
-                bundle = self.build_bundle(obj=result.object, request=request)
-            else: # we have a normal queryset, not search queryset
-                bundle = self.build_bundle(obj=result, request=request)
-
+            bundle = self.build_bundle(obj=result.object, request=request)
             bundles.append(self.full_dehydrate(bundle))
 
         object_list = {
@@ -316,11 +329,11 @@ class EntryResource(ModelResource):
             'objects': bundles
         }
 
-        #object_list['meta']['search_scope'] = SEARCH_SCOPES
+        # object_list['meta']['search_scope'] = SEARCH_SCOPES
         object_list['meta']['search_query'] = search_items
+        object_list['meta']['tags'] = tag_objects
         object_list['meta']['order_by'] = order_by
         object_list['meta']['match'] = match
-
 
         self.log_throttled_access(request)
 
