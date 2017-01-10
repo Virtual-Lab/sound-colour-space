@@ -1,7 +1,7 @@
 <div>
     <div class="row">
         <div class="small-8 columns">
-            <h1>Advanced Search</h1>
+            <h1>Search</h1>
         </div>
     </div>
 
@@ -43,63 +43,77 @@
 
     <div class="row">
         <div class="small-12 columns">
-            <h5>Refine Search</h5>
-        </div>
-    </div>
-    <div class="row">
-        <div class="small-5 columns">
-            <fieldset class="fieldset">
-                <legend><i class="fi-filter"></i> Select date range</legend>
-                <div class="row">
-                    <div class="small-8 columns">
-                        <div id="date_slider" class="slider">
-                    <span class="slider-handle" data-slider-handle role="slider" tabindex="1"
-                          aria-controls="dateSliderStart"></span>
-                            <span class="slider-fill" data-slider-fill></span>
-                            <span class="slider-handle" data-slider-handle role="slider" tabindex="1"
-                                  aria-controls="dateSliderEnd"></span>
-                            <input type="hidden">
-                            <input type="hidden">
-                        </div>
-                        <div class="row">
-                            <div class="small-5 columns align-left">
-                                <input type="number" class="float-left" id="dateSliderStart">
-                            </div>
-                            <div class="small-5 small-offset-2 columns align-right">
-                                <input type="number" class="float-right" id="dateSliderEnd">
-                            </div>
-                        </div>
+            <ul id="refine_search" class="accordion" data-accordion data-allow-all-closed="true">
+                <li class="accordion-item" data-accordion-item>
+                    <a href="#" data-bypass class="accordion-title" style="padding:0;display: inline-block;">
+                        <button class="button small radius" style="margin:0;"><i class="fi-widget"></i> Refine Search</u_></button>
+                    </a>
+                    <div class="accordion-content" data-tab-content>
 
-                    </div>
-                    <div class="small-4 columns align-self-middle align-right">
-                        <div class="switch small">
-                            <input class="switch-input" id="date_range_toggle" type="checkbox"
-                                   name="toggle date range filter">
-                            <label class="switch-paddle" for="date_range_toggle">
-                                <span class="show-for-sr">Filter by date range?</span>
-                                <span class="switch-active" aria-hidden="true">On</span>
-                                <span class="switch-inactive" aria-hidden="true">Off</span>
-                            </label>
+                        <div class="row">
+                            <div class="small-5 columns">
+                                <fieldset class="fieldset">
+                                    <legend><i class="fi-filter"></i> Select date range</legend>
+                                    <div class="row">
+                                        <div class="small-8 columns">
+                                            <div id="date_slider" class="slider">
+                                        <span class="slider-handle" data-slider-handle role="slider" tabindex="1"
+                                              aria-controls="dateSliderStart"></span>
+                                                <span class="slider-fill" data-slider-fill></span>
+                                                <span class="slider-handle" data-slider-handle role="slider" tabindex="1"
+                                                      aria-controls="dateSliderEnd"></span>
+                                                <input type="hidden">
+                                                <input type="hidden">
+                                            </div>
+                                            <div class="row">
+                                                <div class="small-5 columns align-left">
+                                                    <input type="number" class="float-left" id="dateSliderStart">
+                                                </div>
+                                                <div class="small-5 small-offset-2 columns align-right">
+                                                    <input type="number" class="float-right" id="dateSliderEnd">
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="small-4 columns align-self-middle align-right">
+                                            <div class="switch small">
+                                                <input class="switch-input" id="date_range_toggle" type="checkbox"
+                                                       name="toggle date range filter">
+                                                <label class="switch-paddle" for="date_range_toggle">
+                                                    <span class="show-for-sr">Filter by date range?</span>
+                                                    <span class="switch-active" aria-hidden="true">On</span>
+                                                    <span class="switch-inactive" aria-hidden="true">Off</span>
+                                                </label>
+                                            </div>
+                                            <button class="button normal radius float-right apply_date_range"><i class="fi-magnifying-glass"></i>&nbsp;Apply
+                </button>
+                                            <!--
+                                            <div class="medium button-group">
+                                                <button class="button apply_date__range"><i class="fi-filter"></i>&nbsp;Find</button>
+                                                <button class="button secondary remove_date__range"><i class="fi-x"></i></button>
+                                            </div>
+                                            -->
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            {?meta.tags}
+                            <div class="small-12 columns">
+                                <fieldset class="fieldset">
+                                    <legend><i class="fi-filter"></i> Keywords</legend>
+                                    <div>
+                                        {#meta}{#tags}<span class="tag label {?selected}selected{/selected}" data-slug={slug}>{name}</span>{@sep}&nbsp;{/sep}{/tags}{/meta}
+                                    </div>
+                                </fieldset>
+                            </div>
+                            {/meta.tags}
                         </div>
-                        <!--
-                        <div class="medium button-group">
-                            <button class="button apply_date__range"><i class="fi-filter"></i>&nbsp;Find</button>
-                            <button class="button secondary remove_date__range"><i class="fi-x"></i></button>
-                        </div>
-                        -->
                     </div>
-                </div>
-            </fieldset>
-        </div>
-        <div class="small-12 columns">
-            <fieldset class="fieldset">
-                <legend><i class="fi-filter"></i> Keywords</legend>
-                <div>
-                    {#meta}{#tags}<span class="tag label {?selected}selected{/selected}" data-slug={slug}>{name}</span>{@sep}&nbsp;{/sep}{/tags}{/meta}
-                </div>
-            </fieldset>
+                </li>
+            </ul>
         </div>
     </div>
+
     <div class="row align-right">
         <div class="small-3 columns">
             <select class="order_by">

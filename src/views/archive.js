@@ -20,6 +20,8 @@ var HeaderView = Base.TemplateView.extend({
 
     onShow: function () {
 
+        this.$el.foundation();
+
         if (!_.isUndefined(this.options.parent.collection.query.order_by))
             $('.order_by').val(this.options.parent.collection.query.order_by);
 
@@ -40,6 +42,16 @@ var HeaderView = Base.TemplateView.extend({
             changedDelay: 500,
             moveTime: 200,
         });
+
+
+
+        // toggle accordion if advanced search filters are active
+        if (this.options.parent.collection.query.tags != undefined || this.options.parent.collection.query.date__range != undefined) {
+            $('#refine_search').foundation('down', $('.accordion-content'));
+        }
+
+        Foundation.reInit('slider');
+
     },
 
     keyPressed: function (e) {
@@ -74,6 +86,12 @@ var HeaderView = Base.TemplateView.extend({
         'click button.search': function () {
             this.options.parent.query();
         },
+
+        'click button.apply_date_range': function() {
+            $('#date_range_toggle').prop('checked', true);
+            this.options.parent.query();
+        },
+
         'keypress input[type=search]': 'keyPressed',
         'search input[type=search]': 'keyPressed',
 
@@ -114,11 +132,12 @@ module.exports = Base.TemplateView.extend({
             if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
                 // load more!
                 if (this.collection.meta !== undefined && this.collection.meta.next != null) {
+                    //console.warn(this.collection.meta.next);
                     this.collection.url = this.collection.meta.next;
                     this.collection.fetch({
                         remove: false,
                         success: function (collection, response, options) {
-                            // console.warn("adding", response.objects.length, "total", this.collection.length);
+                            //console.warn("adding", response.objects.length, "total", this.collection.length);
                             this.entry_list_header_meta();
                         }.bind(this)
                     });

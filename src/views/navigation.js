@@ -87,7 +87,7 @@ module.exports = Base.TemplateView.extend({
         //console.log('onShow navigation', Backbone.history.getFragment());
 
         // initialize foundation on $el
-        this.$el.foundation();
+        //this.$el.foundation();
 
     },
 

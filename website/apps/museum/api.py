@@ -286,25 +286,18 @@ class EntryResource(ModelResource):
             if not results:
                 results = EmptySearchQuerySet()
 
-        if date_range:
-            start = date_range.split(',')[0]
-            end = date_range.split(',')[1]
-            results = results.filter(date__range=(start, end))
-
         selected_tags = []
         if tags:
             selected_tags = [t.strip() for t in tags.split(',')]
             for tag in selected_tags:
                 results = results.filter(SQ(tags=tag))
 
-
-
         # if we filter tags OR have a search query, get the possible tags, otherwise return all tags
         if tags or query:
             possible_tags = []
             for r in results.all():
                 possible_tags += [t.pk for t in r.object.tags.all()]
-            possible_tags = set(possible_tags)  # convert to set removes duplicates
+            possible_tags = set(possible_tags)  # convert to set to remove duplicates
             tags = Keyword.objects.filter(pk__in=possible_tags).order_by('name')
         else:
             tags = Keyword.objects.all()
@@ -312,6 +305,11 @@ class EntryResource(ModelResource):
         tag_objects = []
         for t in tags: tag_objects.append(
             {"name": t.name, "slug": t.slug, "selected": True if t.slug in selected_tags else False})
+
+        if date_range:
+            start = date_range.split(',')[0]
+            end = date_range.split(',')[1]
+            results = results.filter(date__range=(start, end))
 
         # apply ordering
         results = results.order_by(order_by)

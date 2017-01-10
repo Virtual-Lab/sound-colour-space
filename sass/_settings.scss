@@ -47,6 +47,41 @@ $header-color: #444444;
 
 
 
+// 7. Accordion
+// ------------
+
+$accordion-background: transparent;
+$accordion-plusminus: false;
+$accordion-item-color: foreground($accordion-background, $primary-color);
+$accordion-item-background-hover: transparent;
+$accordion-item-padding: 1.25rem 1rem;
+$accordion-content-background: $white;
+$accordion-content-border: 1px solid transparent;
+$accordion-content-color: foreground($accordion-content-background, $body-font-color);
+$accordion-content-padding: 1rem;
+
+
+// 16. Dropdown
+// ------------
+
+$dropdown-padding: 1rem;
+$dropdown-border: 1px solid $medium-gray;
+$dropdown-font-size: 1rem;
+//$dropdown-width: 300px;
+$dropdown-width: $global-width;
+$dropdown-radius: $global-radius;
+$dropdown-sizes: (
+  tiny: 100px,
+  small: 200px,
+  large: 400px,
+);
+
+
+// 19. Forms
+// ---------
+$fieldset-margin: rem-calc(4.5 0);
+
+
 // 22. Menu
 // --------
 
