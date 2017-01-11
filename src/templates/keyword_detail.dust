@@ -1,8 +1,7 @@
-<div id="set">
+<div id="keyword">
     <div class="row">
-        <div class="small-12 columns">
-            <h1>{title}</h1>
-            <h4>{subtitle}</h4>
+        <div class="small-12 columns text-center">
+            <h4>{name}</h4>
         </div>
     </div>
     <div class="row description">

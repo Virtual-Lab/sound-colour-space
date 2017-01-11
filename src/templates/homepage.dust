@@ -1,8 +1,8 @@
 <div class="row">
     <div class="small-8 column">
-        <h1>Sound Colour Space – A Virtual Museum</h1>
         <img src="{STATIC_URL}img/fig_0_head_1456_464.jpg"/>
         <br/><br/>
+        <h4>Sound Colour Space – A Virtual Museum</h4>
         <p>
             Im Zentrum des Projekts Sound Colour Space – A Virtual Museum steht das Begriffsfeld Klang, Ton, Tonhöhe,
             Klangfarbe in seiner Beziehung zu visuellen Phänomenen und geometrischen Konzepten. Das Vorhaben versteht

@@ -5,13 +5,13 @@ var apiUrl = require('../apiUrl');
 
 module.exports = Backbone.Model.extend({
 
-    idAttribute: 'doc_id',
+    idAttribute: 'slug',
 
     initialize: function() {
     },
 
     url: function() {
-        return apiUrl('set', this.id);
+        return apiUrl('keyword', this.id);
     },
 
 });

@@ -1,0 +1,7 @@
+<section id="entries">
+    <div class="row">
+        <div class="medium-12 columns">
+            <div class="row entries"></div>
+        </div>
+    </div>
+</section>

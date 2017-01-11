@@ -1,7 +1,7 @@
 <div>
     <div class="row">
-        <div class="small-8 columns">
-            <h1>Search</h1>
+        <div class="small-12 columns text-center">
+            <h3>Search</h3>
         </div>
     </div>
 
@@ -115,7 +115,7 @@
     </div>
 
     <div class="row align-right">
-        <div class="small-3 columns">
+        <div class="small-2 columns">
             <select class="order_by">
                 <option value="-date">Date (newest first)</option>
                 <option value="date">Date (oldest first)</option>
@@ -127,8 +127,9 @@
         </div>
         <div class="small-2 shrink columns">
             <div class="button-group float-right">
-                <div class="button toggle-grid"><i class="fi-thumbnails"></i></div>
-                <div class="button toggle-list"><i class="fi-list-thumbnails"></i></div>
+                <div class='button {@eq key=preferredView value="list"}active{/eq} toggle-list'><i class="fi-list"></i></div>
+                <div class='button {@eq key=preferredView value="even-grid"}active{/eq} toggle-even-grid'><i class="fi-thumbnails"></i></div>
+                <div class='button {@eq key=preferredView value="grid"}active{/eq} toggle-grid'><i class="fi-graph-bar"></i></div>
             </div>
         </div>
     </div>

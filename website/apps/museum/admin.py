@@ -191,7 +191,7 @@ class CollectionAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': (
-                 'uuid', 'madek', 'doc_id', 'title', 'slug', 'subtitle', 'description', 'author', 'show_image', 'tags',
+                 'uuid', 'madek', 'doc_id', 'title', 'slug', 'subtitle', 'description', 'num_columns', 'author', 'show_image', 'tags',
             )
         }),
     )

@@ -79,10 +79,6 @@ module.exports = Base.ListView.extend({
 
     },
 
-    events: {
-        "click .toggle_grid": function () {
-            $('.entries').toggleClass('grid');
-        }
-    }
+    events: {},
 
 });

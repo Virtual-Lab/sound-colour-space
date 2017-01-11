@@ -9,7 +9,7 @@ module.exports = Base.SingleView.extend({
 
     data: {},
 
-    template: require('../templates/entry_single.dust'),
+    template: require('../templates/entry_even_grid_single.dust'),
 
     onShow: function () {
 

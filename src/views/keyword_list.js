@@ -3,20 +3,22 @@ var _ = require('underscore');
 var $ = require('jquery');
 Backbone.$ = $;
 
-
 var Base = require('./base');
-var SetSingleView = require('./set_single');
-
 var swap = require('../views/swap.js');
+
+var KeywordSingleView = Base.SingleView.extend({
+    tagName: 'li',
+    template: require('../templates/keyword_single.dust'),
+});
 
 
 module.exports = Base.ListView.extend({
 
-    template: require('../templates/set_list.dust'),
+    template: require('../templates/keyword_list.dust'),
 
     addOne: function (model) {
         //console.log('adding', model.id);
-        var view = new SetSingleView({model: model});
+        var view = new KeywordSingleView({model: model});
         this.$(".entries").append(view.render().el);
         view.onShow();
     },

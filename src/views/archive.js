@@ -2,6 +2,7 @@ var Base = require('./base');
 
 var EntryListView = require('./entry_list');
 var EntryGridView = require('./entry_grid');
+var EntryEvenGridView = require('./entry_even_grid');
 
 var apiUrl = require('../apiUrl');
 var swap = require('../views/swap.js');
@@ -118,8 +119,10 @@ module.exports = Base.TemplateView.extend({
 
         if (App.preferredView === 'list')
             var view = new EntryListView({collection: this.collection});
-        else
+        else if (App.preferredView === 'grid')
             var view = new EntryGridView({collection: this.collection});
+        else
+            var view = new EntryEvenGridView({collection: this.collection});
 
         swap($('[data-js-region="entry_list"]'), view);
 
@@ -166,7 +169,7 @@ module.exports = Base.TemplateView.extend({
     header: function () {
         swap($('[data-js-region="entry_list_header"]'), new HeaderView({
             parent: this,
-            data: {meta: this.collection.meta}
+            data: {meta: this.collection.meta, preferredView: App.preferredView}
         }));
     },
 
@@ -226,16 +229,23 @@ module.exports = Base.TemplateView.extend({
             this.query({trigger: true, replace: true});
         },
 
-        // change views
+        'click .toggle-even-grid': function () {
+            App.preferredView = "even-grid";
+            this.header(); // re-render header for button
+            var view = new EntryEvenGridView({collection: this.collection});
+            swap($('[data-js-region="entry_list"]'), view);
+        },
         'click .toggle-grid': function () {
+            App.preferredView = "grid";
+            this.header(); // re-render header for button
             var view = new EntryGridView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
-            App.preferredView = "grid";
         },
         'click .toggle-list': function () {
+            App.preferredView = "list";
+            this.header(); // re-render header for button
             var view = new EntryListView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
-            App.preferredView = "list";
         },
 
     }

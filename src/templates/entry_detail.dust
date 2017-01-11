@@ -5,14 +5,14 @@
         {! <span>{image.url}</span> !}
         <h6><i>{portrayed_object_date}</i></h6>
         <h6>{#author}{first_name} {last_name} {?pseudonym}({pseudonym}){/pseudonym}{/author}</h6>
-        {?tags}<h6>Tags:{#tags} <a href="/q={.}">{.}</a>{@sep},{/sep}{/tags}</h6>{/tags}
+        {?tags}<h6>Tags:{#tags} <a href="/keywords/{slug}">{name}</a>{@sep},{/sep}{/tags}</h6>{/tags}
         <img src="{image.url}"/>
         <div class="description">{description}</div>
         <div class="related text-left">
             {?related}See also:{/related}
             <ul>
                 {#related}
-                <li><a href="/{uri}">{title}</a></li>
+                <li><a href="/{uri}">{title} ({portrayed_object_date})</a></li>
                 {~n}{/related}
             </ul>
         </div>

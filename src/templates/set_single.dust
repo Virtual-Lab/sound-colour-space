@@ -1,11 +1,7 @@
 <div class="small-2 column set align-self-middle" style="margin-bottom: 40px;">
-    <div class="row text-center">
-        <div class="small-12 columns">
-            <span><a href="{uri}">{title}</a></span>
-        </div>
-    </div>
     <div class="row">
-        <div class="small-12 column set description">
+        <div class="small-12 column text-center set">
+            <span><a href="{uri}">{title}</a></span><br />
             <a href="{uri}"><img src="{cover}"/></a>
         </div>
     </div>

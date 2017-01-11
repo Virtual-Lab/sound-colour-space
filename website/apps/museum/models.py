@@ -37,6 +37,9 @@ class Keyword(Base, TagBase):
         verbose_name = _("keyword")
         verbose_name_plural = _("keywords")
 
+    def get_absolute_url(self):
+        return 'keywords/%s' % self.slug
+
 
 class TaggedObject(GenericTaggedItemBase):
     tag = models.ForeignKey(Keyword, related_name="museums_tagged_objects")
@@ -238,6 +241,8 @@ class Collection(Base):
     # word document id for annotaions
     doc_id = models.IntegerField(unique=True, null=True, blank=True)
 
+    num_columns = models.IntegerField(null=True, blank=True, default=4)
+
     class Meta:
         app_label = 'museum'
         verbose_name = _('collection')
@@ -250,7 +255,7 @@ class Collection(Base):
 
 
     def get_absolute_url(self):
-        return 'sets/%s' % self.slug
+        return 'sets/%s' % self.doc_id
 
 
 

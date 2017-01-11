@@ -35,8 +35,8 @@ module.exports = Base.TemplateView.extend({
             //console.log(Backbone.history.getFragment().split('/')[0]);
             //return (Backbone.History.started == true ? Backbone.history.getFragment().split('/')[0] : '/');
 
-            console.log(URI(window.location.href).path());
-            return (Backbone.History.started == true ? URI(window.location.href).path(): '/');
+            //console.log("uri directory:", URI(window.location.href).segment(0));
+            return (Backbone.History.started == true ? '/'+URI(window.location.href).segment(0): '/');
         },
 
 
@@ -58,6 +58,10 @@ module.exports = Base.TemplateView.extend({
             {
                 "url": "/timeline",
                 "text": "Timeline"
+            },
+            {
+                "url": "/keywords",
+                "text": "Keywords"
             },
             {
                 "url": "/exhibitions",

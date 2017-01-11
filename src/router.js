@@ -7,6 +7,7 @@ Backbone.$ = $;
 
 var entryController = require('./controllers/entry_controller');
 var setController = require('./controllers/set_controller');
+var keywordController = require('./controllers/keyword_controller');
 var virtualLabController = require('./controllers/virtual_lab_controller');
 
 // views
@@ -71,8 +72,10 @@ module.exports = Backbone.Router.extend({
         '(/)': home,
         'archive(?*query)(/)': entryController.Archive,
         'sets(/)': setController.List,
-        'sets/:slug(/)': setController.Detail,
+        'sets/:doc_id(/)': setController.Detail,
         'timeline(?*query)(/)': entryController.Timeline,
+        'keywords(/)': keywordController.List,
+        'keywords/:slug(/)': keywordController.Detail,
         'editor(/)': editor,
         'diagrams/:doc_id(/)': entryController.Detail,
         'exhibitions(/)': exhibitions,

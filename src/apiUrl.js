@@ -18,9 +18,16 @@ var URLs = {
     sets: function () {
         return api_url + 'collection/';      // CAUTION: API URI IS 'COLLECTION' NOT SET FOR DJANGO COMPATIBILITY
     },
-    set: function (slug) {
-        return URLs.sets() + slug;
-    }
+    set: function (doc_id) {
+        return URLs.sets() + doc_id;
+    },
+
+    keywords: function () {
+        return api_url + 'keyword/';
+    },
+    keyword: function (slug) {
+        return URLs.keywords() + slug;
+    },
 
 
     /*

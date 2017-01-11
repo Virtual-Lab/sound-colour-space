@@ -5,18 +5,18 @@ Backbone.$ = $;
 
 
 var Base = require('./base');
-var EntryListSingleView = require('./entry_list_single');
+var EntryEvenGridSingleView = require('./entry_even_grid_single');
 
 var swap = require('../views/swap.js');
 
 
 module.exports = Base.ListView.extend({
 
-    template: require('../templates/entry_list.dust'),
+    template: require('../templates/entry_even_grid.dust'),
 
     addOne: function (model) {
         //console.debug('add', model.id);
-        var view = new EntryListSingleView({model: model, tagName: "tr"});
+        var view = new EntryEvenGridSingleView({model: model, data: {num_columns: this.data.num_columns | 3}});
         this.$(".entries").append(view.render().el);
         view.onShow(); // TODO call onShow automatically
     },
@@ -37,9 +37,12 @@ module.exports = Base.ListView.extend({
         return this;
     },
 
+
+
     onShow: function () {
         //console.debug("############################################onShow list");
         this.collection.each(this.addOne, this);
     },
 
+    events: {}
 });

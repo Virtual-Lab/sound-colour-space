@@ -187,7 +187,7 @@ class EntryResource(ModelResource):
         return image
 
     def dehydrate_tags(self, bundle):
-        return [tag.name for tag in bundle.obj.tags.all()]
+        return [{"name": tag.name, "slug": tag.slug} for tag in bundle.obj.tags.all()]
 
     def dehydrate_related(self, bundle):
 
@@ -345,7 +345,7 @@ class CollectionResource(ModelResource):
     class Meta:
         queryset = Collection.objects.all()
         resource_name = 'collection'
-        detail_uri_name = 'slug'
+        detail_uri_name = 'doc_id'
         always_return_data = True
 
         authentication = Authentication()
@@ -367,6 +367,10 @@ class CollectionResource(ModelResource):
 
     def dehydrate_uri(self, bundle):
         return bundle.obj.get_absolute_url()
+
+    def dehydrate_num_columns(self, bundle):
+        cols = bundle.obj.num_columns or 4 # return 4 if None
+        return 12 / cols
 
     def dehydrate(self, bundle):
 
@@ -390,8 +394,34 @@ class CollectionResource(ModelResource):
                 if key == 'cover':
 
                     if entry_qs.exists():
-                        bundle.data[key] = obj.entry.all()[0].image.url
+                        bundle.data[key] = get_thumbnailer(obj.entry.all()[0].image)['x-small'].url
                 else:
                     bundle.data[key] = getattr(obj, key)
 
         return bundle
+
+
+class KeywordResource(ModelResource):
+    uri = fields.CharField(blank=True, readonly=True)
+
+    class Meta:
+        queryset = Keyword.objects.all()
+        resource_name = 'keyword'
+        detail_uri_name = 'slug'
+        always_return_data = True
+
+        authentication = Authentication()
+        authorization = Authorization()
+
+        excludes = ['id', 'created', 'modified']
+
+        list_allowed_methods = ["get"]
+        detail_allowed_methods = ["get"]
+
+        ordering = {
+            'name',
+        }
+
+    def dehydrate_uri(self, bundle):
+        return bundle.obj.get_absolute_url()
+
