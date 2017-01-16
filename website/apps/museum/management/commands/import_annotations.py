@@ -1,15 +1,9 @@
-import csv
+# -*- coding: latin-1 -*-
 from django.core.management.base import BaseCommand, CommandError
 
-from museum.models import Entry, Collection
+import codecs
 
-class MyDialect(csv.Dialect):
-    strict = True
-    skipinitialspace = True
-    quoting = csv.QUOTE_ALL
-    delimiter = ';'
-    quotechar = '"'
-    lineterminator = '\n'
+from museum.models import Entry, Collection, Keyword
 
 
 class Command(BaseCommand):
@@ -22,41 +16,71 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         total = 0
 
-        if (options['type'] == 'sets'):
-            with open(options['path'], 'rb') as csvfile:
-                r = csv.reader(csvfile, MyDialect())
-                for i in r:
-                    print ("#%s: %s \n\n%s") % (i[3], i[0], i[2])
+        if options['type'] == 'sets':
+            with codecs.open(options['path'], 'r', encoding='cp1252') as f:
+                for line in f:
+                    item = line.split(u"\u00A7")
+                    print ("#%s: %s \n\n%s") % (item[3], item[0], item[2])
 
-                    sets = Collection.objects.filter(title__istartswith=i[0])
+                    sets = Collection.objects.filter(title__istartswith=item[0])
                     if len(sets) == 0:
-                        self.stdout.write(self.style.WARNING('no set for %s, ref: %s.' % (i[0], i[3])))
+                        self.stdout.write(self.style.WARNING('no set for %s, ref: %s.' % (item[0], item[3])))
                     elif len(sets) > 1:
-                        self.stdout.write(self.style.WARNING('multiple sets for %s, ref: %s' % (i[0], i[3])))
+                        self.stdout.write(self.style.WARNING('multiple sets for %s, ref: %s' % (item[0], item[3])))
                     else:
-                        sets[0].description = unicode(i[2], errors='ignore')
-                        sets[0].doc_id = i[3]
+                        annotation = item[2]
+                        annotation = annotation.replace('####', '\r\n\r\n')
+                        # two spaces before newline for markdown newline
+                        annotation = annotation.replace('##', '  \r\n')
+                        sets[0].description = annotation
+                        sets[0].doc_id = item[3]
                         sets[0].save()
                         total += 1
             self.stdout.write(self.style.SUCCESS('Updated %s sets.' % total))
 
-        elif (options['type'] == 'diagrams'):
-            with open(options['path'], 'rb') as csvfile:
-                r = csv.reader(csvfile, MyDialect())
-                for i in r:
-                    # print ("#%s: %s \n\n%s") % (i[2], i[0], i[1])
+        elif options['type'] == 'diagrams':
+            with codecs.open(options['path'], 'r', encoding='cp1252') as f:
+                for line in f:
+                    item = line.split(u"\u00A7")
+                    #print ("#%s: %s \n\n%s") % (item[2], item[0], item[1])
+                    entries = Entry.objects.filter(image__icontains=item[0])
 
-                    entries = Entry.objects.filter(image__icontains=i[0])
                     if len(entries) == 0:
-                        self.stdout.write(self.style.WARNING('no entries for %s, ref: %s.' % (i[0], i[2])))
+                        self.stdout.write(self.style.WARNING('no entries for %s doc_id: %s.' % (item[0], item[2])))
                     elif len(entries) > 1:
-                        self.stdout.write(self.style.WARNING('multiple entries for %s, ref: %s' % (i[0], i[2])))
+                        self.stdout.write(self.style.WARNING('multiple entries for %s doc_id: %s' % (item[0], item[2])))
                     else:
-                        entries[0].description = unicode(i[1], errors='ignore')
-                        entries[0].doc_id = i[2]
+                        annotation = item[1]
+                        annotation = annotation.replace('####', '\r\n\r\n')
+                        annotation = annotation.replace('##', '  \r\n') # two spaces before newline for markdown newline
+                        entries[0].description = annotation
+                        entries[0].doc_id = item[2]
                         entries[0].save()
                         total += 1
 
             self.stdout.write(self.style.SUCCESS('Updated %s entries.' % total))
 
+        elif options['type'] == 'keywords':
+            with codecs.open(options['path'], 'r', encoding='cp1252') as f:
+                for line in f:
+                    item = line.split(u"\u00A7")
 
+                    name = item[0].strip(' ')
+
+                    keywords = Keyword.objects.filter(name__iexact=name)
+
+                    if len(keywords) == 0:
+                        self.stdout.write(self.style.WARNING('no keywords for %s.' % name))
+                    elif len(keywords) > 1:
+                        self.stdout.write(self.style.WARNING('multiple keywords for %s' % name))
+                    else:
+                        annotation = item[2]
+                        annotation = annotation.replace('####', '\r\n\r\n')
+                        # two spaces before newline for markdown newline
+                        annotation = annotation.replace('##', '  \r\n')
+                        keywords[0].description = annotation
+                        keywords[0].save()
+
+                        total += 1
+
+            self.stdout.write(self.style.SUCCESS('Updated %s keywords.' % total))

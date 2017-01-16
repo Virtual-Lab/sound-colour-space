@@ -37,6 +37,8 @@ class Keyword(Base, TagBase):
         verbose_name = _("keyword")
         verbose_name_plural = _("keywords")
 
+        ordering = ('name', )
+
     def get_absolute_url(self):
         return 'keywords/%s' % self.slug
 
@@ -198,6 +200,20 @@ class Entry(Base):
     remote_href = models.CharField(_('remote_href'), max_length=200, blank=True, null=True)
 
     doc_id = models.IntegerField(unique=True, null=True, blank=True)
+
+    # category
+    TONE_SYSTEMS = 'TO'
+    COLOUR_SYSTEMS = 'CO'
+
+    CATEGORY_CHOICES = (
+        (TONE_SYSTEMS, 'Tone Systems'),
+        (COLOUR_SYSTEMS, 'Colour Systems'),
+    )
+    category = models.CharField(
+        max_length=2,
+        choices=CATEGORY_CHOICES,
+        default=TONE_SYSTEMS,
+    )
 
     # related entries
     related = models.ManyToManyField('self', symmetrical=True, blank=True)

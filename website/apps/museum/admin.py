@@ -114,7 +114,7 @@ class EntryAdmin(admin.ModelAdmin):
         (None, {
             'fields': (
                 'doc_id', 'uuid', 'show_image', 'author', 'portrayed_object_date', 'date', 'date_accuracy',
-                'title', 'subtitle', 'description', 'tags', 'source',
+                'title', 'subtitle', 'category', 'description', 'tags', 'source',
                 'copyright_notice', 'license', 'related', 'link')
         }),
 

@@ -16,7 +16,9 @@ from museum.models import Keyword, Entry, Author, License, Collection
 
 
 class Command(BaseCommand):
-    help = 'Sync entries with MAdeK database'
+    help = 'Sync entries with MAdeK database. Needs two positional arguments: set uuid, category (one of tone_systems or colour_systems)'
+
+    category = 'TO'
 
     base = 'http://medienarchiv.zhdk.ch'
     # collection_remote_id = '73114b11-08de-42a9-ba36-864d9c1b5641'
@@ -29,8 +31,17 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('collection_remote_id', nargs='+', type=str)
+        parser.add_argument('category', type=str)
 
     def handle(self, *args, **options):
+
+        if (options['category'] == "tone_systems"):
+            self.category = "TO"
+        elif (options['category'] == "colour_systems"):
+            self.category = "CO"
+        else:
+            self.stdout.write(self.style.ERROR('Unknown category.'))
+            return
 
         url = self.base + '/api/media-entries/?collection_id=' + options['collection_remote_id'][0]
 
@@ -139,7 +150,9 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Madek: %s' % entry.get('id')))
 
         # the updated entry as dict
-        new_entry = {}
+        new_entry = {
+            "category": self.category
+        }
 
         # get meta data
         meta_data = requests.get(self.base + href + '/meta-data/', auth=self.auth)

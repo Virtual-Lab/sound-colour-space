@@ -1,58 +1,36 @@
 // dust filters
 var dust = require('dustjs-linkedin');
-
-
 var marked = require('marked');
 //var md5 = require('blueimp-md5');
 
-
 var renderer = new marked.Renderer();
-
 
 // override link rendering
 renderer.link = function (href, title, text) {
 
+    //console.warn(href);
+
     if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
         return '<a href="' + href + '" title="' + (title != null ? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
     }
+    /*
     else if (href.split('/')[0].indexOf('diagram') === 0) {
         return '<a href="/diagrams/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
     }
     else if (href.split('/')[0].indexOf('set') === 0) {
         return '<a href="/sets/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
     }
+    */
+
     else {
         return '<a href="' + href + '" title="' + (title != null ? title : "") + '">' + text + '</a>';
     }
 };
 
-
-/*
- marked.setOptions({
- renderer: renderer,
- gfm: true,
- tables: true,
- breaks: false,
- pedantic: false,
- sanitize: false, // IMPORTANT, because we do MathJax before markdown,
- //            however we do escaping in 'CreatePreview'.
- smartLists: true,
- smartypants: false
- });
- */
-
 // markdown filter
 dust.filters.markdown = function (text) {
     return marked(text, {renderer: renderer});
 };
-
-
-// md5 hash filter
-/*
- dust.filters.md5 = function(value) {
- return md5(value);
- };
- */
 
 // human file size filter
 dust.filters.humanFileSize = function (bytes) {
@@ -72,12 +50,9 @@ dust.filters.humanFileSize = function (bytes) {
     return bytes.toFixed(1) + ' ' + units[u];
 };
 
-// twitter filter
-dust.filters.hipster = function (text) {
-    return twttr.txt.autoLink(text,
-        {
-            usernameUrlBase: BASE_URL + "/",
-            hashtagUrlBase: BASE_URL + "/search#",
-            listUrlBase: BASE_URL + "/",
-        });
-};
+// md5 hash filter
+/*
+ dust.filters.md5 = function(value) {
+ return md5(value);
+ };
+ */

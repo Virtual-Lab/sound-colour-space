@@ -5,9 +5,11 @@
             <h4>{subtitle}</h4>
         </div>
     </div>
-    <div class="row description">
+
+
+    <div id="description" class="row description">
         <div class="small-12 columns">
-            <p>{description|markdown|s}</p>
+            <p>{description}</p>
         </div>
     </div>
 

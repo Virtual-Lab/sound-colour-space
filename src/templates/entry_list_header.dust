@@ -1,7 +1,7 @@
 <div>
     <div class="row">
         <div class="small-12 columns text-center">
-            <h3>Search</h3>
+            <h4>Search</h4>
         </div>
     </div>
 
@@ -51,7 +51,7 @@
                     <div class="accordion-content" data-tab-content>
 
                         <div class="row">
-                            <div class="small-5 columns">
+                            <div class="small-6 columns">
                                 <fieldset class="fieldset">
                                     <legend><i class="fi-filter"></i> Select date range</legend>
                                     <div class="row">
@@ -87,14 +87,16 @@
                                             </div>
                                             <button class="button normal radius float-right apply_date_range"><i class="fi-magnifying-glass"></i>&nbsp;Apply
                 </button>
-                                            <!--
-                                            <div class="medium button-group">
-                                                <button class="button apply_date__range"><i class="fi-filter"></i>&nbsp;Find</button>
-                                                <button class="button secondary remove_date__range"><i class="fi-x"></i></button>
-                                            </div>
-                                            -->
                                         </div>
                                     </div>
+                                </fieldset>
+                            </div>
+                            <div class="small-6 columns">
+                                <fieldset  class="fieldset category">
+                                    <legend><i class="fi-filter"></i> Choose Category</legend>
+                                    <button class="label tone_systems" id="tone_systems">Tone Systems</button><br>
+                                    <button class="label colour_systems" id="colour_systems">Colour Systems</button>
+                                    <button class="button normal radius float-right search"><i class="fi-magnifying-glass"></i>&nbsp;Apply</button>
                                 </fieldset>
                             </div>
                             {?meta.tags}

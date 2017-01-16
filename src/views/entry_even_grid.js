@@ -16,7 +16,11 @@ module.exports = Base.ListView.extend({
 
     addOne: function (model) {
         //console.debug('add', model.id);
-        var view = new EntryEvenGridSingleView({model: model, data: {num_columns: this.data.num_columns | 3}});
+        if (this.data.num_columns == undefined)
+            var cols = 4;
+        else
+            var cols = this.data.num_columns;
+        var view = new EntryEvenGridSingleView({model: model, data: {num_columns: cols}});
         this.$(".entries").append(view.render().el);
         view.onShow(); // TODO call onShow automatically
     },

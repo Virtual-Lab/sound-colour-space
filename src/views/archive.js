@@ -23,20 +23,25 @@ var HeaderView = Base.TemplateView.extend({
 
         this.$el.foundation();
 
-        if (!_.isUndefined(this.options.parent.collection.query.order_by))
-            $('.order_by').val(this.options.parent.collection.query.order_by);
+        var q = this.options.parent.collection.query;
+
+        if (!_.isUndefined(q.order_by))
+            $('.order_by').val(q.order_by);
 
 
-        if (!_.isUndefined(this.options.parent.collection.query.date__range))
+        if (!_.isUndefined(q.date__range))
             $('#date_range_toggle').prop('checked', true);
+
+        if (!_.isUndefined(q.category))
+            $('.category').find('.label.' + q.category).addClass('selected');
 
 
         this.date_slider = new Foundation.Slider($('#date_slider'), {
             start: 800,
             end: new Date().getFullYear() + 1,
             step: 1,
-            initialStart: _.isUndefined(this.options.parent.collection.query.date__range) ? 800 : this.options.parent.collection.query.date__range.split(',')[0],
-            initialEnd: _.isUndefined(this.options.parent.collection.query.date__range) ? new Date().getFullYear() + 1 : this.options.parent.collection.query.date__range.split(',')[1],
+            initialStart: _.isUndefined(q.date__range) ? 800 : q.date__range.split(',')[0],
+            initialEnd: _.isUndefined(q.date__range) ? new Date().getFullYear() + 1 : q.date__range.split(',')[1],
             //doubleSided: true,
             //binding: true,
             clickSelect: true,
@@ -44,13 +49,12 @@ var HeaderView = Base.TemplateView.extend({
             moveTime: 200,
         });
 
-
-
         // toggle accordion if advanced search filters are active
-        if (this.options.parent.collection.query.tags != undefined || this.options.parent.collection.query.date__range != undefined) {
+        if (q.tags != undefined || q.category != undefined || q.date__range != undefined) {
             $('#refine_search').foundation('down', $('.accordion-content'));
         }
 
+        // reinit plugins here
         Foundation.reInit('slider');
 
     },
@@ -84,11 +88,21 @@ var HeaderView = Base.TemplateView.extend({
             this.options.parent.query();
         },
 
+        'click .label.tone_systems': function (e) {
+            $(e.currentTarget).toggleClass('selected');
+            $('.label.colour_systems').removeClass('selected');
+        },
+
+        'click .label.colour_systems': function (e) {
+            $(e.currentTarget).toggleClass('selected');
+            $('.label.tone_systems').removeClass('selected');
+        },
+
         'click button.search': function () {
             this.options.parent.query();
         },
 
-        'click button.apply_date_range': function() {
+        'click button.apply_date_range': function () {
             $('#date_range_toggle').prop('checked', true);
             this.options.parent.query();
         },
@@ -195,6 +209,15 @@ module.exports = Base.TemplateView.extend({
 
         // get match
         this.collection.query.match = $('.match').val();
+
+        // category selected?
+        if ($('.label.colour_systems').hasClass('selected'))
+            this.collection.query.category = 'colour_systems';
+        else if ($('.label.tone_systems').hasClass('selected'))
+            this.collection.query.category = 'tone_systems';
+        else
+            // make sure we remove category
+            this.collection.query = _.omit(this.collection.query, 'category');
 
         // set date__range
         this.collection.query.date__range = $('#dateSliderStart').val() + ',' + $('#dateSliderEnd').val();

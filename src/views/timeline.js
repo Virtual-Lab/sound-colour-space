@@ -112,9 +112,11 @@ module.exports = Base.TemplateView.extend({
         this.data.readyToFetch = true;
         */
 
+        var offset_top = 180;
+
         $("[data-sticky_navigator]").stick_in_parent({
             parent: "[data-sticky_navigator_parent]",
-            offset_top: 90,
+            offset_top: offset_top,
             bottoming: false
         });
 
@@ -138,7 +140,7 @@ module.exports = Base.TemplateView.extend({
         // Cache selectors
         var lastId,
             timelineMenu = $("#timeline_menu"),
-            timelineMenuHeight = 90.0, //timelineMenu.outerHeight() + 15,
+            timelineMenuHeight = offset_top, //timelineMenu.outerHeight() + 15,
             // All list items
             menuItems = timelineMenu.find("a");
         // Anchors corresponding to menu items

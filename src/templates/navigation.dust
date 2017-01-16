@@ -1,7 +1,7 @@
 <div>
     <nav>
         <div class="row">
-            <div class="column text-center">
+            <div class="column text-center" style="margin:5px;">
                 <a href="/"><h1>Sound Colour Space - A Virtual Museum</h1></a>
             </div>
         </div>

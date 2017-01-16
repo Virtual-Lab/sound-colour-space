@@ -1,7 +1,7 @@
 <div>
     <div class="row">
         <div class="small-8 columns">
-            <h1>About</h1>
+            <h4>About</h4>
             </div>
         </div>
     <div class="row">
@@ -14,7 +14,7 @@
     </div>
     <div class="row">
         <div class="small-8 columns">
-            <h1>Project Team</h1>
+            <h4>Project Team</h4>
         </div>
     </div>
     <div class="row">
@@ -66,8 +66,8 @@
     </div>
     <div class="row">
         <div class="small-8 columns">
-            <h1>Inhalte vernetzen</h1>
-            <h4>Diagrammatische Modelle der Vermittlung im Projekt "Sound Colour Space"</h4>
+            <h4>Inhalte vernetzen</h4>
+            <h5>Diagrammatische Modelle der Vermittlung im Projekt "Sound Colour Space"</h5>
         </div>
     </div>
     <div class="row">

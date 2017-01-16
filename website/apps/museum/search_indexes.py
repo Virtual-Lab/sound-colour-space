@@ -9,6 +9,8 @@ class EntryIndex(indexes.SearchIndex, indexes.Indexable):
 
     title = indexes.CharField(model_attr='title', null=True)
 
+    #category = indexes.CharField(model_attr='category', null=True)
+
     portrayed_object_date = indexes.CharField(model_attr='portrayed_object_date', null=True)
     portrayed_object_date_auto = indexes.EdgeNgramField(model_attr='portrayed_object_date', null=True)
 
@@ -26,7 +28,9 @@ class EntryIndex(indexes.SearchIndex, indexes.Indexable):
     def prepare(self, object):
         self.prepared_data = super(EntryIndex, self).prepare(object)
         self.prepared_data['tags'] = [tag.name for tag in object.tags.all()]
-        #print ([tag.name for tag in object.tags.all()])
+
+        self.prepared_data['category'] = object.category
+
 
         return self.prepared_data
 

@@ -238,6 +238,15 @@ class EntryResource(ModelResource):
         order_by = request.GET.get('order_by', 'date')
         date_range = request.GET.get('date__range', None)
         tags = request.GET.get('tags', [])
+        cat = request.GET.get('category', None)
+
+        category = None
+
+        if cat:
+            if cat == 'tone_systems':
+                category = 'TO'
+            elif cat == 'colour_systems':
+                category = 'CO'
 
         match = request.GET.get('match', 'OR')
         operator = SQ.OR if (match == 'OR') else SQ.AND
@@ -286,6 +295,7 @@ class EntryResource(ModelResource):
             if not results:
                 results = EmptySearchQuerySet()
 
+
         selected_tags = []
         if tags:
             selected_tags = [t.strip() for t in tags.split(',')]
@@ -301,6 +311,9 @@ class EntryResource(ModelResource):
             tags = Keyword.objects.filter(pk__in=possible_tags).order_by('name')
         else:
             tags = Keyword.objects.all()
+
+        if category:
+            results = results.filter(category=category)
 
         tag_objects = []
         for t in tags: tag_objects.append(

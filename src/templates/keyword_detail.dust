@@ -1,7 +1,7 @@
 <div id="keyword">
     <div class="row">
         <div class="small-12 columns text-center">
-            <h4>{name}</h4>
+            <h4>&#171;{name}&#187;</h4>
         </div>
     </div>
     <div class="row description">

@@ -1,5 +1,5 @@
 // map-get($foundation-palette, primary)
-$timeline_color: #333
+$timeline_color: #888
 
 #timeline_header
   display: block
@@ -55,12 +55,14 @@ $timeline_color: #333
     left: 27px
     width: calc(100% - 57px)
 
+
+
     h1
+      //color: $timeline_color
       font-size: 1.125rem
       padding: 20px
-
-      background-color: darken($body-background, 3)
-      border: 1px lighten($timeline_color, 20) solid
+      background-color: darken($body-background, 1)
+      border: 1px $timeline_color solid
 
     .connector
 

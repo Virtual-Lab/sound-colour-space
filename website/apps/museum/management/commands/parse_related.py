@@ -7,8 +7,17 @@ from museum.models import Entry, Collection
 class Command(BaseCommand):
     help = 'Set description and set related entries based on annotations (regular expression search)'
 
+    ref_id = []
+
     def add_arguments(self, parser):
         parser.add_argument('type', type=str)
+
+    def repl(self, matchobj):
+        refs = []
+        for x in (matchobj.group(0).replace('[', '').replace(']', '').replace(' ','').split(',')):
+            self.ref_id.append(int(x))
+            refs += {'[' + x + '][]'}
+        return "[" + ','.join(refs) + "]"
 
     def handle(self, *args, **options):
 
@@ -61,33 +70,25 @@ class Command(BaseCommand):
 
         elif (options['type'] == 'diagrams'):
             entries = Entry.objects.all()
+
             total = 0
             for e in entries:
-                matches = re.findall('\[\d+\]', unicode(e.description))
-                if matches:
-                    i = 0
-                    for m in matches:
-                        number = (int)(matches[i].replace('[', '').replace(']', ''))
-                        try:
-                            ref = Entry.objects.get(doc_id=number)
-                            title = ref.title
-                            # update description text: [doc_id](doc_id "title")
-                            e.description = e.description.replace(matches[i], '[' + matches[i] + '](diagram/' + str(
-                                number) + ' "' + title + '")')
+                e.description = re.sub("\[([\d, *]+)\]", self.repl, unicode(e.description))
 
-                            # add related obj
-                            e.related.add(ref)
+                # ref: [45]: /diagrams/45 "Diatonic Scale"
+                for i in self.ref_id:
+                    try:
+                        ref = Entry.objects.get(doc_id=i)
+                        ref_link = '\r\n[' + str(ref.doc_id) + ']' + ': /' + ref.get_absolute_url() + " \"" + ref.title + "\""
+                        e.description += ref_link
 
-                            e.save()
+                        e.save()
+                    except Entry.DoesNotExist:
+                        self.stdout.write(self.style.WARNING('Referenced entry does not exist: %s' % i))
 
-                            # save only number for related set
-                            # matches[i] = number
-                        except (Entry.DoesNotExist):
-                            self.stdout.write(self.style.WARNING('Referenced entry does not exist: %s' % number))
+                self.ref_id = []
 
-                        i += 1
-
-                    total += 1
+                total += 1
 
             self.stdout.write(self.style.SUCCESS('Updated %s entries.' % total))
 

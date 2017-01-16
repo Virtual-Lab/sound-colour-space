@@ -21,7 +21,7 @@ module.exports = Base.DetailView.extend({
     template: require('../templates/keyword_detail.dust'),
 
     data: {
-        preferredView: 'list'
+
     },
 
     onShow: function () {
@@ -46,8 +46,7 @@ module.exports = Base.DetailView.extend({
             //data: params,
             url: uri,
             success: function (collection, response, options) {
-               if (!App.preferredView)
-                    App.preferredView = 'list';
+
                 if (App.preferredView === 'list')
                     var view = new EntryListView({collection: this.collection});
                 else if (App.preferredView === 'grid')

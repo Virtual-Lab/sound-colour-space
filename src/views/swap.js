@@ -1,4 +1,4 @@
-module.exports = function(region, newView) {
+module.exports = function (region, newView) {
 
     // if there's an old View in the region, grab a reference to it
     var oldView = region.view;
@@ -12,7 +12,7 @@ module.exports = function(region, newView) {
         }
 
         // remove the old View HTML from the page
-        if (oldView.onRemove){
+        if (oldView.onRemove) {
             oldView.onRemove();
         }
         oldView.remove();
@@ -30,16 +30,9 @@ module.exports = function(region, newView) {
     // put the HTML output from the new View into the Region (and therefore the page)
     region.html(newView.render().el);
 
-    if (newView.onShow){
+    if (newView.onShow) {
         newView.onShow();
-
-        /*
-        if ($(document).find('#date_slider').length)
-            Foundation.reInit('slider');
-        */
-
-
-
     }
-
 };
+
+

@@ -26,15 +26,21 @@ module.exports = Base.DetailView.extend({
 
         if (!App.preferredView)
             App.preferredView = 'list';
-        if (App.preferredView === 'list')
+
+        if (App.preferredView === 'list') {
             var view = new EntryListView({collection: this.collection});
-        else if (App.preferredView === 'grid')
+        }
+
+        else if (App.preferredView === 'grid') {
             var view = new EntryGridView({collection: this.collection});
-        else
+        }
+
+        else {
             var view = new EntryEvenGridView({
                 collection: this.collection,
                 data: {num_columns: this.model.get('num_columns')}
             });
+        }
 
         swap($('[data-js-region="entry_list"]'), view);
     },
