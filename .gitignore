@@ -5,9 +5,6 @@ website/project/local_settings.py
 website/site-static/bower_components
 website/media
 
-website/site-static/js/bundle.js
-website/site-static/js/bundle.js.map
-
 *.pyc
 
 .idea/
