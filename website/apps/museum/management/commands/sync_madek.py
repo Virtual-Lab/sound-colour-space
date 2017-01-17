@@ -14,6 +14,9 @@ from django.utils import timezone
 
 from requests.auth import HTTPBasicAuth
 
+import urllib3
+urllib3.disable_warnings()
+
 import tempfile
 
 from django.core.files import File
