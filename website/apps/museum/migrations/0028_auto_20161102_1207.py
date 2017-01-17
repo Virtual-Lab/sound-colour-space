@@ -53,6 +53,9 @@ class Migration(migrations.Migration):
         # update uuid
         migrations.RunPython(concat_uuid),
 
+        migrations.RunSQL('SET CONSTRAINTS ALL IMMEDIATE',
+                          reverse_sql=migrations.RunSQL.noop),
+
         migrations.AlterModelOptions(
             name='experiment',
             options={'ordering': ('title',), 'verbose_name': 'experiment', 'verbose_name_plural': 'experiments'},
@@ -99,5 +102,8 @@ class Migration(migrations.Migration):
                 name='uuid',
                 field=models.UUIDField(default=uuid.uuid4, editable=False),
             ),
-        ])
+        ]),
+
+        migrations.RunSQL(migrations.RunSQL.noop,
+                          reverse_sql='SET CONSTRAINTS ALL IMMEDIATE')
     ]
