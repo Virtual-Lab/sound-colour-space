@@ -1,7 +1,11 @@
 <section id="entries">
-    <div class="row">
-        <div class="medium-12 columns">
+
+            {#meta}
+            {@gt key=total_count value="0"}
             <div class="row entries"></div>
-        </div>
-    </div>
+            {:else}
+            <h5 class="text-center">No results. Try to remove a filter or change your query term.</h5>
+            {/gt}
+            {/meta}
+
 </section>

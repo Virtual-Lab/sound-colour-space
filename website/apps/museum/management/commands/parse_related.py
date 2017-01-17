@@ -86,6 +86,7 @@ class Command(BaseCommand):
                     except Entry.DoesNotExist:
                         self.stdout.write(self.style.WARNING('Referenced entry does not exist: %s' % i))
 
+                # clear list for next entry
                 self.ref_id = []
 
                 total += 1

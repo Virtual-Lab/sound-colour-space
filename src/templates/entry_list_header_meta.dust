@@ -10,17 +10,20 @@
     {/meta.search_query}
     <div class="row">
         <div class="small-12 column text-center">
-            {#meta}
-            <p>Showing {totalItems}/{total_count} diagrams.</p>
-            {/meta}
+
+            <!--<p>Showing {totalItems}/{total_count} diagrams.</p>-->
+
         </div>
     </div>
 </div>
 {:else}
+
 <div>
     <div class="row">
         <div class="small-12 large-expand columns text-center">
+            {?meta.search_query}
             <h5>Nothing found for: <b>{#meta.search_query sep="{match}"}{term}{@sep} {sep} {/sep}{/meta.search_query}</b></h5>
+            {/meta.search_query}
         </div>
     </div>
 </div>

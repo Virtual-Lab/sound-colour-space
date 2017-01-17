@@ -18,9 +18,10 @@ module.exports = Base.ListView.extend({
         //console.debug('add', model.id);
         var view = new EntryListSingleView({model: model, tagName: "tr"});
         this.$(".entries").append(view.render().el);
-        view.onShow(); // TODO call onShow automatically
+        view.onShow();
     },
 
+    /*
     // override render function because adding items must be done in the onShow() function
     render: function () {
 
@@ -41,5 +42,6 @@ module.exports = Base.ListView.extend({
         //console.debug("############################################onShow list");
         this.collection.each(this.addOne, this);
     },
+    */
 
 });

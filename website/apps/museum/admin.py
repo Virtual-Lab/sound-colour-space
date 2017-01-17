@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import os
 from django.contrib import admin
 from django.core import urlresolvers
 from django.utils.html import format_html
@@ -152,8 +153,9 @@ class EntryAdmin(admin.ModelAdmin):
     def show_image(self, obj):
         if obj.image:
             return format_html(
-                '<img src={} width=100px />',
-                obj.image.url
+                '<img src={} width=100px /><br /><span>{}</span>',
+                obj.image.url,
+                os.path.split(obj.image.name)[1]
             )
         else:
             return ''

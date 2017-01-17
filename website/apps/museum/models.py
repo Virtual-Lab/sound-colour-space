@@ -235,6 +235,10 @@ class Entry(Base):
     def get_absolute_url(self):
         return 'diagrams/%s' % self.doc_id
 
+    @property
+    def filename(self):
+        return os.path.basename(self.image.name)
+
 
 class Collection(Base):
     """

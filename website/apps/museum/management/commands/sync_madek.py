@@ -6,6 +6,12 @@ import os
 import requests
 import shutil
 
+
+import re
+from datetime import datetime
+from django.utils import timezone
+
+
 from requests.auth import HTTPBasicAuth
 
 import tempfile
@@ -234,12 +240,21 @@ class Command(BaseCommand):
                 f.close()
                 os.unlink(f.name)
 
-        # set licenses, authors
+        # set licenses, authors, keywords
         self.stdout.write(self.style.SUCCESS('Entry: %s' % obj))
         obj.license.set(license_objs)
         obj.author.set(author_objs)
         for keyword in keywords_objs:
             obj.tags.add(keyword)
+
+        # set date
+        m = re.findall('^(\d{4})', str(obj.portrayed_object_date))
+        if m:
+            date = datetime.strptime(m[0], '%Y')
+            date = timezone.make_aware(date, timezone.get_current_timezone())
+            obj.date = date
+            obj.date_accuracy = 3
+            obj.save()
 
         return obj
 

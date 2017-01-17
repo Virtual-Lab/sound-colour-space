@@ -173,9 +173,10 @@ module.exports = Base.TemplateView.extend({
             url: uri,
             success: function (collection, response, options) {
                 //console.warn("adding", collection.models.length, "total", this.collection.length);
-                this.header();
+                //this.header();
+                // just for meta...
                 this.entry_list_header_meta();
-                //console.log(this.collection.meta);
+                this.onShow();
             }.bind(this)
         });
     },
@@ -188,6 +189,7 @@ module.exports = Base.TemplateView.extend({
     },
 
     entry_list_header_meta: function () {
+        //console.warn(this.collection.meta);
         swap($('[data-js-region="entry_list_header_meta"]'), new MetaView({
             parent: this,
             data: {meta: _.extend(this.collection.meta, {totalItems: this.collection.length})}
