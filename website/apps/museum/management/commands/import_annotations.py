@@ -51,6 +51,7 @@ class Command(BaseCommand):
                         if i > 0:
                             self.stdout.write(
                                 self.style.WARNING('multiple entries for %s doc_id: %s' % (e, e.doc_id)))
+                            continue
 
                         annotation = item[1]
                         annotation = annotation.replace('####', '\r\n\r\n')
