@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import codecs
 
+from django.db import IntegrityError
 from museum.models import Entry, Collection, Keyword
 
 
@@ -58,12 +59,15 @@ class Command(BaseCommand):
                         annotation = annotation.replace('##',
                                                         '  \r\n')  # two spaces before newline for markdown newline
                         e.description = annotation
-                        e.doc_id = item[2]
-                        e.save()
+                        try:
+                            e.doc_id = item[2]
+                            e.save()
+                        except IntegrityError:
+                            self.style.WARNING('multiple keys for %s doc_id: %s' % (e, e.doc_id))
 
                         i += 1
 
-                        total += 1
+                    total += 1
 
                     '''
                     if len(entries) == 0:
