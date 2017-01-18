@@ -3,7 +3,11 @@
     <div id="entry_list_header_meta" data-js-region="entry_list_header_meta"></div>
     <div class="row">
         <div class="small-12 columns">
+            {#meta}
+            {@gt key=total_count value="0"}
             <div id="entry_list" data-js-region="entry_list"></div>
+            {/gt}
+            {/meta}
         </div>
     </div>
 </div>

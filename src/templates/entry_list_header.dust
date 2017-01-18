@@ -33,7 +33,7 @@
                 </button>
             </h5>
         </div>
-        <div class="small-2 columns">
+        <div class="small-6 columns">
             <h5>
                 <button class="button normal radius float-right search"><i class="fi-magnifying-glass"></i>&nbsp;Search
                 </button>

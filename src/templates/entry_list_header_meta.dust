@@ -4,7 +4,7 @@
     {?meta.search_query}
     <div class="row">
         <div class="small-12 large-expand columns text-center">
-            <h5>Search results for: <b>{#meta.search_query sep="{match}"}{term}{@sep} {sep} {/sep}{/meta.search_query}</b></h5>
+            <h5>{total_count} results for: <b>{#meta.search_query sep="{match}"}{term}{@sep} {sep} {/sep}{/meta.search_query}</b></h5>
         </div>
     </div>
     {/meta.search_query}
@@ -23,6 +23,8 @@
         <div class="small-12 large-expand columns text-center">
             {?meta.search_query}
             <h5>Nothing found for: <b>{#meta.search_query sep="{match}"}{term}{@sep} {sep} {/sep}{/meta.search_query}</b></h5>
+            {:else}
+            <h5 class="text-center">No results, try to adjust your query or filter.</h5>
             {/meta.search_query}
         </div>
     </div>

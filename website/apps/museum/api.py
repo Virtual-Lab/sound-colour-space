@@ -295,7 +295,6 @@ class EntryResource(ModelResource):
             if not results:
                 results = EmptySearchQuerySet()
 
-
         selected_tags = []
         if tags:
             selected_tags = [t.strip() for t in tags.split(',')]
@@ -308,16 +307,22 @@ class EntryResource(ModelResource):
             for r in results.all():
                 possible_tags += [t.pk for t in r.object.tags.all()]
             possible_tags = set(possible_tags)  # convert to set to remove duplicates
-            tags = Keyword.objects.filter(pk__in=possible_tags).order_by('name')
+            new_tags = Keyword.objects.filter(pk__in=possible_tags).order_by('name')
         else:
-            tags = Keyword.objects.all()
+            new_tags = Keyword.objects.all()
 
         if category:
             results = results.filter(category=category)
 
-        tag_objects = []
-        for t in tags: tag_objects.append(
+        tag_objects = [] # what we will return
+        for t in new_tags: tag_objects.append(
             {"name": t.name, "slug": t.slug, "selected": True if t.slug in selected_tags else False})
+
+        # make sure we return at least the selected tag, if no results were found
+        if len(tag_objects) == 0:
+            user_tags = Keyword.objects.filter(slug__in=selected_tags).order_by('name')
+            for t in user_tags: tag_objects.append(
+                {"name": t.name, "slug": t.slug, "selected": True})
 
         if date_range:
             start = date_range.split(',')[0]

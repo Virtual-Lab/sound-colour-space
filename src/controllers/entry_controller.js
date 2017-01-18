@@ -55,7 +55,9 @@ module.exports.Archive = function (query) {
         App.ArchiveEntries.query = _.defaults(params, {limit: 30, order_by: 'date', match: 'OR', image_size: 'x-small'});
     }
 
-    var archive = new ArchiveView({collection: App.ArchiveEntries});
+    var archive = new ArchiveView({
+        collection: App.ArchiveEntries
+    });
     App.View.archive = archive;
 
     swap(Regions.content, archive);

@@ -118,12 +118,16 @@ var MetaView = Base.TemplateView.extend({
 });
 
 
-module.exports = Base.TemplateView.extend({
+module.exports = Base.ListView.extend({
 
     template: require('../templates/archive.dust'),
 
     data: {
         logged_in_slug: SLUG    // used in the template to check if the user is on his own profile page
+    },
+
+    addOne: function (model) {
+        return;
     },
 
     onShow: function () {
@@ -146,7 +150,8 @@ module.exports = Base.TemplateView.extend({
         $(window).on("scroll", _.bind(function () {
             var scrollHeight = $(document).height();
             var scrollPosition = $(window).height() + $(window).scrollTop();
-            if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
+            // console.log((scrollHeight - scrollPosition) / scrollHeight);
+            if ((scrollHeight - scrollPosition) / scrollHeight < 0.1) {
                 // load more!
                 if (this.collection.meta !== undefined && this.collection.meta.next != null) {
                     //console.warn(this.collection.meta.next);
@@ -163,21 +168,26 @@ module.exports = Base.TemplateView.extend({
         }, this));
     },
 
+    onRemove: function () {
+        $(window).unbind('scroll');
+    },
+
     search: function () {
 
         var uri = new URI(apiUrl('entries') + 'search?' + URI.buildQuery(this.collection.query, true)).readable();
 
         this.collection.search({
             reset: true,
-            //data: params,
             url: uri,
             success: function (collection, response, options) {
-                //console.warn("adding", collection.models.length, "total", this.collection.length);
-                //this.header();
-                // just for meta...
-                this.entry_list_header_meta();
+                this.collection.meta = collection.meta;
+                _.extend(this.data, {meta: collection.meta});
+                this.render();
                 this.onShow();
+                this.entry_list_header_meta();
+
             }.bind(this)
+
         });
     },
 

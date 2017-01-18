@@ -8,7 +8,7 @@
             </select>
         </label>
     </div>
-    <div class="small-6 column">
+    <div class="small-10 column">
         <div class="input-group">
             <input class="input-group-field search" type="search" placeholder="" value="{term}">
             <div class="input-group-button">
