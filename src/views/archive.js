@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 var Base = require('./base');
 
 var EntryListView = require('./entry_list');

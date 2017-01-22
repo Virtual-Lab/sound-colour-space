@@ -3,7 +3,7 @@
     {!<td>{#author}{first_name} {last_name} {?pseudonym}({pseudonym}){/pseudonym}{/author}</td>!}
     <td>{portrayed_object_date}</td>
     <td class="diagram"><a href="{uri}"><img src="{image.url}" /></a></td>
-    <td class="annotation"><div class="truncate"><a href="{uri}">{description}</a></div></td>
+    <td class="annotation"><a href="{uri}"><div class="truncate">{description}</div></a></td>
     {!<td>{#tags}{.}{@sep},{/sep}{/tags}</td>!}
 </tr>
 

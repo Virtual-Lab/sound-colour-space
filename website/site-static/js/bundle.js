@@ -48607,7 +48607,7 @@ module.exports.Detail = function (doc_id) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../models/entries":39,"../models/entry":40,"../views/archive":79,"../views/entry_detail":82,"../views/regions.js":97,"../views/swap.js":101,"../views/timeline":102,"foundation-sites":8,"jquery":12,"lodash":14,"urijs":27}],33:[function(require,module,exports){
+},{"../models/entries":40,"../models/entry":41,"../views/archive":80,"../views/entry_detail":83,"../views/regions.js":98,"../views/swap.js":102,"../views/timeline":103,"foundation-sites":8,"jquery":12,"lodash":14,"urijs":27}],33:[function(require,module,exports){
 var _ = require('lodash');
 var $ = require('jquery');
 
@@ -48658,7 +48658,7 @@ module.exports.Detail = function (slug) {
     });
 };
 
-},{"../models/keyword":43,"../models/keywords":44,"../views/keyword_detail":93,"../views/keyword_list":94,"../views/regions.js":97,"../views/swap.js":101,"jquery":12,"lodash":14}],34:[function(require,module,exports){
+},{"../models/keyword":44,"../models/keywords":45,"../views/keyword_detail":94,"../views/keyword_list":95,"../views/regions.js":98,"../views/swap.js":102,"jquery":12,"lodash":14}],34:[function(require,module,exports){
 var _ = require('lodash');
 var $ = require('jquery');
 
@@ -48707,7 +48707,7 @@ module.exports.Detail = function (doc_id) {
     });
 };
 
-},{"../models/set":45,"../models/sets":46,"../views/regions.js":97,"../views/set_detail":98,"../views/set_list":99,"../views/swap.js":101,"jquery":12,"lodash":14}],35:[function(require,module,exports){
+},{"../models/set":46,"../models/sets":47,"../views/regions.js":98,"../views/set_detail":99,"../views/set_list":100,"../views/swap.js":102,"jquery":12,"lodash":14}],35:[function(require,module,exports){
 var _ = require('lodash');
 var $ = require('jquery');
 
@@ -48747,7 +48747,7 @@ module.exports.Detail = function (slug) {
     experiment.fetch();
 };
 
-},{"../models/experiment":41,"../models/experiments":42,"../views/experiment_detail":89,"../views/experiment_list":90,"../views/regions.js":97,"../views/swap.js":101,"jquery":12,"lodash":14}],36:[function(require,module,exports){
+},{"../models/experiment":42,"../models/experiments":43,"../views/experiment_detail":90,"../views/experiment_list":91,"../views/regions.js":98,"../views/swap.js":102,"jquery":12,"lodash":14}],36:[function(require,module,exports){
 // dust filters
 var dust = require('dustjs-linkedin');
 var marked = require('marked');
@@ -48808,6 +48808,916 @@ dust.filters.humanFileSize = function (bytes) {
  */
 
 },{"dustjs-linkedin":5,"marked":15}],37:[function(require,module,exports){
+'use strict';
+
+/**
+ * jsOnlyLightbox 0.5.5
+ * Copyright © 2014 Felix Hagspiel - http://jslightbox.felixhagspiel.de
+ *
+ * @license MIT
+ * - Free for use in both personal and commercial projects
+ */
+/* exported Lightbox */
+module.exports = function() {
+
+  /**
+   * Constants
+   */
+  var _const_name = 'jslghtbx';
+  var _const_class_prefix = _const_name;
+  var _const_id_prefix = _const_name;
+  var _const_dataattr = 'data-' + _const_name;
+  /**
+   * Private vars
+   */
+  var CTX = this,
+    isIE8 = false,
+    isIE9 = false,
+    body = document.getElementsByTagName('body')[0],
+    template = '<div class="' + _const_name + '-contentwrapper" id="' + _const_name + '-contentwrapper" ></div>',
+    imgRatio = false, // ratio of current image
+    currGroup = false, // current group
+    currThumbnail = false, // first clicked thumbnail
+    currImage = {}, // currently shown image
+    currImages = [], // images belonging to current group
+    isOpen = false, // check if box is open
+    animationEl, // reference to animation-element
+    animationInt, // animation-interval
+    animationChildren = [], // childs to animate
+    animationTimeout, // timeout until animation starts
+  // controls
+    nextBtn = false,
+    prevBtn = false,
+  // resize-vars
+    maxWidth,
+    maxHeight,
+    newImgWidth,
+    newImgHeight;
+
+  /*
+   *   Public attributes
+   */
+  CTX.opt = {};
+  CTX.box = false;
+  CTX.wrapper = false;
+  CTX.thumbnails = [];
+
+  /**
+   * Private methods
+   */
+
+  /**
+   * Get correct height in IE8
+   * @return {number}
+   */
+  function getHeight() {
+    return window.innerHeight || document.documentElement.offsetHeight;
+  }
+
+  /**
+   * Get correct width in IE8
+   * @return {number}
+   */
+  function getWidth() {
+    return window.innerWidth || document.documentElement.offsetWidth;
+  }
+
+  /**
+   * Adds eventlisteners cross browser
+   * @param {Object}   el       The element which gets the listener
+   * @param {String}   e        The event type
+   * @param {Function} callback The action to execute on event
+   * @param {Boolean}  capture      The capture mode
+   */
+  function addEvent(el, e, callback, capture) {
+    if (el.addEventListener) {
+      el.addEventListener(e, callback, capture || false);
+    } else if (el.attachEvent) {
+      el.attachEvent('on' + e, callback);
+    }
+  }
+
+  /**
+   * Checks if element has a specific class
+   * @param  {Object}  el        [description]
+   * @param  {String}  className [description]
+   * @return {Boolean}           [description]
+   */
+  function hasClass(el, className) {
+    if (!el || !className) {
+      return;
+    }
+    return (new RegExp('(^|\\s)' + className + '(\\s|$)').test(el.className));
+  }
+
+  /**
+   * Removes class from element
+   * @param  {Object} el
+   * @param  {String} className
+   * @return {Object}
+   */
+  function removeClass(el, className) {
+    if (!el || !className) {
+      return;
+    }
+    el.className = el.className.replace(new RegExp('(?:^|\\s)' + className + '(?!\\S)'), '');
+    return el;
+  }
+
+  /**
+   * Adds class to element
+   * @param  {Object} el
+   * @param  {String} className
+   * @return {Object}
+   */
+  function addClass(el, className) {
+    if (!el || !className) {
+      return;
+    }
+    if (!hasClass(el, className)) {
+      el.className += ' ' + className;
+    }
+    return el;
+  }
+
+  /**
+   * Checks if obj is set
+   * @param  {Object} obj
+   * @return {Boolean}
+   */
+  function isset(obj) {
+    return typeof obj !== 'undefined';
+
+  }
+
+  /**
+   * Get attribute value cross-browser. Returns the attribute as string if found,
+   * otherwise returns false
+   * @param  {Object} obj
+   * @param  {String} attr
+   * @return {boolean || string}
+   */
+  function getAttr(obj, attr) {
+    if (!obj || !isset(obj)) {
+      return false;
+    }
+    var ret;
+    if (obj.getAttribute) {
+      ret = obj.getAttribute(attr);
+    }
+    else if (obj.getAttributeNode) {
+      ret = obj.getAttributeNode(attr).value;
+    }
+    if (isset(ret) && ret !== '') {
+      return ret;
+    }
+    return false;
+  }
+
+  /**
+   * Checks if element has attribute cross-browser
+   * @param  {Object}  obj
+   * @param  {String}  attr
+   * @return {Boolean}
+   */
+  function hasAttr(obj, attr) {
+    if (!obj || !isset(obj)) {
+      return false;
+    }
+    var ret;
+    if (obj.getAttribute) {
+      ret = obj.getAttribute(attr);
+    }
+    else if (obj.getAttributeNode) {
+      ret = obj.getAttributeNode(attr).value;
+    }
+    return typeof ret === 'string';
+
+  }
+
+  /**
+   * Adds clickhandlers to thumbnails
+   * @param  {Object} i
+   */
+  function clckHlpr(i) {
+    addEvent(i, 'click', function (e) {
+      stopPropagation(e);
+      preventDefault(e);
+      currGroup = getAttr(i, _const_dataattr + '-group') || false;
+      currThumbnail = i;
+      openBox(i, false, false, false);
+    }, false);
+  }
+
+  /**
+   * Stop event propagation cross browser
+   * @param  {Object} e
+   */
+  function stopPropagation(e) {
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+    else {
+      e.returnValue = false;
+    }
+  }
+
+  /**
+   * Prevent default cross browser
+   * @param  {Object} e
+   */
+  function preventDefault(e) {
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
+    else {
+      e.returnValue = false;
+    }
+  }
+
+
+  /**
+   * Get thumbnails by group
+   * @param  {String} group
+   * @return {Object}       Array containing the thumbnails
+   */
+  function getByGroup(group) {
+    var arr = [];
+    for (var i = 0; i < CTX.thumbnails.length; i++) {
+      if (getAttr(CTX.thumbnails[i], _const_dataattr + '-group') === group) {
+        arr.push(CTX.thumbnails[i]);
+      }
+    }
+    return arr;
+  }
+
+  /**
+   * Get the position of thumbnail in group-array
+   * @param  {Object} thumbnail
+   * @param  {String} group
+   * @return {number}
+   */
+  function getPos(thumbnail, group) {
+    var arr = getByGroup(group);
+    for (var i = 0; i < arr.length; i++) {
+      // compare elements
+      if (getAttr(thumbnail, 'src') === getAttr(arr[i], 'src') &&
+        getAttr(thumbnail, _const_dataattr + '-index') === getAttr(arr[i], _const_dataattr + '-index') &&
+        getAttr(thumbnail, _const_dataattr) === getAttr(arr[i], _const_dataattr)) {
+
+        return i;
+      }
+    }
+  }
+
+  /**
+   * Preloads next and prev images
+   */
+  function preload() {
+    if (!currGroup) {
+      return;
+    }
+    var prev = new Image();
+    var next = new Image();
+    var pos = getPos(currThumbnail, currGroup);
+    if (pos === (currImages.length - 1)) {
+      // last image in group, preload first image and the one before
+      prev.src = getAttr(currImages[currImages.length - 1], _const_dataattr) || currImages[currImages.length - 1].src;
+      next.src = getAttr(currImages[0].src, _const_dataattr) || currImages[0].src;
+    } else if (pos === 0) {
+      // first image in group, preload last image and the next one
+      prev.src = getAttr(currImages[currImages.length - 1], _const_dataattr) || currImages[currImages.length - 1].src;
+      next.src = getAttr(currImages[1], _const_dataattr) || currImages[1].src;
+    } else {
+      // in between, preload prev & next image
+      prev.src = getAttr(currImages[pos - 1], _const_dataattr) || currImages[pos - 1].src;
+      next.src = getAttr(currImages[pos + 1], _const_dataattr) || currImages[pos + 1].src;
+    }
+  }
+
+  /**
+   * Starts the loading animation
+   */
+  function startAnimation() {
+    if (isIE8) {
+      return;
+    }
+    // stop any already running animations
+    stopAnimation();
+    var fnc = function () {
+      addClass(CTX.box, _const_class_prefix + '-loading');
+      if (!isIE9 && typeof CTX.opt.loadingAnimation === 'number') {
+        var index = 0;
+        animationInt = setInterval(function () {
+          addClass(animationChildren[index], _const_class_prefix + '-active');
+          setTimeout(function () {
+            removeClass(animationChildren[index], _const_class_prefix + '-active');
+          }, CTX.opt.loadingAnimation);
+          index = index >= animationChildren.length ? 0 : index += 1;
+        }, CTX.opt.loadingAnimation);
+      }
+    };
+    // set timeout to not show loading animation on fast connections
+    animationTimeout = setTimeout(fnc, 500);
+  }
+
+  /**
+   * Stops the animation
+   */
+  function stopAnimation() {
+    if (isIE8) {
+      return;
+    }
+    // hide animation-element
+    removeClass(CTX.box, _const_class_prefix + '-loading');
+    // stop animation
+    if (!isIE9 && typeof CTX.opt.loadingAnimation !== 'string' && CTX.opt.loadingAnimation) {
+      clearInterval(animationInt);
+      // do not use animationChildren.length here due to IE8/9 bugs
+      for (var i = 0; i < animationChildren.length; i++) {
+        removeClass(animationChildren[i], _const_class_prefix + '-active');
+      }
+    }
+  }
+
+  /**
+   * Initializes the control arrows
+   */
+  function initControls() {
+    if (!nextBtn) {
+      // create & append next-btn
+      nextBtn = document.createElement('span');
+      addClass(nextBtn, _const_class_prefix + '-next');
+
+      // add custom images
+      if (CTX.opt.nextImg) {
+        var nextBtnImg = document.createElement('img');
+        nextBtnImg.setAttribute('src', CTX.opt.nextImg);
+        nextBtn.appendChild(nextBtnImg);
+      } else {
+        addClass(nextBtn, _const_class_prefix + '-no-img');
+      }
+      addEvent(nextBtn, 'click', function (e) {
+        stopPropagation(e); // prevent closing of lightbox
+        CTX.next();
+      }, false);
+      CTX.box.appendChild(nextBtn);
+    }
+    addClass(nextBtn, _const_class_prefix + '-active');
+    if (!prevBtn) {
+      // create & append next-btn
+      prevBtn = document.createElement('span');
+      addClass(prevBtn, _const_class_prefix + '-prev');
+
+      // add custom images
+      if (CTX.opt.prevImg) {
+        var prevBtnImg = document.createElement('img');
+        prevBtnImg.setAttribute('src', CTX.opt.prevImg);
+        prevBtn.appendChild(prevBtnImg);
+      } else {
+        addClass(prevBtn, _const_class_prefix + '-no-img');
+      }
+      addEvent(prevBtn, 'click', function (e) {
+        stopPropagation(e); // prevent closing of lightbox
+        CTX.prev();
+      }, false);
+      CTX.box.appendChild(prevBtn);
+    }
+    addClass(prevBtn, _const_class_prefix + '-active');
+  }
+
+  /**
+   * Moves controls to correct position
+   */
+  function repositionControls() {
+    if (CTX.opt.responsive && nextBtn && prevBtn) {
+      var btnTop = (getHeight() / 2) - (nextBtn.offsetHeight / 2);
+      nextBtn.style.top = btnTop + 'px';
+      prevBtn.style.top = btnTop + 'px';
+    }
+  }
+
+  /**
+   * Sets options and defaults
+   * @param {Object} opt
+   */
+  function setOpt(opt) {
+    // set options
+    if (!opt) {
+      opt = {};
+    }
+
+    /**
+     * Sets the passed value per default to true if not given
+     * @param {Object || String || Number || Boolean || ...} val
+     * @returns {Boolean}
+     */
+    function setTrueDef(val) {
+      return typeof val === 'boolean' ? val : true;
+    }
+
+    CTX.opt = {
+      // options
+      boxId: opt.boxId || false,
+      controls: setTrueDef(opt.controls),
+      dimensions: setTrueDef(opt.dimensions),
+      captions: setTrueDef(opt.captions),
+      prevImg: typeof opt.prevImg === 'string' ? opt.prevImg : false,
+      nextImg: typeof opt.nextImg === 'string' ? opt.nextImg : false,
+      hideCloseBtn: opt.hideCloseBtn || false,
+      closeOnClick: typeof opt.closeOnClick === 'boolean' ? opt.closeOnClick : true,
+      nextOnClick: setTrueDef(opt.nextOnClick),
+      loadingAnimation: opt.loadingAnimation === undefined ? true : opt.loadingAnimation,
+      animElCount: opt.animElCount || 4,
+      preload: setTrueDef(opt.preload),
+      carousel: setTrueDef(opt.carousel),
+      animation: typeof opt.animation === 'number' || opt.animation === false ? opt.animation : 400,
+      responsive: setTrueDef(opt.responsive),
+      maxImgSize: opt.maxImgSize || 0.8,
+      keyControls: setTrueDef(opt.keyControls),
+      hideOverflow: opt.hideOverflow || true,
+      // callbacks
+      onopen: opt.onopen || false,
+      onclose: opt.onclose || false,
+      onload: opt.onload || false,
+      onresize: opt.onresize || false,
+      onloaderror: opt.onloaderror || false,
+      onimageclick: typeof opt.onimageclick === 'function' ? opt.onimageclick : false
+    };
+
+    // load box in custom element
+    if (CTX.opt.boxId) {
+      CTX.box = document.getElementById(CTX.opt.boxId);
+      // set class if missing
+      var classes = CTX.box.getAttribute('class');
+      if (classes.search(_const_class_prefix + ' ') < 0) {
+        CTX.box.setAttribute('class', classes + ' ' + _const_class_prefix);
+      }
+    }
+    // create box element if no ID is given and element is not there
+    else if (!CTX.box) {
+      // check if there already exists a jslghtbx-div
+      var newEl = document.getElementById(_const_id_prefix);
+      if (!newEl) {
+        newEl = document.createElement('div');
+      }
+      newEl.setAttribute('id', _const_id_prefix);
+      newEl.setAttribute('class', _const_class_prefix);
+      CTX.box = newEl;
+      body.appendChild(CTX.box);
+    }
+    CTX.box.innerHTML = template;
+    if (isIE8) {
+      addClass(CTX.box, _const_class_prefix + '-ie8');
+    }
+    CTX.wrapper = document.getElementById(_const_id_prefix + '-contentwrapper');
+
+    // init regular closebutton
+    if (!CTX.opt.hideCloseBtn) {
+      var closeBtn = document.createElement('span');
+      closeBtn.setAttribute('id', _const_id_prefix + '-close');
+      closeBtn.setAttribute('class', _const_class_prefix + '-close');
+      closeBtn.innerHTML = 'X';
+      CTX.box.appendChild(closeBtn);
+      addEvent(closeBtn, 'click', function (e) {
+        stopPropagation(e);
+        CTX.close();
+      }, false);
+    }
+
+    // close lightbox on background-click by default / if true
+    if (!isIE8 && CTX.opt.closeOnClick) {
+      addEvent(CTX.box, 'click', function (e) {
+        stopPropagation(e);
+        CTX.close();
+      }, false);
+    }
+
+    // set loading animation
+    if (typeof CTX.opt.loadingAnimation === 'string') {
+      // set loading GIF
+      animationEl = document.createElement('img');
+      animationEl.setAttribute('src', CTX.opt.loadingAnimation);
+      addClass(animationEl, _const_class_prefix + '-loading-animation');
+      CTX.box.appendChild(animationEl);
+    } else if (CTX.opt.loadingAnimation) {
+      // set default animation time
+      CTX.opt.loadingAnimation = typeof CTX.opt.loadingAnimation === 'number' ? CTX.opt.loadingAnimation : 200;
+      // create animation elements
+      animationEl = document.createElement('div');
+      addClass(animationEl, _const_class_prefix + '-loading-animation');
+      var i = 0;
+      while (i < CTX.opt.animElCount) {
+        animationChildren.push(animationEl.appendChild(document.createElement('span')));
+        i++;
+      }
+      CTX.box.appendChild(animationEl);
+    }
+
+    // add resize-eventhandlers
+    if (CTX.opt.responsive) {
+      addEvent(window, 'resize', function () {
+        CTX.resize();
+      }, false);
+      addClass(CTX.box, _const_class_prefix + '-nooverflow'); // hide scrollbars on prev/next
+    }
+    else {
+      removeClass(CTX.box, _const_class_prefix + '-nooverflow');
+    }
+
+    // add keyboard event handlers
+    if (CTX.opt.keyControls) {
+      addEvent(document, 'keydown', function (e) {
+        if (isOpen) {
+          stopPropagation(e); // prevent closing of lightbox
+          if (e.keyCode === 39) {
+            // show next img on right cursor
+            CTX.next();
+          } else if (e.keyCode === 37) {
+            // show prev img on left cursor
+            CTX.prev();
+          } else if (e.keyCode === 27) {
+            // close lightbox on ESC
+            CTX.close();
+          }
+        }
+      }, false);
+    }
+  }
+
+  /**
+   * Opens the lightbox. Either @param el and @param group must be given,
+   * but not both together!
+   * @param  {Object || String}   el      an image element or a link to an image
+   * @param  {String}   group       the name of an image group
+   * @param  {Function} cb          A private callback
+   * @param  {Object} event
+   */
+  function openBox(el, group, cb, event) {
+    if (!el && !group) {
+      return false;
+    }
+    // save images from group
+    currGroup = group || currGroup || getAttr(el, _const_dataattr + '-group');
+    if (currGroup) {
+      currImages = getByGroup(currGroup);
+      if (typeof el === 'boolean' && !el) {
+        // el is set to false, load first image of group
+        el = currImages[0];
+      }
+    }
+
+    // create new img-element
+    currImage.img = new Image();
+
+    // set el as current thumbnail
+    currThumbnail = el;
+
+    // get correct image-source
+    var src;
+    if (typeof el === 'string') {
+      // string with img-src given
+      src = el;
+    }
+    else if (getAttr(el, _const_dataattr)) {
+      // image-source given
+      src = getAttr(el, _const_dataattr);
+    }
+    else {
+      // no image-source given
+      src = getAttr(el, 'src');
+    }
+    // clear old image ratio for proper resize-values
+    imgRatio = false;
+
+    // add init-class on opening, but not at prev/next
+    if (!isOpen) {
+      if (typeof CTX.opt.animation === 'number') {
+        addClass(currImage.img, _const_class_prefix + '-animate-transition ' + _const_class_prefix + '-animate-init');
+      }
+      isOpen = true;
+
+      // execute open callback
+      if (CTX.opt.onopen) {
+        CTX.opt.onopen(currImage);
+      }
+    }
+
+    // hide overflow by default / if set
+    if (!CTX.opt || !isset(CTX.opt.hideOverflow) || CTX.opt.hideOverflow) {
+      body.setAttribute('style', 'overflow: hidden');
+    }
+
+    CTX.box.setAttribute('style', 'padding-top: 0');
+    CTX.wrapper.innerHTML = '';
+    CTX.wrapper.appendChild(currImage.img);
+    // set animation class
+    if (CTX.opt.animation) {
+      addClass(CTX.wrapper, _const_class_prefix + '-animate');
+    }
+    // set caption
+    var captionText = getAttr(el, _const_dataattr + '-caption');
+    if (captionText && CTX.opt.captions) {
+      var caption = document.createElement('p');
+      caption.setAttribute('class', _const_class_prefix + '-caption');
+      caption.innerHTML = captionText;
+      CTX.wrapper.appendChild(caption);
+    }
+
+    addClass(CTX.box, _const_class_prefix + '-active');
+
+    // show wrapper early to avoid bug where dimensions are not
+    // correct in IE8
+    if (isIE8) {
+      addClass(CTX.wrapper, _const_class_prefix + '-active');
+    }
+    if (CTX.opt.controls && currImages.length > 1) {
+      initControls();
+      repositionControls();
+    }
+
+    /**
+     * Onerror-handler for the image
+     */
+    currImage.img.onerror = function (imageErrorEvent) {
+      if (CTX.opt.onloaderror) {
+        // if `event` is false, error happened on opening the box
+        imageErrorEvent._happenedWhile = event ? event : false;
+        CTX.opt.onloaderror(imageErrorEvent);
+      }
+    };
+    /**
+     * Onload-handler for the image
+     */
+    currImage.img.onload = function () {
+      // store original width here
+      currImage.originalWidth = this.naturalWidth || this.width;
+      currImage.originalHeight = this.naturalHeight || this.height;
+      // use dummyimage for correct dimension calculating in older IE
+      if (isIE8 || isIE9) {
+        var dummyImg = new Image();
+        dummyImg.setAttribute('src', src);
+        currImage.originalWidth = dummyImg.width;
+        currImage.originalHeight = dummyImg.height;
+      }
+      // interval to check if image is ready to show
+      var checkClassInt = setInterval(function () {
+        if (hasClass(CTX.box, _const_class_prefix + '-active')) {
+          addClass(CTX.wrapper, _const_class_prefix + '-wrapper-active');
+          // set animation
+          if (typeof CTX.opt.animation === 'number') {
+            addClass(currImage.img, _const_class_prefix + '-animate-transition');
+          }
+          if (cb) {
+            cb();
+          }
+          // stop Animation
+          stopAnimation();
+          // clear animation timeout
+          clearTimeout(animationTimeout);
+          // preload previous and next image
+          if (CTX.opt.preload) {
+            preload();
+          }
+          // set clickhandler on image to show next image
+          if (CTX.opt.nextOnClick) {
+            // add cursor pointer
+            addClass(currImage.img, _const_class_prefix + '-next-on-click');
+            addEvent(currImage.img, 'click', function (e) {
+              stopPropagation(e);
+              CTX.next();
+            }, false);
+          }
+          // set custom clickhandler on image
+          if (CTX.opt.onimageclick) {
+            addEvent(currImage.img, 'click', function (e) {
+              stopPropagation(e);
+              CTX.opt.onimageclick(currImage);
+            }, false);
+          }
+          // execute onload callback
+          if (CTX.opt.onload) {
+            CTX.opt.onload(event);
+          }
+          // stop current interval
+          clearInterval(checkClassInt);
+          // resize the image
+          CTX.resize();
+        }
+      }, 10);
+    };
+
+    // set src
+    currImage.img.setAttribute('src', src);
+
+    // start loading animation
+    startAnimation();
+  }
+
+  /*
+   *   Public methods
+   */
+
+  /**
+   * Init-function, must be called once
+   * @param  {Object} opt Custom options
+   */
+  CTX.load = function (opt) {
+    // check for IE8
+    if (navigator.appVersion.indexOf('MSIE 8') > 0) {
+      isIE8 = true;
+    }
+
+    // check for IE9
+    if (navigator.appVersion.indexOf('MSIE 9') > 0) {
+      isIE9 = true;
+    }
+
+    // set options
+    setOpt(opt);
+
+    // Find all elements with `data-jslghtbx` attribute & add clickhandlers
+    var arr = document.querySelectorAll('[' + _const_dataattr + ']');
+    for (var i = 0; i < arr.length; i++) {
+      if (hasAttr(arr[i], _const_dataattr)) {
+        // set index to get proper position in getPos()
+        arr[i].setAttribute(_const_dataattr + '-index', i);
+        CTX.thumbnails.push(arr[i]);
+        clckHlpr(arr[i]);
+      }
+    }
+
+  };
+
+  /**
+   * Public caller for openBox()
+   * @param  {Object || string} el  Image element or a link
+   * @param  {String} group
+   */
+  CTX.open = function (el, group) {
+    // if image and group are given, set group to false
+    // to prevent errors
+    if (el && group) {
+      group = false;
+    }
+    openBox(el, group, false, false);
+  };
+
+  /**
+   * Calculates the new image size and resizes it
+   */
+  CTX.resize = function () {
+    if (!currImage.img) {
+      return;
+    }
+    maxWidth = getWidth();
+    maxHeight = getHeight();
+    var boxWidth = CTX.box.offsetWidth;
+    var boxHeight = CTX.box.offsetHeight;
+    if (!imgRatio && currImage.img && currImage.img.offsetWidth && currImage.img.offsetHeight) {
+      imgRatio = currImage.img.offsetWidth / currImage.img.offsetHeight;
+    }
+
+    // Height of image is too big to fit in viewport
+    if (Math.floor(boxWidth / imgRatio) > boxHeight) {
+      newImgWidth = boxHeight * imgRatio;
+      newImgHeight = boxHeight;
+    }
+    // Width of image is too big to fit in viewport
+    else {
+      newImgWidth = boxWidth;
+      newImgHeight = boxWidth / imgRatio;
+    }
+    // decrease size with modifier
+    newImgWidth = Math.floor(newImgWidth * CTX.opt.maxImgSize);
+    newImgHeight = Math.floor(newImgHeight * CTX.opt.maxImgSize);
+
+    // check if image exceeds maximum size
+    if (CTX.opt.dimensions && newImgHeight > currImage.originalHeight ||
+      CTX.opt.dimensions && newImgWidth > currImage.originalWidth) {
+      newImgHeight = currImage.originalHeight;
+      newImgWidth = currImage.originalWidth;
+    }
+    currImage.img.setAttribute('width', newImgWidth);
+    currImage.img.setAttribute('height', newImgHeight);
+    currImage.img.setAttribute('style', 'margin-top:' + ((getHeight() - newImgHeight) / 2) + 'px');
+
+    // reposition controls after timeout
+    setTimeout(repositionControls, 200);
+
+    // execute resize callback
+    if (CTX.opt.onresize) {
+      CTX.opt.onresize(currImage);
+    }
+  };
+
+  /**
+   * Loads the next image
+   */
+  CTX.next = function () {
+    if (!currGroup) {
+      return;
+    }
+    // get position of next image
+    var pos = getPos(currThumbnail, currGroup) + 1;
+    if (currImages[pos]) {
+      currThumbnail = currImages[pos];
+    }
+    else if (CTX.opt.carousel) {
+      currThumbnail = currImages[0];
+    }
+    else {
+      return;
+    }
+    if (typeof CTX.opt.animation === 'number') {
+      removeClass(currImage.img, _const_class_prefix + '-animating-next');
+      setTimeout(function () {
+        var cb = function () {
+          setTimeout(function () {
+            addClass(currImage.img, _const_class_prefix + '-animating-next');
+          }, CTX.opt.animation / 2);
+        };
+        openBox(currThumbnail, false, cb, 'next');
+      }, CTX.opt.animation / 2);
+    }
+    else {
+      openBox(currThumbnail, false, false, 'next');
+    }
+  };
+
+  /**
+   * Loads the prev image
+   */
+  CTX.prev = function () {
+    if (!currGroup) {
+      return;
+    }
+    // get position of prev image
+    var pos = getPos(currThumbnail, currGroup) - 1;
+    if (currImages[pos]) {
+      currThumbnail = currImages[pos];
+    }
+    else if (CTX.opt.carousel) {
+      currThumbnail = currImages[currImages.length - 1];
+    }
+    else {
+      return;
+    }
+    // animation stuff
+    if (typeof CTX.opt.animation === 'number') {
+      removeClass(currImage.img, _const_class_prefix + '-animating-prev');
+      setTimeout(function () {
+        var cb = function () {
+          setTimeout(function () {
+            addClass(currImage.img, _const_class_prefix + '-animating-next');
+          }, CTX.opt.animation / 2);
+        };
+        openBox(currThumbnail, false, cb, 'prev');
+      }, CTX.opt.animation / 2);
+    }
+    else {
+      openBox(currThumbnail, false, false, 'prev');
+    }
+  };
+
+  /**
+   * Closes the box
+   */
+  CTX.close = function () {
+    // restore Defaults
+    currGroup = false;
+    currThumbnail = false;
+    var _currImage = currImage;
+    currImage = {};
+    currImages = [];
+    isOpen = false;
+    removeClass(CTX.box, _const_class_prefix + '-active');
+    removeClass(CTX.wrapper, _const_class_prefix + '-wrapper-active');
+    removeClass(nextBtn, _const_class_prefix + '-active');
+    removeClass(prevBtn, _const_class_prefix + '-active');
+    CTX.box.setAttribute('style', 'padding-top: 0px');
+
+    // stop animtation
+    stopAnimation();
+
+    // Hide Lightbox if iE8
+    if (isIE8) {
+      CTX.box.setAttribute('style', 'display: none');
+    }
+
+    // show overflow by default / if set
+    if (!CTX.opt || !isset(CTX.opt.hideOverflow) || CTX.opt.hideOverflow) {
+      body.setAttribute('style', 'overflow: auto');
+    }
+
+    // execute close callback
+    if (CTX.opt.onclose) {
+      CTX.opt.onclose(_currImage);
+    }
+  };
+};
+
+},{}],38:[function(require,module,exports){
 // Generated by CoffeeScript 1.6.2
 /**
  @license Sticky-kit v1.1.3 | WTFPL | Leaf Corcoran 2015 | http://leafo.net
@@ -49074,7 +49984,7 @@ $.fn.stick_in_parent = function (opts) {
 };
 
 
-},{"jquery":12}],38:[function(require,module,exports){
+},{"jquery":12}],39:[function(require,module,exports){
 (function (global){
 window.App = {
     Helper: {},
@@ -49086,8 +49996,10 @@ window.App = {
 };
 
 global.$ = global.jQuery = require('jquery');
+var _ = require('lodash');
 var Backbone = require('backbone');
 Backbone.$ = $;
+
 
 // we do need this for dustjs helpers!!!
 require('dustjs-helpers');
@@ -49243,7 +50155,7 @@ $(function () {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./dust-filters.js":36,"./router.js":47,"./views/navigation.js":96,"./views/regions.js":97,"./views/swap.js":101,"backbone":2,"dustjs-helpers":4,"jquery":12,"keymaster":13}],39:[function(require,module,exports){
+},{"./dust-filters.js":36,"./router.js":48,"./views/navigation.js":97,"./views/regions.js":98,"./views/swap.js":102,"backbone":2,"dustjs-helpers":4,"jquery":12,"keymaster":13,"lodash":14}],40:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -49297,7 +50209,7 @@ module.exports = Backbone.Collection.extend({
      */
 });
 
-},{"../apiUrl":31,"./entry":40,"backbone":2,"jquery":12}],40:[function(require,module,exports){
+},{"../apiUrl":31,"./entry":41,"backbone":2,"jquery":12}],41:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -49316,7 +50228,7 @@ module.exports = Backbone.Model.extend({
 
 });
 
-},{"../apiUrl":31,"backbone":2,"jquery":12}],41:[function(require,module,exports){
+},{"../apiUrl":31,"backbone":2,"jquery":12}],42:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -49335,7 +50247,7 @@ module.exports = Backbone.Model.extend({
 
 });
 
-},{"../apiUrl":31,"backbone":2,"jquery":12}],42:[function(require,module,exports){
+},{"../apiUrl":31,"backbone":2,"jquery":12}],43:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -49353,7 +50265,7 @@ module.exports = Backbone.Collection.extend({
 
 });
 
-},{"../apiUrl":31,"./experiment":41,"backbone":2,"jquery":12}],43:[function(require,module,exports){
+},{"../apiUrl":31,"./experiment":42,"backbone":2,"jquery":12}],44:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -49372,7 +50284,7 @@ module.exports = Backbone.Model.extend({
 
 });
 
-},{"../apiUrl":31,"backbone":2,"jquery":12}],44:[function(require,module,exports){
+},{"../apiUrl":31,"backbone":2,"jquery":12}],45:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -49390,7 +50302,7 @@ module.exports = Backbone.Collection.extend({
 
 });
 
-},{"../apiUrl":31,"./keyword":43,"backbone":2,"jquery":12}],45:[function(require,module,exports){
+},{"../apiUrl":31,"./keyword":44,"backbone":2,"jquery":12}],46:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -49409,7 +50321,7 @@ module.exports = Backbone.Model.extend({
 
 });
 
-},{"../apiUrl":31,"backbone":2,"jquery":12}],46:[function(require,module,exports){
+},{"../apiUrl":31,"backbone":2,"jquery":12}],47:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -49427,7 +50339,7 @@ module.exports = Backbone.Collection.extend({
 
 });
 
-},{"../apiUrl":31,"./set":45,"backbone":2,"jquery":12}],47:[function(require,module,exports){
+},{"../apiUrl":31,"./set":46,"backbone":2,"jquery":12}],48:[function(require,module,exports){
 // Application router
 // ==================
 'use strict';
@@ -49528,73 +50440,73 @@ module.exports = Backbone.Router.extend({
 });
 
 
-},{"./controllers/entry_controller":32,"./controllers/keyword_controller":33,"./controllers/set_controller":34,"./controllers/virtual_lab_controller":35,"./templates/documentation.dust":51,"./templates/exhibitions.dust":62,"./views/404.js":78,"./views/archive.js":79,"./views/base.js":80,"./views/editor.js":81,"./views/homepage.js":92,"./views/layout.js":95,"./views/regions.js":97,"./views/swap.js":101,"backbone":2,"jquery":12}],48:[function(require,module,exports){
+},{"./controllers/entry_controller":32,"./controllers/keyword_controller":33,"./controllers/set_controller":34,"./controllers/virtual_lab_controller":35,"./templates/documentation.dust":52,"./templates/exhibitions.dust":63,"./views/404.js":79,"./views/archive.js":80,"./views/base.js":81,"./views/editor.js":82,"./views/homepage.js":93,"./views/layout.js":96,"./views/regions.js":98,"./views/swap.js":102,"backbone":2,"jquery":12}],49:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("404",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 column text-center\"><h1>404 Not Found</h1></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("404", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],49:[function(require,module,exports){
+},{"dustjs-linkedin":5}],50:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("archive",body_0);function body_0(chk,ctx){return chk.w("<div><div id=\"entry_list_header\" data-js-region=\"entry_list_header\"></div><div id=\"entry_list_header_meta\" data-js-region=\"entry_list_header_meta\"></div><div class=\"row\"><div class=\"small-12 columns\">").s(ctx.get(["meta"], false),ctx,{"block":body_1},{}).w("</div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.h("gt",ctx,{"block":body_2},{"key":ctx.get(["total_count"], false),"value":"0"},"h");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<div id=\"entry_list\" data-js-region=\"entry_list\"></div>");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("archive", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],50:[function(require,module,exports){
+},{"dustjs-linkedin":5}],51:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("base",body_0);function body_0(chk,ctx){return chk.w("<div data-js-region=\"base\"><div id=\"navigation\" data-js-region=\"navigation\"></div><div id=\"content\" data-js-region=\"content\"></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("base", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],51:[function(require,module,exports){
+},{"dustjs-linkedin":5}],52:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("documentation",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-8 columns\"><h4>About</h4></div></div><div class=\"row\"><div class=\"small-8 columns\"><p>The research project Sound Colour Space – A Virtual Museum is based at ZHdK(Zurich University of the Arts), ICST (Institute for Computer Music and Sound Technology)</p></div></div><div class=\"row\"><div class=\"small-8 columns\"><h4>Project Team</h4></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Applicants</dt><dd>Prof. Dr. Martin Neukom, ICST, ZHdK</dd><dd>Prof. Dr. Dieter Mersch, ith, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Project Management</dt><dd>Dr. Daniel Muzzulini, ICST, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Team</dt><dd>Lucas Bennett, ICST, ZHdK</dd><dd>Jeroen Visser, ith, ZHdK</dd><dd>Philippe Kocher, ICST, ZHdK</dd><dd>Raimund Vogtenhuber, ICST, ZHdK</dd><dd>Susanne Schumacher, MIZ, ZHdK</dd><dd>Christoph Stähli, ICST, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Partners</dt><dd>Prof. Dr. Christoph Reuter, Institut für Systematische Musikwissenschaft, Universität Wien</dd><dd>Prof. Dr. Benjamin Wardhaugh, All Souls College, Oxford</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Funding</dt><dd>Schweizerischer Nationalfond (SNF)</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><h4>Inhalte vernetzen</h4><h5>Diagrammatische Modelle der Vermittlung im Projekt \"Sound Colour Space\"</h5></div></div><div class=\"row\"><div class=\"small-8 columns\"><iframe src=\"https://player.vimeo.com/video/190070646?color=559e7a&byline=0\" width=\"640\" height=\"360\"frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></div>s<div class=\"row\"><div class=\"small-8 columns\"><iframe src=\"https://player.vimeo.com/video/190072380?color=559e7a&byline=0\" width=\"640\" height=\"360\"frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("documentation", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],52:[function(require,module,exports){
+},{"dustjs-linkedin":5}],53:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("editor",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row full align-stretch\"><div class=\"columns align-left\"><input type=\"search\" placeholder=\"search\" class=\"search\"><div id=\"stencil_holder\"></div></div><div class=\"columns align-self-stretch\"><div id=\"paper\"></div></div></div><div class=\"row full\"><div class=\"columns large-12 left\"><div id=\"selection-info\"></div><button type=\"button\" class=\"success button\" id=\"btn_open_svg\">Save SVG</button></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("editor", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],53:[function(require,module,exports){
-(function() {
-var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h3>").f(ctx.get(["title"], false),ctx,"h").w("</h3><h6>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h6><h6><i>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</i></h6><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_3},{}).w("<img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</div><div class=\"related text-left\">").x(ctx.get(["related"], false),ctx,{"block":body_6},{}).w("<ul>").s(ctx.get(["related"], false),ctx,{"block":body_7},{}).w("</ul></div><br/><div class=\"row\"><div class=\"large-12 medium-12 small-12 column text-left\">Source: ").f(ctx.get(["source"], false),ctx,"h").w("<br/>Copyright: ").f(ctx.get(["copyright_notice"], false),ctx,"h").w("<br/>License: ").s(ctx.get(["license"], false),ctx,{"block":body_8},{}).w("</div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_4},{}).w("</h6>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(" <a href=\"/keywords/").f(ctx.get(["slug"], false),ctx,"h").w("\">").f(ctx.get(["name"], false),ctx,"h").w("</a>").h("sep",ctx,{"block":body_5},{},"h");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w(",");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("See also:");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w(" (").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w(")</a></li>\n");}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\" data-bypass target=\"_blank\">").f(ctx.get(["label"], false),ctx,"h").w("</a>");}body_8.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
-}).call(this);
-
 },{"dustjs-linkedin":5}],54:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_even_grid",body_0);function body_0(chk,ctx){return chk.w("<section id=\"entries\"><div class=\"row entries\"></div></section>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_even_grid", context || {}, callback); };
+(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h3>").f(ctx.get(["title"], false),ctx,"h").w("</h3><h6>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h6><h6><i>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</i></h6><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_3},{}).f(ctx.get(["originalImage"], false),ctx,"h").w("<img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" /><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</div><div class=\"related text-left\">").x(ctx.get(["related"], false),ctx,{"block":body_6},{}).w("<ul>").s(ctx.get(["related"], false),ctx,{"block":body_7},{}).w("</ul></div><br/><div class=\"row\"><div class=\"large-12 medium-12 small-12 column text-left\">Source: ").f(ctx.get(["source"], false),ctx,"h").w("<br/>Copyright: ").f(ctx.get(["copyright_notice"], false),ctx,"h").w("<br/>License: ").s(ctx.get(["license"], false),ctx,{"block":body_8},{}).w("</div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_4},{}).w("</h6>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(" <a href=\"/keywords/").f(ctx.get(["slug"], false),ctx,"h").w("\">").f(ctx.get(["name"], false),ctx,"h").w("</a>").h("sep",ctx,{"block":body_5},{},"h");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w(",");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("See also:");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w(" (").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w(")</a></li>\n");}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\" data-bypass target=\"_blank\">").f(ctx.get(["label"], false),ctx,"h").w("</a>");}body_8.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],55:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_even_grid_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-").f(ctx.get(["num_columns"], false),ctx,"h").w(" columns\" style=\"margin-bottom: 40px;\"><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" style=\"max-height: 200px;\"/></a></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_even_grid_single", context || {}, callback); };
+(function(dust){dust.register("entry_even_grid",body_0);function body_0(chk,ctx){return chk.w("<section id=\"entries\"><div class=\"row entries\"></div></section>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_even_grid", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],56:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_grid",body_0);function body_0(chk,ctx){return chk.w("<section id=\"entries\"><div class=\"row\"><div class=\"medium-12 columns\"><div class=\"entries grid\"></div></div></div></section>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_grid", context || {}, callback); };
+(function(dust){dust.register("entry_even_grid_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-").f(ctx.get(["num_columns"], false),ctx,"h").w(" columns\" style=\"margin-bottom: 40px;\"><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" style=\"max-height: 200px;\"/></a></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_even_grid_single", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],57:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_grid_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry grid-item ").f(ctx.get(["uuid"], false),ctx,"h").w("\"><!--<div class=\"entry column align-self-bottom grid-item\">--><div class=\"entry_wrapper text-center grow\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" height=\"200\"/> ").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("<span>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</span></a></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br />");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_grid_single", context || {}, callback); };
+(function(dust){dust.register("entry_grid",body_0);function body_0(chk,ctx){return chk.w("<section id=\"entries\"><div class=\"row\"><div class=\"medium-12 columns\"><div class=\"entries grid\"></div></div></div></section>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_grid", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],58:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_list",body_0);function body_0(chk,ctx){return chk.w("<div><section id=\"entries\"><div class=\"row\"><div class=\"small-12 columns\"><table class=\"stack hover\"><thead><tr><th>Title / Author</th><th>Date</th><th>Diagram</th><th>Annotation</th></tr></thead><tbody class=\"entries\"></tbody></table></div></div></section></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list", context || {}, callback); };
+(function(dust){dust.register("entry_grid_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry grid-item ").f(ctx.get(["uuid"], false),ctx,"h").w("\"><!--<div class=\"entry column align-self-bottom grid-item\">--><div class=\"entry_wrapper text-center grow\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" height=\"200\"/> ").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("<span>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</span></a></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br />");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_grid_single", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],59:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("entry_list",body_0);function body_0(chk,ctx){return chk.w("<div><section id=\"entries\"><div class=\"row\"><div class=\"small-12 columns\"><table class=\"stack hover\"><thead><tr><th>Title / Author</th><th>Date</th><th>Diagram</th><th>Annotation</th></tr></thead><tbody class=\"entries\"></tbody></table></div></div></section></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":5}],60:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 require('./search_field_mask.dust');
@@ -49602,115 +50514,115 @@ require('./search_field_mask.dust');
 (function(dust){dust.register("entry_list_header",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns text-center\"><h4>Search</h4></div></div><div class=\"row\"><div class=\"small-1 shrink columns\"><label>Match:<select class=\"match\"><option ").h("eq",ctx,{"block":body_1},{"key":ctx.getPath(false, ["meta","match"]),"value":"OR"},"h").w(" value=\"OR\">Any of the terms</option><option ").h("eq",ctx,{"block":body_2},{"key":ctx.getPath(false, ["meta","match"]),"value":"AND"},"h").w(" value=\"AND\">All of the terms</option></select></label></div></div><div id=\"search_field_masks\">").s(ctx.get(["meta"], false),ctx,{"block":body_3},{}).w("</div><div class=\"row\"><div class=\"small-6 columns\"><h5><button class=\"tiny secondary radius button add_search_field\">Add search field</button></h5></div><div class=\"small-6 columns\"><h5><button class=\"button normal radius float-right search\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Search</button></h5></div></div><div class=\"row\"><div class=\"small-12 columns\"><ul id=\"refine_search\" class=\"accordion\" data-accordion data-allow-all-closed=\"true\"><li class=\"accordion-item\" data-accordion-item><a href=\"#\" data-bypass class=\"accordion-title\" style=\"padding:0;display: inline-block;\"><button class=\"button small radius\" style=\"margin:0;\"><i class=\"fi-widget\"></i> Refine Search</u_></button></a><div class=\"accordion-content\" data-tab-content><div class=\"row\"><div class=\"small-6 columns\"><fieldset class=\"fieldset\"><legend><i class=\"fi-filter\"></i> Select date range</legend><div class=\"row\"><div class=\"small-8 columns\"><div id=\"date_slider\" class=\"slider\"><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"aria-controls=\"dateSliderStart\"></span><span class=\"slider-fill\" data-slider-fill></span><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"aria-controls=\"dateSliderEnd\"></span><input type=\"hidden\"><input type=\"hidden\"></div><div class=\"row\"><div class=\"small-5 columns align-left\"><input type=\"number\" class=\"float-left\" id=\"dateSliderStart\"></div><div class=\"small-5 small-offset-2 columns align-right\"><input type=\"number\" class=\"float-right\" id=\"dateSliderEnd\"></div></div></div><div class=\"small-4 columns align-self-middle align-right\"><div class=\"switch small\"><input class=\"switch-input\" id=\"date_range_toggle\" type=\"checkbox\"name=\"toggle date range filter\"><label class=\"switch-paddle\" for=\"date_range_toggle\"><span class=\"show-for-sr\">Filter by date range?</span><span class=\"switch-active\" aria-hidden=\"true\">On</span><span class=\"switch-inactive\" aria-hidden=\"true\">Off</span></label></div><button class=\"button normal radius float-right apply_date_range\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Apply</button></div></div></fieldset></div><div class=\"small-6 columns\"><fieldset  class=\"fieldset category\"><legend><i class=\"fi-filter\"></i> Choose Category</legend><button class=\"label tone_systems\" id=\"tone_systems\">Tone Systems</button><br><button class=\"label colour_systems\" id=\"colour_systems\">Colour Systems</button><button class=\"button normal radius float-right search\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Apply</button></fieldset></div>").x(ctx.getPath(false, ["meta","tags"]),ctx,{"block":body_6},{}).w("</div></div></li></ul></div></div><div class=\"row align-right\"><div class=\"small-2 columns\"><select class=\"order_by\"><option value=\"-date\">Date (newest first)</option><option value=\"date\">Date (oldest first)</option><option value=\"title\">Title (A-Z)</option><option value=\"-title\">Title (Z-A)</option><option value=\"author__last_name\">Author (A-Z)</option><option value=\"-author__last_name\">Author (Z-A)</option></select></div><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_11},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_12},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_13},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("selected");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("selected");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.s(ctx.get(["search_query"], false),ctx,{"else":body_4,"block":body_5},{});}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.p("search_field_mask",ctx,ctx,{"term":""});}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.p("search_field_mask",ctx,ctx,{}).w(" ");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("<div class=\"small-12 columns\"><fieldset class=\"fieldset\"><legend><i class=\"fi-filter\"></i> Keywords</legend><div>").s(ctx.get(["meta"], false),ctx,{"block":body_7},{}).w("</div></fieldset></div>");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.s(ctx.get(["tags"], false),ctx,{"block":body_8},{});}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<span class=\"tag label ").x(ctx.get(["selected"], false),ctx,{"block":body_9},{}).w("\" data-slug=").f(ctx.get(["slug"], false),ctx,"h").w(">").f(ctx.get(["name"], false),ctx,"h").w("</span>").h("sep",ctx,{"block":body_10},{},"h");}body_8.__dustBody=!0;function body_9(chk,ctx){return chk.w("selected");}body_9.__dustBody=!0;function body_10(chk,ctx){return chk.w("&nbsp;");}body_10.__dustBody=!0;function body_11(chk,ctx){return chk.w("active");}body_11.__dustBody=!0;function body_12(chk,ctx){return chk.w("active");}body_12.__dustBody=!0;function body_13(chk,ctx){return chk.w("active");}body_13.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_header", context || {}, callback); };
 }).call(this);
 
-},{"./search_field_mask.dust":71,"dustjs-linkedin":5}],60:[function(require,module,exports){
+},{"./search_field_mask.dust":72,"dustjs-linkedin":5}],61:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("entry_list_header_meta",body_0);function body_0(chk,ctx){return chk.s(ctx.get(["meta"], false),ctx,{"block":body_1},{});}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.h("gt",ctx,{"else":body_2,"block":body_8},{"key":ctx.get(["total_count"], false),"value":"0"},"h");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 large-expand columns text-center\">").x(ctx.getPath(false, ["meta","search_query"]),ctx,{"else":body_3,"block":body_4},{}).w("</div></div></div>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<h5 class=\"text-center\">No results, try to adjust your query or filter.</h5>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w("<h5>Nothing found for: <b>").s(ctx.getPath(false, ["meta","search_query"]),ctx,{"block":body_5},{"sep":body_7}).w("</b></h5>");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.f(ctx.get(["term"], false),ctx,"h").h("sep",ctx,{"block":body_6},{},"h");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w(" ").f(ctx.get(["sep"], false),ctx,"h").w(" ");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.f(ctx.get(["match"], false),ctx,"h");}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<div>").x(ctx.getPath(false, ["meta","search_query"]),ctx,{"block":body_9},{}).w("<div class=\"row\"><div class=\"small-12 column text-center\"><!--<p>Showing ").f(ctx.get(["totalItems"], false),ctx,"h").w("/").f(ctx.get(["total_count"], false),ctx,"h").w(" diagrams.</p>--></div></div></div>");}body_8.__dustBody=!0;function body_9(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 large-expand columns text-center\"><h5>").f(ctx.get(["total_count"], false),ctx,"h").w(" results for: <b>").s(ctx.getPath(false, ["meta","search_query"]),ctx,{"block":body_10},{"sep":body_12}).w("</b></h5></div></div>");}body_9.__dustBody=!0;function body_10(chk,ctx){return chk.f(ctx.get(["term"], false),ctx,"h").h("sep",ctx,{"block":body_11},{},"h");}body_10.__dustBody=!0;function body_11(chk,ctx){return chk.w(" ").f(ctx.get(["sep"], false),ctx,"h").w(" ");}body_11.__dustBody=!0;function body_12(chk,ctx){return chk.f(ctx.get(["match"], false),ctx,"h");}body_12.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_header_meta", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],61:[function(require,module,exports){
-(function() {
-var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_list_single",body_0);function body_0(chk,ctx){return chk.w("<tr class=\"entry\"><td><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\" style=\"display: block;\"><span class=\"title\">").f(ctx.get(["title"], false),ctx,"h").w("</span><br/>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</a></td><td>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</td><td class=\"diagram\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" /></a></td><td class=\"annotation\"><div class=\"truncate\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["description"], false),ctx,"h").w("</a></div></td></tr>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_single", context || {}, callback); };
-}).call(this);
-
 },{"dustjs-linkedin":5}],62:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("exhibitions",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><a href=\"https://virtual-lab.github.io/presentation2_impress\" target=\"_self\" data-bypass><img src=\"").f(ctx.get(["MEDIA_URL"], false),ctx,"h").w("exhibitions/chromatic_scale.jpg\" width=\"1330\"/></a></div></div><div class=\"row\"><div class=\"small-12 columns\"><video src=\"").f(ctx.get(["MEDIA_URL"], false),ctx,"h").w("videos/2016_SoCoSpa_Präsentation_kurz_1440x1080.m4v\" width=\"1300\" controls></video></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("exhibitions", context || {}, callback); };
+(function(dust){dust.register("entry_list_single",body_0);function body_0(chk,ctx){return chk.w("<tr class=\"entry\"><td><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\" style=\"display: block;\"><span class=\"title\">").f(ctx.get(["title"], false),ctx,"h").w("</span><br/>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</a></td><td>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</td><td class=\"diagram\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" /></a></td><td class=\"annotation\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><div class=\"truncate\">").f(ctx.get(["description"], false),ctx,"h").w("</div></a></td></tr>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_single", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],63:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("experiment_detail",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns\"><h4>").f(ctx.get(["title"], false),ctx,"h").w("</h4></div></div><div class=\"row\"><div class=\"small-12 columns\">").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</div></div><div class=\"row iframe\"><div class=\"small-12 columns\"><iframe width=\"100%\" height=\"1000px\" style=\"border: none;\" src=\"").f(ctx.get(["url"], false),ctx,"h").w("\"></iframe></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_detail", context || {}, callback); };
+(function(dust){dust.register("exhibitions",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><a href=\"https://virtual-lab.github.io/presentation2_impress\" target=\"_self\" data-bypass><img src=\"").f(ctx.get(["MEDIA_URL"], false),ctx,"h").w("exhibitions/chromatic_scale.jpg\" width=\"1330\"/></a></div></div><div class=\"row\"><div class=\"small-12 columns\"><video src=\"").f(ctx.get(["MEDIA_URL"], false),ctx,"h").w("videos/2016_SoCoSpa_Präsentation_kurz_1440x1080.m4v\" width=\"1300\" controls></video></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("exhibitions", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],64:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("experiment_list",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><div class=\"row entries\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_list", context || {}, callback); };
+(function(dust){dust.register("experiment_detail",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns\"><h4>").f(ctx.get(["title"], false),ctx,"h").w("</h4></div></div><div class=\"row\"><div class=\"small-12 columns\">").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</div></div><div class=\"row iframe\"><div class=\"small-12 columns\"><iframe width=\"100%\" height=\"1000px\" style=\"border: none;\" src=\"").f(ctx.get(["url"], false),ctx,"h").w("\"></iframe></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_detail", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],65:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("experiment_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-4 column experiment text-center\"><h4><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></h4><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.get(["cover"], false),ctx,"h").w("\" /></a></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_single", context || {}, callback); };
+(function(dust){dust.register("experiment_list",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><div class=\"row entries\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_list", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],66:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("homepage",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-8 small-offset-2 columns\"><img src=\"").f(ctx.get(["STATIC_URL"], false),ctx,"h").w("img/fig_0_head_1456_464.jpg\"/><br/><br/><h4>Sound Colour Space – A Virtual Museum</h4><p>Im Zentrum des Projekts Sound Colour Space – A Virtual Museum steht das Begriffsfeld Klang, Ton, Tonhöhe,Klangfarbe in seiner Beziehung zu visuellen Phänomenen und geometrischen Konzepten. Das Vorhaben verstehtsich als Beitrag zu einem interdisziplinären Forschungsgebiet und erforscht seine adäquaten Darstellungs-und Vermittlungsformen.</p><p>Zahlreiche Wissenschaftler und Philosophen von der Antike bis zur heutigen Zeit haben die Beziehungenzwischen Ton, Farbe und Geometrie untersucht. Viele ihrer Visualisierungen zu akustischen, optischen undwahrnehmungsbezogenen Themen sprechen zu den Augen und sollen vergleichend studiert werden. Da ein gegebenesBild oder Diagramm in verschiedenen Kontexten und mit unterschiedlichen Implikationen auftreten kann,erlaubt eine ausgeprägte Netzwerkarchitektur eine redundanzfreie Darstellung der betreffenden Inhalte. Nebender Entwicklung einer exemplarischen Webanwendung, wird das Themengebiet mit Beiträgen aus unterschiedlichenDisziplinen und mit künstlerischen Anwendungen bearbeitet und in einen aktuellen Forschungskontext gestellt.</p></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("homepage", context || {}, callback); };
+(function(dust){dust.register("experiment_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-4 column experiment text-center\"><h4><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></h4><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.get(["cover"], false),ctx,"h").w("\" /></a></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_single", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],67:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("keyword_detail",body_0);function body_0(chk,ctx){return chk.w("<div id=\"keyword\"><div class=\"row\"><div class=\"small-12 columns text-center\"><h4>&#171;").f(ctx.get(["name"], false),ctx,"h").w("&#187;</h4></div></div><div class=\"row description\"><div class=\"small-12 columns\"><p>").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</p></div></div><div class=\"row align-right\"><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_1},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_3},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("active");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("active");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("active");}body_3.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_detail", context || {}, callback); };
+(function(dust){dust.register("homepage",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-8 small-offset-2 columns\"><img src=\"").f(ctx.get(["STATIC_URL"], false),ctx,"h").w("img/fig_0_head_1456_464.jpg\"/><br/><br/><h4>Sound Colour Space – A Virtual Museum</h4><p>Im Zentrum des Projekts Sound Colour Space – A Virtual Museum steht das Begriffsfeld Klang, Ton, Tonhöhe,Klangfarbe in seiner Beziehung zu visuellen Phänomenen und geometrischen Konzepten. Das Vorhaben verstehtsich als Beitrag zu einem interdisziplinären Forschungsgebiet und erforscht seine adäquaten Darstellungs-und Vermittlungsformen.</p><p>Zahlreiche Wissenschaftler und Philosophen von der Antike bis zur heutigen Zeit haben die Beziehungenzwischen Ton, Farbe und Geometrie untersucht. Viele ihrer Visualisierungen zu akustischen, optischen undwahrnehmungsbezogenen Themen sprechen zu den Augen und sollen vergleichend studiert werden. Da ein gegebenesBild oder Diagramm in verschiedenen Kontexten und mit unterschiedlichen Implikationen auftreten kann,erlaubt eine ausgeprägte Netzwerkarchitektur eine redundanzfreie Darstellung der betreffenden Inhalte. Nebender Entwicklung einer exemplarischen Webanwendung, wird das Themengebiet mit Beiträgen aus unterschiedlichenDisziplinen und mit künstlerischen Anwendungen bearbeitet und in einen aktuellen Forschungskontext gestellt.</p></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("homepage", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],68:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("keyword_list",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns\"><h4 class=\"text-center\">Keywords</h4></div></div><div class=\"row\"><div class=\"small-12 columns\"><ul class=\"row entries\"></ul></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_list", context || {}, callback); };
+(function(dust){dust.register("keyword_detail",body_0);function body_0(chk,ctx){return chk.w("<div id=\"keyword\"><div class=\"row\"><div class=\"small-12 columns text-center\"><h4>&#171;").f(ctx.get(["name"], false),ctx,"h").w("&#187;</h4></div></div><div class=\"row description\"><div class=\"small-12 columns\"><p>").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</p></div></div><div class=\"row align-right\"><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_1},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_3},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("active");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("active");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("active");}body_3.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_detail", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],69:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("keyword_single",body_0);function body_0(chk,ctx){return chk.w("<li><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><span class=\"tag label\">").f(ctx.get(["name"], false),ctx,"h").w("</span></a>&nbsp;</li>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_single", context || {}, callback); };
+(function(dust){dust.register("keyword_list",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns\"><h4 class=\"text-center\">Keywords</h4></div></div><div class=\"row\"><div class=\"small-12 columns\"><ul class=\"row entries\"></ul></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_list", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],70:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("navigation",body_0);function body_0(chk,ctx){return chk.w("<div><nav><div class=\"row\"><div class=\"column text-center\" style=\"margin:5px;\"><a href=\"/\"><h1>Sound Colour Space - A Virtual Museum</h1></a></div></div><div class=\"row\"><div class=\"column\"><ul class=\"menu align-center\">").s(ctx.get(["menu"], false),ctx,{"block":body_1},{"current":ctx.get(["currentUrl"], false)}).w("</ul></div></div></nav></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<li ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["url"], false),"value":ctx.get(["current"], false)},"h").w("><a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\">").f(ctx.get(["text"], false),ctx,"h").w("</a></li>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("class=\"active\"");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("navigation", context || {}, callback); };
+(function(dust){dust.register("keyword_single",body_0);function body_0(chk,ctx){return chk.w("<li><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><span class=\"tag label\">").f(ctx.get(["name"], false),ctx,"h").w("</span></a>&nbsp;</li>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_single", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],71:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("search_field_mask",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row search_field_mask\"><div class=\"small-2 columns\"><label><select class=\"type\">").h("eq",ctx,{"else":body_1,"block":body_2},{"key":ctx.get(["scope"], false),"value":"fulltext"},"h").h("eq",ctx,{"else":body_3,"block":body_4},{"key":ctx.get(["scope"], false),"value":"title"},"h").h("eq",ctx,{"else":body_5,"block":body_6},{"key":ctx.get(["scope"], false),"value":"author"},"h").w("</select></label></div><div class=\"small-10 column\"><div class=\"input-group\"><input class=\"input-group-field search\" type=\"search\" placeholder=\"\" value=\"").f(ctx.get(["term"], false),ctx,"h").w("\"><div class=\"input-group-button\"><button class=\"radius secondary button remove_search_field\"><i class=\"fi-x\"></i></button></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<option value=\"fulltext\">Fulltext</option>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<option selected value=\"fulltext\">Fulltext</option>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<option value=\"title\">Title</option>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w("<option selected value=\"title\">Title</option>");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w("<option value=\"author\">Author</option>");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("<option selected value=\"author\">Author</option>");}body_6.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("search_field_mask", context || {}, callback); };
+(function(dust){dust.register("navigation",body_0);function body_0(chk,ctx){return chk.w("<div><nav><div class=\"row\"><div class=\"column text-center\" style=\"margin:5px;\"><a href=\"/\"><h1>Sound Colour Space - A Virtual Museum</h1></a></div></div><div class=\"row\"><div class=\"column\"><ul class=\"menu align-center\">").s(ctx.get(["menu"], false),ctx,{"block":body_1},{"current":ctx.get(["currentUrl"], false)}).w("</ul></div></div></nav></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<li ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["url"], false),"value":ctx.get(["current"], false)},"h").w("><a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\">").f(ctx.get(["text"], false),ctx,"h").w("</a></li>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("class=\"active\"");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("navigation", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],72:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("set_detail",body_0);function body_0(chk,ctx){return chk.w("<div id=\"set\"><div class=\"row\"><div class=\"small-12 columns\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1><h4>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h4></div></div><div id=\"description\" class=\"row description\"><div class=\"small-12 columns\"><p>").f(ctx.get(["description"], false),ctx,"h").w("</p></div></div><div class=\"row align-right\"><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_1},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_3},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("active");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("active");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("active");}body_3.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_detail", context || {}, callback); };
+(function(dust){dust.register("search_field_mask",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row search_field_mask\"><div class=\"small-2 columns\"><label><select class=\"type\">").h("eq",ctx,{"else":body_1,"block":body_2},{"key":ctx.get(["scope"], false),"value":"fulltext"},"h").h("eq",ctx,{"else":body_3,"block":body_4},{"key":ctx.get(["scope"], false),"value":"title"},"h").h("eq",ctx,{"else":body_5,"block":body_6},{"key":ctx.get(["scope"], false),"value":"author"},"h").w("</select></label></div><div class=\"small-10 column\"><div class=\"input-group\"><input class=\"input-group-field search\" type=\"search\" placeholder=\"\" value=\"").f(ctx.get(["term"], false),ctx,"h").w("\"><div class=\"input-group-button\"><button class=\"radius secondary button remove_search_field\"><i class=\"fi-x\"></i></button></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<option value=\"fulltext\">Fulltext</option>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<option selected value=\"fulltext\">Fulltext</option>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<option value=\"title\">Title</option>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w("<option selected value=\"title\">Title</option>");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w("<option value=\"author\">Author</option>");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("<option selected value=\"author\">Author</option>");}body_6.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("search_field_mask", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],73:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("set_list",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><h4 class=\"text-center\">Sets</h4><div class=\"row entries\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_list", context || {}, callback); };
+(function(dust){dust.register("set_detail",body_0);function body_0(chk,ctx){return chk.w("<div id=\"set\"><div class=\"row\"><div class=\"small-12 columns\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1><h4>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h4></div></div><div id=\"description\" class=\"row description\"><div class=\"small-12 columns\"><p>").f(ctx.get(["description"], false),ctx,"h").w("</p></div></div><div class=\"row align-right\"><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_1},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_3},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("active");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("active");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("active");}body_3.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_detail", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],74:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("set_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-2 column set align-self-middle\" style=\"margin-bottom: 40px;\"><div class=\"row\"><div class=\"small-12 column text-center set\"><span><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></span><br /><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.get(["cover"], false),ctx,"h").w("\"/></a></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_single", context || {}, callback); };
+(function(dust){dust.register("set_list",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><h4 class=\"text-center\">Sets</h4><div class=\"row entries\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_list", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],75:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("timeline",body_0);function body_0(chk,ctx){return chk.w("<div><div id=\"timeline_header\" data-js-region=\"timeline_header\"></div><div id=\"timeline_wrapper\"><div id=\"timeline_navigator_sizer\" data-sticky_navigator_parent><div id=\"timeline_navigator\" data-sticky_navigator><ul id=\"timeline_menu\" class=\"vertical menu\">").s(ctx.get(["ranges"], false),ctx,{"block":body_1},{}).w("</ul></div></div><div id=\"timeline\"></div><div id=\"timeline_content\"></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<li class=\"").f(ctx.get(["class"], false),ctx,"h").w("\"><a href=\"#").f(ctx.get(["class"], false),ctx,"h").w("\" data-bypass>").f(ctx.get(["class"], false),ctx,"h").w("</a></li>");}body_1.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline", context || {}, callback); };
+(function(dust){dust.register("set_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-2 column set align-self-middle\" style=\"margin-bottom: 40px;\"><div class=\"row\"><div class=\"small-12 column text-center set\"><span><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></span><br /><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.get(["cover"], false),ctx,"h").w("\"/></a></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_single", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],76:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("timeline_section_header",body_0);function body_0(chk,ctx){return chk.w("<div id=\"").f(ctx.get(["class"], false),ctx,"h").w("\" class=\"section\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1><div class=\"connector\"><div class=\"circle\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_section_header", context || {}, callback); };
+(function(dust){dust.register("timeline",body_0);function body_0(chk,ctx){return chk.w("<div><div id=\"timeline_header\" data-js-region=\"timeline_header\"></div><div id=\"timeline_wrapper\"><div id=\"timeline_navigator_sizer\" data-sticky_navigator_parent><div id=\"timeline_navigator\" data-sticky_navigator><ul id=\"timeline_menu\" class=\"vertical menu\">").s(ctx.get(["ranges"], false),ctx,{"block":body_1},{}).w("</ul></div></div><div id=\"timeline\"></div><div id=\"timeline_content\"></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<li class=\"").f(ctx.get(["class"], false),ctx,"h").w("\"><a href=\"#").f(ctx.get(["class"], false),ctx,"h").w("\" data-bypass>").f(ctx.get(["class"], false),ctx,"h").w("</a></li>");}body_1.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],77:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("timeline_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry\"><div class=\"wrapper\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"overlay\"></div><div class=\"eye\"><i class=\"fi-eye\"></i></div><div class=\"description\"><h7>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</h7><h4>").f(ctx.get(["title"], false),ctx,"h").w("</h4><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6><p>").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</p></div></div><div class=\"connector\"><div class=\"circle\"></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br/>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_single", context || {}, callback); };
+(function(dust){dust.register("timeline_section_header",body_0);function body_0(chk,ctx){return chk.w("<div id=\"").f(ctx.get(["class"], false),ctx,"h").w("\" class=\"section\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1><div class=\"connector\"><div class=\"circle\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_section_header", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],78:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("timeline_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry\"><div class=\"wrapper\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"overlay\"></div><div class=\"eye\"><i class=\"fi-eye\"></i></div><div class=\"description\"><h7>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</h7><h4>").f(ctx.get(["title"], false),ctx,"h").w("</h4><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6><p>").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</p></div></div><div class=\"connector\"><div class=\"circle\"></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br/>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_single", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":5}],79:[function(require,module,exports){
 var Base = require('./base.js');
 
 // layout template
@@ -49721,7 +50633,9 @@ module.exports = Base.TemplateView.extend({
 
     }
 });
-},{"../templates/404.dust":48,"./base.js":80}],79:[function(require,module,exports){
+},{"../templates/404.dust":49,"./base.js":81}],80:[function(require,module,exports){
+var _ = require('lodash');
+
 var Base = require('./base');
 
 var EntryListView = require('./entry_list');
@@ -50012,7 +50926,7 @@ module.exports = Base.ListView.extend({
 });
 
 
-},{"../apiUrl":31,"../templates/archive.dust":49,"../templates/entry_list_header.dust":59,"../templates/entry_list_header_meta.dust":60,"../templates/search_field_mask.dust":71,"../views/swap.js":101,"./base":80,"./entry_even_grid":83,"./entry_grid":85,"./entry_list":87,"urijs":27}],80:[function(require,module,exports){
+},{"../apiUrl":31,"../templates/archive.dust":50,"../templates/entry_list_header.dust":60,"../templates/entry_list_header_meta.dust":61,"../templates/search_field_mask.dust":72,"../views/swap.js":102,"./base":81,"./entry_even_grid":84,"./entry_grid":86,"./entry_list":88,"lodash":14,"urijs":27}],81:[function(require,module,exports){
 /* Base Views */
 'use strict';
 
@@ -50416,7 +51330,7 @@ module.exports.ListView = Backbone.View.extend({
     },
 });
 
-},{"backbone":2,"jquery":12,"lodash":14}],81:[function(require,module,exports){
+},{"backbone":2,"jquery":12,"lodash":14}],82:[function(require,module,exports){
  /*
  var Backbone = require('backbone');
  var $ = require('jquery');
@@ -50649,14 +51563,18 @@ module.exports = Base.TemplateView.extend({
 
     }
 });
-},{"../models/entries":39,"../templates/editor.dust":52,"./base.js":80}],82:[function(require,module,exports){
+},{"../models/entries":40,"../templates/editor.dust":53,"./base.js":81}],83:[function(require,module,exports){
+(function (global){
 var Backbone = require('backbone');
-var $ = require('jquery');
+global.$ = global.jQuery = require('jquery');
 var _ = require('lodash');
 var foundation = require('foundation-sites');
 Backbone.$ = $;
 
 var Base = require('./base');
+
+var Lightbox = require('../helpers/lightbox');
+
 
 
 module.exports = Base.DetailView.extend({
@@ -50671,17 +51589,42 @@ module.exports = Base.DetailView.extend({
         // scroll to top
         $(window).scrollTop(0);
 
+        /*
+        if (this.model.get('image')) {
+            console.log(this.model.get('image').url);
+            this.model.set('originalImage', this.model.get('image').url.split('.')[0] + '.jpg');
+        }
+        */
+
         // typeset math
         MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
-
     },
 
-    events: {},
+    events: {
+
+        'click img': function (e) {
+
+            var lightbox = new Lightbox();
+
+            lightbox.load({
+                maxImgSize: 1.0,
+            });
+
+            e.preventDefault();
+
+            lightbox.open(this.model.get('image').url.split('.')[0] + '.' + this.model.get('image').url.split('.')[1]);
+
+
+        }
+
+    },
 
 });
 
 
-},{"../templates/entry_detail.dust":53,"./base":80,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14}],83:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"../helpers/lightbox":37,"../templates/entry_detail.dust":54,"./base":81,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14}],84:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -50734,7 +51677,7 @@ module.exports = Base.ListView.extend({
 
     events: {}
 });
-},{"../templates/entry_even_grid.dust":54,"../views/swap.js":101,"./base":80,"./entry_even_grid_single":84,"backbone":2,"jquery":12,"lodash":14}],84:[function(require,module,exports){
+},{"../templates/entry_even_grid.dust":55,"../views/swap.js":102,"./base":81,"./entry_even_grid_single":85,"backbone":2,"jquery":12,"lodash":14}],85:[function(require,module,exports){
 var $ = require('jquery');
 var _ = require('lodash');
 var Backbone = require('backbone');
@@ -50762,7 +51705,7 @@ module.exports = Base.SingleView.extend({
 
     events: {}
 });
-},{"../templates/entry_even_grid_single.dust":55,"./base":80,"backbone":2,"jquery":12,"lodash":14}],85:[function(require,module,exports){
+},{"../templates/entry_even_grid_single.dust":56,"./base":81,"backbone":2,"jquery":12,"lodash":14}],86:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -50847,7 +51790,7 @@ module.exports = Base.ListView.extend({
     events: {},
 
 });
-},{"../templates/entry_grid.dust":56,"../views/swap.js":101,"./base":80,"./entry_grid_single":86,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":14,"packery":21}],86:[function(require,module,exports){
+},{"../templates/entry_grid.dust":57,"../views/swap.js":102,"./base":81,"./entry_grid_single":87,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":14,"packery":21}],87:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -50904,7 +51847,7 @@ module.exports = Base.SingleView.extend({
 
     events: {}
 });
-},{"../templates/entry_grid_single.dust":57,"./base":80,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":14,"packery":21,"velocity-animate":29,"velocity-animate/velocity.ui":30}],87:[function(require,module,exports){
+},{"../templates/entry_grid_single.dust":58,"./base":81,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":14,"packery":21,"velocity-animate":29,"velocity-animate/velocity.ui":30}],88:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -50952,7 +51895,7 @@ module.exports = Base.ListView.extend({
     */
 
 });
-},{"../templates/entry_list.dust":58,"../views/swap.js":101,"./base":80,"./entry_list_single":88,"backbone":2,"jquery":12,"lodash":14}],88:[function(require,module,exports){
+},{"../templates/entry_list.dust":59,"../views/swap.js":102,"./base":81,"./entry_list_single":89,"backbone":2,"jquery":12,"lodash":14}],89:[function(require,module,exports){
 var $ = require('jquery');
 var _ = require('lodash');
 var Backbone = require('backbone');
@@ -50980,7 +51923,7 @@ module.exports = Base.SingleView.extend({
 
     events: {}
 });
-},{"../templates/entry_list_single.dust":61,"./base":80,"backbone":2,"jquery":12,"lodash":14}],89:[function(require,module,exports){
+},{"../templates/entry_list_single.dust":62,"./base":81,"backbone":2,"jquery":12,"lodash":14}],90:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -51011,7 +51954,7 @@ module.exports = Base.DetailView.extend({
 });
 
 
-},{"../templates/experiment_detail.dust":63,"./base":80,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14}],90:[function(require,module,exports){
+},{"../templates/experiment_detail.dust":64,"./base":81,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14}],91:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -51049,7 +51992,7 @@ module.exports = Base.ListView.extend({
     events: {
     }
 });
-},{"../templates/experiment_list.dust":64,"../views/swap.js":101,"./base":80,"./experiment_single":91,"backbone":2,"jquery":12,"lodash":14}],91:[function(require,module,exports){
+},{"../templates/experiment_list.dust":65,"../views/swap.js":102,"./base":81,"./experiment_single":92,"backbone":2,"jquery":12,"lodash":14}],92:[function(require,module,exports){
 var $ = require('jquery');
 var _ = require('lodash');
 var Backbone = require('backbone');
@@ -51077,7 +52020,7 @@ module.exports = Base.SingleView.extend({
 
     events: {}
 });
-},{"../templates/experiment_single.dust":65,"./base":80,"backbone":2,"jquery":12,"lodash":14}],92:[function(require,module,exports){
+},{"../templates/experiment_single.dust":66,"./base":81,"backbone":2,"jquery":12,"lodash":14}],93:[function(require,module,exports){
 var Base = require('./base.js');
 
 // layout template
@@ -51091,7 +52034,7 @@ module.exports = Base.TemplateView.extend({
     onShow: function () {
     }
 });
-},{"../templates/homepage.dust":66,"./base.js":80}],93:[function(require,module,exports){
+},{"../templates/homepage.dust":67,"./base.js":81}],94:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -51191,7 +52134,7 @@ module.exports = Base.DetailView.extend({
 });
 
 
-},{"../apiUrl":31,"../models/entries":39,"../templates/keyword_detail.dust":67,"./base":80,"./entry_even_grid":83,"./entry_grid":85,"./entry_list":87,"./swap":101,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14,"urijs":27}],94:[function(require,module,exports){
+},{"../apiUrl":31,"../models/entries":40,"../templates/keyword_detail.dust":68,"./base":81,"./entry_even_grid":84,"./entry_grid":86,"./entry_list":88,"./swap":102,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14,"urijs":27}],95:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -51231,7 +52174,7 @@ module.exports = Base.ListView.extend({
     events: {
     }
 });
-},{"../templates/keyword_list.dust":68,"../templates/keyword_single.dust":69,"../views/swap.js":101,"./base":80,"backbone":2,"jquery":12,"lodash":14}],95:[function(require,module,exports){
+},{"../templates/keyword_list.dust":69,"../templates/keyword_single.dust":70,"../views/swap.js":102,"./base":81,"backbone":2,"jquery":12,"lodash":14}],96:[function(require,module,exports){
 var Base = require('./base.js');
 
 // layout template
@@ -51244,7 +52187,7 @@ module.exports = Base.TemplateView.extend({
     }
 });
 
-},{"../templates/base.dust":50,"./base.js":80}],96:[function(require,module,exports){
+},{"../templates/base.dust":51,"./base.js":81}],97:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -51350,9 +52293,9 @@ module.exports = Base.TemplateView.extend({
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../apiUrl":31,"../templates/navigation.dust":70,"./base.js":80,"backbone":2,"backbone-nprogress":1,"foundation-sites":8,"jquery":12,"lodash":14,"nprogress":16,"urijs":27}],97:[function(require,module,exports){
+},{"../apiUrl":31,"../templates/navigation.dust":71,"./base.js":81,"backbone":2,"backbone-nprogress":1,"foundation-sites":8,"jquery":12,"lodash":14,"nprogress":16,"urijs":27}],98:[function(require,module,exports){
 module.exports = {};
-},{}],98:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -51433,7 +52376,7 @@ module.exports = Base.DetailView.extend({
 });
 
 
-},{"../templates/set_detail.dust":72,"./base":80,"./entry_even_grid":83,"./entry_grid":85,"./entry_list":87,"./swap":101,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14}],99:[function(require,module,exports){
+},{"../templates/set_detail.dust":73,"./base":81,"./entry_even_grid":84,"./entry_grid":86,"./entry_list":88,"./swap":102,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14}],100:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -51471,7 +52414,7 @@ module.exports = Base.ListView.extend({
     events: {
     }
 });
-},{"../templates/set_list.dust":73,"../views/swap.js":101,"./base":80,"./set_single":100,"backbone":2,"jquery":12,"lodash":14}],100:[function(require,module,exports){
+},{"../templates/set_list.dust":74,"../views/swap.js":102,"./base":81,"./set_single":101,"backbone":2,"jquery":12,"lodash":14}],101:[function(require,module,exports){
 var $ = require('jquery');
 var _ = require('lodash');
 var Backbone = require('backbone');
@@ -51499,7 +52442,7 @@ module.exports = Base.SingleView.extend({
 
     events: {}
 });
-},{"../templates/set_single.dust":74,"./base":80,"backbone":2,"jquery":12,"lodash":14}],101:[function(require,module,exports){
+},{"../templates/set_single.dust":75,"./base":81,"backbone":2,"jquery":12,"lodash":14}],102:[function(require,module,exports){
 module.exports = function (region, newView) {
 
     // if there's an old View in the region, grab a reference to it
@@ -51539,7 +52482,7 @@ module.exports = function (region, newView) {
 
 
 
-},{}],102:[function(require,module,exports){
+},{}],103:[function(require,module,exports){
 (function (global){
 global.$ = global.jQuery = require('jquery');
 
@@ -51746,7 +52689,7 @@ module.exports = Base.TemplateView.extend({
             }
 
             // user scrolled to bottom of page
-            else if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
+            else if ((scrollHeight - scrollPosition) / scrollHeight < 0.1) {
 
                 // load more of the same if we have more pages!
                 if (this.options.collection.meta !== undefined && this.options.collection.meta.next != null) {
@@ -51806,7 +52749,7 @@ module.exports = Base.TemplateView.extend({
 });
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../helpers/sticky-kit":37,"../templates/timeline.dust":75,"../templates/timeline_section_header.dust":76,"./base":80,"./timeline_single":103,"backbone":2,"foundation-sites":8,"imagesloaded":10,"jquery":12,"lodash":14}],103:[function(require,module,exports){
+},{"../helpers/sticky-kit":38,"../templates/timeline.dust":76,"../templates/timeline_section_header.dust":77,"./base":81,"./timeline_single":104,"backbone":2,"foundation-sites":8,"imagesloaded":10,"jquery":12,"lodash":14}],104:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -51866,7 +52809,7 @@ module.exports = Base.SingleView.extend({
 });
 
 
-},{"../templates/timeline_single.dust":77,"./base":80,"backbone":2,"imagesloaded":10,"jquery":12,"lodash":14,"velocity-animate":29,"velocity-animate/velocity.ui":30}]},{},[38])
+},{"../templates/timeline_single.dust":78,"./base":81,"backbone":2,"imagesloaded":10,"jquery":12,"lodash":14,"velocity-animate":29,"velocity-animate/velocity.ui":30}]},{},[39])
 
 
 //# sourceMappingURL=bundle.js.map

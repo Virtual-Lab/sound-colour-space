@@ -203,7 +203,7 @@ module.exports = Base.TemplateView.extend({
             }
 
             // user scrolled to bottom of page
-            else if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
+            else if ((scrollHeight - scrollPosition) / scrollHeight < 0.1) {
 
                 // load more of the same if we have more pages!
                 if (this.options.collection.meta !== undefined && this.options.collection.meta.next != null) {

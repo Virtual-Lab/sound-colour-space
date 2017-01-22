@@ -8,8 +8,10 @@ window.App = {
 };
 
 global.$ = global.jQuery = require('jquery');
+var _ = require('lodash');
 var Backbone = require('backbone');
 Backbone.$ = $;
+
 
 // we do need this for dustjs helpers!!!
 require('dustjs-helpers');

@@ -27,7 +27,8 @@ var reactify = require('reactify');
 
 var sassPaths = [
     'sass/lib/fd-6.2',
-    'sass/lib/font-awesome-4.6.3'
+    'sass/lib/font-awesome-4.6.3',
+    'lightbox'
 ];
 
 var AUTOPREFIXER_BROWSERS = [
