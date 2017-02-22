@@ -1,3 +1,3 @@
- ## [Deploy](deploy.md)
+## [Deploy](deploy.md)
 
- ## [Sync + Import](sync_and_import.md)
+## [Sync + Import](sync_and_import.md)
