@@ -43,11 +43,11 @@ var exhibitions = function () {
     swap(Regions.content, new ExhibitionsView({}));
 };
 
-var documentation = function () {
-    var DocumentationView = Base.TemplateView.extend({
-        template: require('./templates/documentation.dust'),
+var about = function () {
+    var AboutView = Base.TemplateView.extend({
+        template: require('./templates/about.dust'),
     });
-    swap(Regions.content, new DocumentationView({}));
+    swap(Regions.content, new AboutView({}));
 };
 
 var editor = function (actions) {
@@ -81,7 +81,7 @@ module.exports = Backbone.Router.extend({
         'exhibitions(/)': exhibitions,
         'virtuallab(/)': virtualLabController.List,
         'virtuallab/:slug(/)': virtualLabController.Detail,
-        'documentation(/)': documentation,
+        'about(/)': about,
         '*actions': defaultRoute
     },
 

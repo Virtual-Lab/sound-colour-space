@@ -1,6 +1,8 @@
 import os
 import sys
 
+from django.utils.translation import ugettext_lazy as _
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 
@@ -86,6 +88,10 @@ AUTHENTICATION_BACKENDS = (
 
 ROOT_URLCONF = 'project.urls'
 WSGI_APPLICATION = 'project.wsgi.application'
+
+LANGUAGES = [
+    ('en', _('English')),
+]
 
 # i18n
 LANGUAGE_CODE = 'en-us'

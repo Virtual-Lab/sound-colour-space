@@ -4,11 +4,23 @@ var _ = require('underscore');
 var foundation = require('foundation-sites');
 Backbone.$ = $;
 
+var marked = require('marked');
+
 var Base = require('./base');
 
 var Lightbox = require('../helpers/lightbox');
 
+var renderer = new marked.Renderer();
 
+// override link rendering
+renderer.link = function (href, title, text) {
+
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
+    } else {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '">' + text + '</a>';
+    }
+};
 
 module.exports = Base.DetailView.extend({
 
@@ -19,18 +31,18 @@ module.exports = Base.DetailView.extend({
     },
 
     onShow: function () {
+
         // scroll to top
         $(window).scrollTop(0);
 
-        /*
-        if (this.model.get('image')) {
-            console.log(this.model.get('image').url);
-            this.model.set('originalImage', this.model.get('image').url.split('.')[0] + '.jpg');
-        }
-        */
+        MathJax.Hub.Queue(
+            ["Typeset", MathJax.Hub, "description"],
+            function () {
+                $('.description').html(marked($('.description').html(), {renderer: renderer}));
+                $('.description').css('visibility', 'visible');
+            }
+        );
 
-        // typeset math
-        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
     },
 
     events: {
@@ -46,7 +58,6 @@ module.exports = Base.DetailView.extend({
             e.preventDefault();
 
             lightbox.open(this.model.get('image').url.split('.')[0] + '.' + this.model.get('image').url.split('.')[1]);
-
 
         }
 

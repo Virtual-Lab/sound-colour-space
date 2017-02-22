@@ -177,14 +177,18 @@ class EntryResource(ModelResource):
         except:
             image_size = "medium"
 
-        thumbnail = get_thumbnailer(bundle.obj.image)[image_size]
+        try:
+            thumbnail = get_thumbnailer(bundle.obj.image)[image_size]
 
-        image = ({
-            'url': thumbnail.url,
-            'width': thumbnail.width,
-            'height': thumbnail.height
-        })
-        return image
+            image = ({
+                'url': thumbnail.url,
+                'width': thumbnail.width,
+                'height': thumbnail.height
+            })
+            return image
+        except Exception:
+            image = ({})
+            return image
 
     def dehydrate_tags(self, bundle):
         return [{"name": tag.name, "slug": tag.slug} for tag in bundle.obj.tags.all()]
@@ -195,7 +199,8 @@ class EntryResource(ModelResource):
         for related in bundle.obj.related.all():
             related_entries.append({
                 'title': related.title,
-                'uri': related.get_absolute_url()
+                'uri': related.get_absolute_url(),
+                'portrayed_object_date': related.portrayed_object_date
             })
 
         return related_entries

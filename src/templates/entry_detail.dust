@@ -7,16 +7,18 @@
         <h6>{#author}{first_name} {last_name} {?pseudonym}({pseudonym}){/pseudonym}{/author}</h6>
         {?tags}<h6>Tags:{#tags} <a href="/keywords/{slug}">{name}</a>{@sep},{/sep}{/tags}</h6>{/tags}
         {originalImage}
-        <img src="{image.url}" />
-        <div class="description">{description|markdown|s}</div>
+        <img class="diagram" src="{image.url}"/>
+        <div id="description" class="description">{description}</div>
+        {?related}
         <div class="related text-left">
-            {?related}See also:{/related}
+            See also:
             <ul>
                 {#related}
                 <li><a href="/{uri}">{title} ({portrayed_object_date})</a></li>
                 {~n}{/related}
             </ul>
         </div>
+        {/related}
         <br/>
         <div class="row">
             <div class="large-12 medium-12 small-12 column text-left">

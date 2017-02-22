@@ -6,10 +6,9 @@
         </div>
     </div>
 
-
-    <div id="description" class="row description">
+    <div class="row">
         <div class="small-12 columns">
-            <p>{description}</p>
+            <div id="description" class="description">{description}</div>
         </div>
     </div>
 

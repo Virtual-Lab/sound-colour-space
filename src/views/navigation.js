@@ -72,8 +72,8 @@ module.exports = Base.TemplateView.extend({
                 "text": "Virtual Lab"
             },
             {
-                "url": "/documentation",
-                "text": "Documentation"
+                "url": "/about",
+                "text": "About"
             }
         ]
 

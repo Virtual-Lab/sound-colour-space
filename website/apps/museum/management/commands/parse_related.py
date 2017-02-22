@@ -1,7 +1,8 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 
 import re
-from museum.models import Entry, Collection
+from museum.models import Entry, Collection, Experiment
 
 
 class Command(BaseCommand):
@@ -19,77 +20,60 @@ class Command(BaseCommand):
             refs += {'[' + x + '][]'}
         return "[" + ','.join(refs) + "]"
 
+    def update_description_for_obj(self, obj):
+        changed = False
+
+        # get references
+        obj.description = re.sub("\[(\d+)(\s*,?\s*\d+)*\]", self.repl, unicode(obj.description))
+
+        # ref: [45]: /diagrams/45 "Diatonic Scale"
+        # set: [10003]: /sets/10003 "Chromatic Scales"
+        for i in self.ref_id:
+            try:
+                if i < 10000:
+                    ref = Entry.objects.get(doc_id=i)
+                else:
+                    ref = Collection.objects.get(doc_id=i)
+
+                ref_link = '\r\n[' + str(
+                    ref.doc_id) + ']' + ': /' + ref.get_absolute_url() + " \"" + ref.title + "\""
+                obj.description += ref_link
+                obj.save()
+                changed = True
+            except ObjectDoesNotExist:
+                self.stdout.write(self.style.WARNING('Referenced entry does not exist: %s' % i))
+
+        # clear list
+        self.ref_id = []
+
+        return changed
+
     def handle(self, *args, **options):
 
-        if (options['type'] == 'sets'):
+        if options['type'] == 'sets':
             sets = Collection.objects.all()
             total = 0
             for s in sets:
-                # match 1-3 numbers in brackets
-                matches = re.findall('\[\d{1,3}\]', unicode(s.description))
-                if matches:
-                    i = 0
-                    for m in matches:
-                        number = (int)(matches[i].replace('[', '').replace(']', ''))
-                        try:
-                            ref = Entry.objects.get(doc_id=number)
-                            title = ref.title
-                            # update description text: [doc_id](doc_id "title")
-                            s.description = s.description.replace(matches[i], '[' + matches[i] + '](diagram/' + str(
-                                number) + ' "' + title + '")')
-
-                            s.save()
-                        except (Entry.DoesNotExist):
-                            self.stdout.write(self.style.WARNING('Referenced entry does not exist: %s' % number))
-
-                        i += 1
-
-
-
-                # match 5 numbers in brackets
-                matches = re.findall('\[\d\d\d\d\d\]', unicode(s.description))
-                if matches:
-                    i = 0
-                    for m in matches:
-                        number = (int)(matches[i].replace('[', '').replace(']', ''))
-                        try:
-                            ref = Collection.objects.get(doc_id=number)
-                            title = ref.title
-                            # update description text: [doc_id](doc_id "title")
-                            s.description = s.description.replace(matches[i], '[' + matches[i] + '](set/' + ref.slug + ' "' + title + '")')
-
-                            s.save()
-                        except (Collection.DoesNotExist):
-                            self.stdout.write(self.style.WARNING('Referenced set does not exist: %s' % number))
-
-                        i += 1
-
-                total += 1
+                if self.update_description_for_obj(s):
+                    total += 1
 
             self.stdout.write(self.style.SUCCESS('Updated %s sets.' % total))
 
-        elif (options['type'] == 'diagrams'):
+        elif options['type'] == 'diagrams':
             entries = Entry.objects.all()
-
             total = 0
             for e in entries:
-                e.description = re.sub("\[([\d, *]+)\]", self.repl, unicode(e.description))
+                if self.update_description_for_obj(e):
+                    total += 1
 
-                # ref: [45]: /diagrams/45 "Diatonic Scale"
-                for i in self.ref_id:
-                    try:
-                        ref = Entry.objects.get(doc_id=i)
-                        ref_link = '\r\n[' + str(ref.doc_id) + ']' + ': /' + ref.get_absolute_url() + " \"" + ref.title + "\""
-                        e.description += ref_link
+            self.stdout.write(self.style.SUCCESS('Updated %s entries.' % total))
 
-                        e.save()
-                    except Entry.DoesNotExist:
-                        self.stdout.write(self.style.WARNING('Referenced entry does not exist: %s' % i))
-
-                # clear list for next entry
-                self.ref_id = []
-
-                total += 1
+        elif options['type'] == 'experiments':
+            experiments = Experiment.objects.all()
+            total = 0
+            for e in experiments:
+                if self.update_description_for_obj(e):
+                    total += 1
 
             self.stdout.write(self.style.SUCCESS('Updated %s entries.' % total))
 

@@ -90,10 +90,17 @@ module.exports.Detail = function (doc_id) {
     var entry = new Entry({doc_id: doc_id});
 
     // render
-    swap(Regions.content, new EntryDetailView({model: entry}));
+    // normally we render here already, but we don't because of mathjax issues
 
     App.currentView = EntryDetailView;
 
     // fetch
-    entry.fetch();
+    entry.fetch(
+        {
+            success: function () {
+                // render
+                swap(Regions.content, new EntryDetailView({model: entry}));
+            },
+        }
+    );
 };

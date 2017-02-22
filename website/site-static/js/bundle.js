@@ -48597,12 +48597,19 @@ module.exports.Detail = function (doc_id) {
     var entry = new Entry({doc_id: doc_id});
 
     // render
-    swap(Regions.content, new EntryDetailView({model: entry}));
+    // normally we render here already, but we don't because of mathjax issues
 
     App.currentView = EntryDetailView;
 
     // fetch
-    entry.fetch();
+    entry.fetch(
+        {
+            success: function () {
+                // render
+                swap(Regions.content, new EntryDetailView({model: entry}));
+            },
+        }
+    );
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
@@ -48750,8 +48757,12 @@ module.exports.Detail = function (slug) {
 },{"../models/experiment":42,"../models/experiments":43,"../views/experiment_detail":90,"../views/experiment_list":91,"../views/regions.js":98,"../views/swap.js":102,"jquery":12,"lodash":14}],36:[function(require,module,exports){
 // dust filters
 var dust = require('dustjs-linkedin');
+
+// KEPT FOR REFERENCE
+
+/*
 var marked = require('marked');
-//var md5 = require('blueimp-md5');
+var md5 = require('blueimp-md5');
 
 var renderer = new marked.Renderer();
 
@@ -48763,14 +48774,14 @@ renderer.link = function (href, title, text) {
     if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
         return '<a href="' + href + '" title="' + (title != null ? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
     }
-    /*
-    else if (href.split('/')[0].indexOf('diagram') === 0) {
-        return '<a href="/diagrams/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
-    }
-    else if (href.split('/')[0].indexOf('set') === 0) {
-        return '<a href="/sets/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
-    }
-    */
+
+//  else if (href.split('/')[0].indexOf('diagram') === 0) {
+//        return '<a href="/diagrams/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
+//  }
+//  else if (href.split('/')[0].indexOf('set') === 0) {
+//      return '<a href="/sets/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
+//  }
+
 
     else {
         return '<a href="' + href + '" title="' + (title != null ? title : "") + '">' + text + '</a>';
@@ -48801,13 +48812,15 @@ dust.filters.humanFileSize = function (bytes) {
 };
 
 // md5 hash filter
-/*
+
  dust.filters.md5 = function(value) {
  return md5(value);
  };
- */
 
-},{"dustjs-linkedin":5,"marked":15}],37:[function(require,module,exports){
+
+*/
+
+},{"dustjs-linkedin":5}],37:[function(require,module,exports){
 'use strict';
 
 /**
@@ -50385,11 +50398,11 @@ var exhibitions = function () {
     swap(Regions.content, new ExhibitionsView({}));
 };
 
-var documentation = function () {
-    var DocumentationView = Base.TemplateView.extend({
-        template: require('./templates/documentation.dust'),
+var about = function () {
+    var AboutView = Base.TemplateView.extend({
+        template: require('./templates/about.dust'),
     });
-    swap(Regions.content, new DocumentationView({}));
+    swap(Regions.content, new AboutView({}));
 };
 
 var editor = function (actions) {
@@ -50423,7 +50436,7 @@ module.exports = Backbone.Router.extend({
         'exhibitions(/)': exhibitions,
         'virtuallab(/)': virtualLabController.List,
         'virtuallab/:slug(/)': virtualLabController.Detail,
-        'documentation(/)': documentation,
+        'about(/)': about,
         '*actions': defaultRoute
     },
 
@@ -50440,7 +50453,7 @@ module.exports = Backbone.Router.extend({
 });
 
 
-},{"./controllers/entry_controller":32,"./controllers/keyword_controller":33,"./controllers/set_controller":34,"./controllers/virtual_lab_controller":35,"./templates/documentation.dust":52,"./templates/exhibitions.dust":63,"./views/404.js":79,"./views/archive.js":80,"./views/base.js":81,"./views/editor.js":82,"./views/homepage.js":93,"./views/layout.js":96,"./views/regions.js":98,"./views/swap.js":102,"backbone":2,"jquery":12}],49:[function(require,module,exports){
+},{"./controllers/entry_controller":32,"./controllers/keyword_controller":33,"./controllers/set_controller":34,"./controllers/virtual_lab_controller":35,"./templates/about.dust":50,"./templates/exhibitions.dust":63,"./views/404.js":79,"./views/archive.js":80,"./views/base.js":81,"./views/editor.js":82,"./views/homepage.js":93,"./views/layout.js":96,"./views/regions.js":98,"./views/swap.js":102,"backbone":2,"jquery":12}],49:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("404",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 column text-center\"><h1>404 Not Found</h1></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("404", context || {}, callback); };
@@ -50449,19 +50462,19 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],50:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("archive",body_0);function body_0(chk,ctx){return chk.w("<div><div id=\"entry_list_header\" data-js-region=\"entry_list_header\"></div><div id=\"entry_list_header_meta\" data-js-region=\"entry_list_header_meta\"></div><div class=\"row\"><div class=\"small-12 columns\">").s(ctx.get(["meta"], false),ctx,{"block":body_1},{}).w("</div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.h("gt",ctx,{"block":body_2},{"key":ctx.get(["total_count"], false),"value":"0"},"h");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<div id=\"entry_list\" data-js-region=\"entry_list\"></div>");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("archive", context || {}, callback); };
+(function(dust){dust.register("about",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"large-10 large-offset-2 columns\"><div class=\"row\"><div class=\"small-8 columns\"><h4>About</h4></div></div><div class=\"row\"><div class=\"small-8 columns\"><p>The project \"Sound Colour Space – A Virtual Museum\", based at the Zurich University of the Arts(ZHdK),is a collaboration between the Institute for Computer Music and Sound Technology (ICST), theInstitutfür Theorie (ith) and the Medien- und Informationszentrum (MIZ).</p></div></div><div class=\"row\"><div class=\"small-8 columns\"><h4>Project Team</h4></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Applicants</dt><dd>Prof. Dr. Martin Neukom, ICST, ZHdK</dd><dd>Prof. Dr. Dieter Mersch, ith, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Project Management</dt><dd>Dr. Daniel Muzzulini, ICST, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Team</dt><dd>Lucas Bennett, ICST, ZHdK</dd><dd>Philippe Kocher, ICST, ZHdK</dd><dd>Dr. Susanne Schumacher, MIZ, ZHdK</dd><dd>Christoph Stähli, ICST, ZHdK</dd><dd>Jeroen Visser, ith, ZHdK</dd><dd>Raimund Vogtenhuber, ICST, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Partners</dt><dd>Prof. Dr. Christoph Reuter, Institut für Systematische Musikwissenschaft, Universität Wien</dd><dd>Prof. Dr. Benjamin Wardhaugh, All Souls College, Oxford</dd><dd>Gerhard Dirmoser, Linz</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><h4>Funding</h4><p>Schweizerischer Nationalfond (SNF: 105216_156979)</p></div></div><div class=\"row\"><div class=\"small-8 columns\"><h4>How to quote this website?</h4><p>„Sound Colour Space – A Virtual Museum“, Zurich University of the Arts, 2017,&nbsp;http://sound-colour-space.zhdk.ch</p></div></div><div class=\"row\"><div class=\"small-8 columns\"><h4>More information and additional material</h4><dl><dd><a href=\"https://www.zhdk.ch/forschungsprojekt/426348\" target=\"_blank\" data-bypass>ZürcherHochschule der Künste - Forschungsprojekte: Sound Colour Space</a></dd><dd><a href=\"https://medienarchiv.zhdk.ch/sets/4222fb4a-f454-421f-b646-c679007bd8ed\"target=\"_blank\" data-bypass>Forschungsprojekt «Sound Color Space»: Quellen, Ergebnisseund Dokumentation</a></dd></dl></div></div></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("about", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],51:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("base",body_0);function body_0(chk,ctx){return chk.w("<div data-js-region=\"base\"><div id=\"navigation\" data-js-region=\"navigation\"></div><div id=\"content\" data-js-region=\"content\"></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("base", context || {}, callback); };
+(function(dust){dust.register("archive",body_0);function body_0(chk,ctx){return chk.w("<div><div id=\"entry_list_header\" data-js-region=\"entry_list_header\"></div><div id=\"entry_list_header_meta\" data-js-region=\"entry_list_header_meta\"></div><div class=\"row\"><div class=\"small-12 columns\">").s(ctx.get(["meta"], false),ctx,{"block":body_1},{}).w("</div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.h("gt",ctx,{"block":body_2},{"key":ctx.get(["total_count"], false),"value":"0"},"h");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<div id=\"entry_list\" data-js-region=\"entry_list\"></div>");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("archive", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],52:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("documentation",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-8 columns\"><h4>About</h4></div></div><div class=\"row\"><div class=\"small-8 columns\"><p>The research project Sound Colour Space – A Virtual Museum is based at ZHdK(Zurich University of the Arts), ICST (Institute for Computer Music and Sound Technology)</p></div></div><div class=\"row\"><div class=\"small-8 columns\"><h4>Project Team</h4></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Applicants</dt><dd>Prof. Dr. Martin Neukom, ICST, ZHdK</dd><dd>Prof. Dr. Dieter Mersch, ith, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Project Management</dt><dd>Dr. Daniel Muzzulini, ICST, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Team</dt><dd>Lucas Bennett, ICST, ZHdK</dd><dd>Jeroen Visser, ith, ZHdK</dd><dd>Philippe Kocher, ICST, ZHdK</dd><dd>Raimund Vogtenhuber, ICST, ZHdK</dd><dd>Susanne Schumacher, MIZ, ZHdK</dd><dd>Christoph Stähli, ICST, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Partners</dt><dd>Prof. Dr. Christoph Reuter, Institut für Systematische Musikwissenschaft, Universität Wien</dd><dd>Prof. Dr. Benjamin Wardhaugh, All Souls College, Oxford</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Funding</dt><dd>Schweizerischer Nationalfond (SNF)</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><h4>Inhalte vernetzen</h4><h5>Diagrammatische Modelle der Vermittlung im Projekt \"Sound Colour Space\"</h5></div></div><div class=\"row\"><div class=\"small-8 columns\"><iframe src=\"https://player.vimeo.com/video/190070646?color=559e7a&byline=0\" width=\"640\" height=\"360\"frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></div>s<div class=\"row\"><div class=\"small-8 columns\"><iframe src=\"https://player.vimeo.com/video/190072380?color=559e7a&byline=0\" width=\"640\" height=\"360\"frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("documentation", context || {}, callback); };
+(function(dust){dust.register("base",body_0);function body_0(chk,ctx){return chk.w("<div data-js-region=\"base\"><div id=\"navigation\" data-js-region=\"navigation\"></div><div id=\"content\" data-js-region=\"content\"></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("base", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],53:[function(require,module,exports){
@@ -50473,7 +50486,7 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],54:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h3>").f(ctx.get(["title"], false),ctx,"h").w("</h3><h6>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h6><h6><i>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</i></h6><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_3},{}).f(ctx.get(["originalImage"], false),ctx,"h").w("<img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" /><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</div><div class=\"related text-left\">").x(ctx.get(["related"], false),ctx,{"block":body_6},{}).w("<ul>").s(ctx.get(["related"], false),ctx,{"block":body_7},{}).w("</ul></div><br/><div class=\"row\"><div class=\"large-12 medium-12 small-12 column text-left\">Source: ").f(ctx.get(["source"], false),ctx,"h").w("<br/>Copyright: ").f(ctx.get(["copyright_notice"], false),ctx,"h").w("<br/>License: ").s(ctx.get(["license"], false),ctx,{"block":body_8},{}).w("</div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_4},{}).w("</h6>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(" <a href=\"/keywords/").f(ctx.get(["slug"], false),ctx,"h").w("\">").f(ctx.get(["name"], false),ctx,"h").w("</a>").h("sep",ctx,{"block":body_5},{},"h");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w(",");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("See also:");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w(" (").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w(")</a></li>\n");}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\" data-bypass target=\"_blank\">").f(ctx.get(["label"], false),ctx,"h").w("</a>");}body_8.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
+(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h3>").f(ctx.get(["title"], false),ctx,"h").w("</h3><h6>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h6><h6><i>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</i></h6><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_3},{}).f(ctx.get(["originalImage"], false),ctx,"h").w("<img class=\"diagram\" src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div id=\"description\" class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div>").x(ctx.get(["related"], false),ctx,{"block":body_6},{}).w("<br/><div class=\"row\"><div class=\"large-12 medium-12 small-12 column text-left\">Source: ").f(ctx.get(["source"], false),ctx,"h").w("<br/>Copyright: ").f(ctx.get(["copyright_notice"], false),ctx,"h").w("<br/>License: ").s(ctx.get(["license"], false),ctx,{"block":body_8},{}).w("</div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_4},{}).w("</h6>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(" <a href=\"/keywords/").f(ctx.get(["slug"], false),ctx,"h").w("\">").f(ctx.get(["name"], false),ctx,"h").w("</a>").h("sep",ctx,{"block":body_5},{},"h");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w(",");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("<div class=\"related text-left\">See also:<ul>").s(ctx.get(["related"], false),ctx,{"block":body_7},{}).w("</ul></div>");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w(" (").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w(")</a></li>\n");}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\" data-bypass target=\"_blank\">").f(ctx.get(["label"], false),ctx,"h").w("</a>");}body_8.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],55:[function(require,module,exports){
@@ -50511,7 +50524,7 @@ var dust = require('dustjs-linkedin');
 var dust = require('dustjs-linkedin');
 require('./search_field_mask.dust');
 require('./search_field_mask.dust');
-(function(dust){dust.register("entry_list_header",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns text-center\"><h4>Search</h4></div></div><div class=\"row\"><div class=\"small-1 shrink columns\"><label>Match:<select class=\"match\"><option ").h("eq",ctx,{"block":body_1},{"key":ctx.getPath(false, ["meta","match"]),"value":"OR"},"h").w(" value=\"OR\">Any of the terms</option><option ").h("eq",ctx,{"block":body_2},{"key":ctx.getPath(false, ["meta","match"]),"value":"AND"},"h").w(" value=\"AND\">All of the terms</option></select></label></div></div><div id=\"search_field_masks\">").s(ctx.get(["meta"], false),ctx,{"block":body_3},{}).w("</div><div class=\"row\"><div class=\"small-6 columns\"><h5><button class=\"tiny secondary radius button add_search_field\">Add search field</button></h5></div><div class=\"small-6 columns\"><h5><button class=\"button normal radius float-right search\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Search</button></h5></div></div><div class=\"row\"><div class=\"small-12 columns\"><ul id=\"refine_search\" class=\"accordion\" data-accordion data-allow-all-closed=\"true\"><li class=\"accordion-item\" data-accordion-item><a href=\"#\" data-bypass class=\"accordion-title\" style=\"padding:0;display: inline-block;\"><button class=\"button small radius\" style=\"margin:0;\"><i class=\"fi-widget\"></i> Refine Search</u_></button></a><div class=\"accordion-content\" data-tab-content><div class=\"row\"><div class=\"small-6 columns\"><fieldset class=\"fieldset\"><legend><i class=\"fi-filter\"></i> Select date range</legend><div class=\"row\"><div class=\"small-8 columns\"><div id=\"date_slider\" class=\"slider\"><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"aria-controls=\"dateSliderStart\"></span><span class=\"slider-fill\" data-slider-fill></span><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"aria-controls=\"dateSliderEnd\"></span><input type=\"hidden\"><input type=\"hidden\"></div><div class=\"row\"><div class=\"small-5 columns align-left\"><input type=\"number\" class=\"float-left\" id=\"dateSliderStart\"></div><div class=\"small-5 small-offset-2 columns align-right\"><input type=\"number\" class=\"float-right\" id=\"dateSliderEnd\"></div></div></div><div class=\"small-4 columns align-self-middle align-right\"><div class=\"switch small\"><input class=\"switch-input\" id=\"date_range_toggle\" type=\"checkbox\"name=\"toggle date range filter\"><label class=\"switch-paddle\" for=\"date_range_toggle\"><span class=\"show-for-sr\">Filter by date range?</span><span class=\"switch-active\" aria-hidden=\"true\">On</span><span class=\"switch-inactive\" aria-hidden=\"true\">Off</span></label></div><button class=\"button normal radius float-right apply_date_range\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Apply</button></div></div></fieldset></div><div class=\"small-6 columns\"><fieldset  class=\"fieldset category\"><legend><i class=\"fi-filter\"></i> Choose Category</legend><button class=\"label tone_systems\" id=\"tone_systems\">Tone Systems</button><br><button class=\"label colour_systems\" id=\"colour_systems\">Colour Systems</button><button class=\"button normal radius float-right search\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Apply</button></fieldset></div>").x(ctx.getPath(false, ["meta","tags"]),ctx,{"block":body_6},{}).w("</div></div></li></ul></div></div><div class=\"row align-right\"><div class=\"small-2 columns\"><select class=\"order_by\"><option value=\"-date\">Date (newest first)</option><option value=\"date\">Date (oldest first)</option><option value=\"title\">Title (A-Z)</option><option value=\"-title\">Title (Z-A)</option><option value=\"author__last_name\">Author (A-Z)</option><option value=\"-author__last_name\">Author (Z-A)</option></select></div><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_11},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_12},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_13},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("selected");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("selected");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.s(ctx.get(["search_query"], false),ctx,{"else":body_4,"block":body_5},{});}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.p("search_field_mask",ctx,ctx,{"term":""});}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.p("search_field_mask",ctx,ctx,{}).w(" ");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("<div class=\"small-12 columns\"><fieldset class=\"fieldset\"><legend><i class=\"fi-filter\"></i> Keywords</legend><div>").s(ctx.get(["meta"], false),ctx,{"block":body_7},{}).w("</div></fieldset></div>");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.s(ctx.get(["tags"], false),ctx,{"block":body_8},{});}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<span class=\"tag label ").x(ctx.get(["selected"], false),ctx,{"block":body_9},{}).w("\" data-slug=").f(ctx.get(["slug"], false),ctx,"h").w(">").f(ctx.get(["name"], false),ctx,"h").w("</span>").h("sep",ctx,{"block":body_10},{},"h");}body_8.__dustBody=!0;function body_9(chk,ctx){return chk.w("selected");}body_9.__dustBody=!0;function body_10(chk,ctx){return chk.w("&nbsp;");}body_10.__dustBody=!0;function body_11(chk,ctx){return chk.w("active");}body_11.__dustBody=!0;function body_12(chk,ctx){return chk.w("active");}body_12.__dustBody=!0;function body_13(chk,ctx){return chk.w("active");}body_13.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_header", context || {}, callback); };
+(function(dust){dust.register("entry_list_header",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns text-center\"><h4>Search</h4></div></div><div class=\"row\"><div class=\"small-1 shrink columns\"><label>Match:<select class=\"match\"><option ").h("eq",ctx,{"block":body_1},{"key":ctx.getPath(false, ["meta","match"]),"value":"OR"},"h").w(" value=\"OR\">Any of the terms</option><option ").h("eq",ctx,{"block":body_2},{"key":ctx.getPath(false, ["meta","match"]),"value":"AND"},"h").w(" value=\"AND\">All of the terms</option></select></label></div></div><div id=\"search_field_masks\">").s(ctx.get(["meta"], false),ctx,{"block":body_3},{}).w("</div><div class=\"row\"><div class=\"small-6 columns\"><h5><button class=\"tiny secondary radius button add_search_field\">Add search field</button></h5></div><div class=\"small-6 columns\"><h5><button class=\"button normal radius float-right search\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Search</button></h5></div></div><div class=\"row\"><div class=\"small-12 columns\"><ul id=\"refine_search\" class=\"accordion\" data-accordion data-allow-all-closed=\"true\"><li class=\"accordion-item\" data-accordion-item><a href=\"#\" data-bypass class=\"accordion-title\" style=\"padding:0;display: inline-block;\"><button class=\"button small radius\" style=\"margin:0;\"><i class=\"fi-widget\"></i> Refine Search</u_></button></a><div class=\"accordion-content\" data-tab-content><div class=\"row\"><div class=\"small-6 columns\"><fieldset class=\"fieldset\"><legend><i class=\"fi-filter\"></i> Select date range</legend><div class=\"row\"><div class=\"small-8 columns\"><div id=\"date_slider\" class=\"slider\"><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"aria-controls=\"dateSliderStart\"></span><span class=\"slider-fill\" data-slider-fill></span><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"aria-controls=\"dateSliderEnd\"></span><input type=\"hidden\"><input type=\"hidden\"></div><div class=\"row\"><div class=\"small-5 columns align-left\"><input type=\"number\" class=\"float-left\" id=\"dateSliderStart\"></div><div class=\"small-5 small-offset-2 columns align-right\"><input type=\"number\" class=\"float-right\" id=\"dateSliderEnd\"></div></div></div><div class=\"small-4 columns align-self-middle align-right\"><div class=\"switch small\"><input class=\"switch-input\" id=\"date_range_toggle\" type=\"checkbox\"name=\"toggle date range filter\"><label class=\"switch-paddle\" for=\"date_range_toggle\"><span class=\"show-for-sr\">Filter by date range?</span><span class=\"switch-active\" aria-hidden=\"true\">On</span><span class=\"switch-inactive\" aria-hidden=\"true\">Off</span></label></div><button class=\"button normal radius float-right apply_date_range\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Apply</button></div></div></fieldset></div><div class=\"small-6 columns\"><fieldset  class=\"fieldset category\"><legend><i class=\"fi-filter\"></i> Choose Category</legend><button class=\"label tone_systems\" id=\"tone_systems\">Tone Systems</button><br><button class=\"label colour_systems\" id=\"colour_systems\">Colour Systems</button><br><br><div class=\"button-group float-right\"><button class=\"button normal radius search\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Apply</button><button class=\"button normal radius secondary category clear\"><i class=\"fi-x\"></i></button></div></fieldset></div>").x(ctx.getPath(false, ["meta","tags"]),ctx,{"block":body_6},{}).w("</div></div></li></ul></div></div><div class=\"row align-right\"><div class=\"small-2 columns\"><select class=\"order_by\"><option value=\"-date\">Date (newest first)</option><option value=\"date\">Date (oldest first)</option><option value=\"title\">Title (A-Z)</option><option value=\"-title\">Title (Z-A)</option><option value=\"author__last_name\">Author (A-Z)</option><option value=\"-author__last_name\">Author (Z-A)</option></select></div><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_11},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_12},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_13},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("selected");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("selected");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.s(ctx.get(["search_query"], false),ctx,{"else":body_4,"block":body_5},{});}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.p("search_field_mask",ctx,ctx,{"term":""});}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.p("search_field_mask",ctx,ctx,{}).w(" ");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("<div class=\"small-12 columns\"><fieldset class=\"fieldset\"><legend><i class=\"fi-filter\"></i> Keywords</legend><div>").s(ctx.get(["meta"], false),ctx,{"block":body_7},{}).w("</div></fieldset></div>");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.s(ctx.get(["tags"], false),ctx,{"block":body_8},{});}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<span class=\"tag label ").x(ctx.get(["selected"], false),ctx,{"block":body_9},{}).w("\" data-slug=").f(ctx.get(["slug"], false),ctx,"h").w(">").f(ctx.get(["name"], false),ctx,"h").w("</span>").h("sep",ctx,{"block":body_10},{},"h");}body_8.__dustBody=!0;function body_9(chk,ctx){return chk.w("selected");}body_9.__dustBody=!0;function body_10(chk,ctx){return chk.w("&nbsp;");}body_10.__dustBody=!0;function body_11(chk,ctx){return chk.w("active");}body_11.__dustBody=!0;function body_12(chk,ctx){return chk.w("active");}body_12.__dustBody=!0;function body_13(chk,ctx){return chk.w("active");}body_13.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_header", context || {}, callback); };
 }).call(this);
 
 },{"./search_field_mask.dust":72,"dustjs-linkedin":5}],61:[function(require,module,exports){
@@ -50523,7 +50536,7 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],62:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_list_single",body_0);function body_0(chk,ctx){return chk.w("<tr class=\"entry\"><td><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\" style=\"display: block;\"><span class=\"title\">").f(ctx.get(["title"], false),ctx,"h").w("</span><br/>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</a></td><td>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</td><td class=\"diagram\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" /></a></td><td class=\"annotation\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><div class=\"truncate\">").f(ctx.get(["description"], false),ctx,"h").w("</div></a></td></tr>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_single", context || {}, callback); };
+(function(dust){dust.register("entry_list_single",body_0);function body_0(chk,ctx){return chk.w("<tr class=\"entry\"><td><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\" style=\"display: block;\"><span class=\"title\">").f(ctx.get(["title"], false),ctx,"h").w("</span><br/>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</a></td><td>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</td><td class=\"diagram\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" /></a></td><td class=\"annotation\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><div class=\"truncate\"><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div></div></a></td></tr>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_single", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],63:[function(require,module,exports){
@@ -50553,7 +50566,7 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],67:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("homepage",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-8 small-offset-2 columns\"><img src=\"").f(ctx.get(["STATIC_URL"], false),ctx,"h").w("img/fig_0_head_1456_464.jpg\"/><br/><br/><h4>Sound Colour Space – A Virtual Museum</h4><p>Im Zentrum des Projekts Sound Colour Space – A Virtual Museum steht das Begriffsfeld Klang, Ton, Tonhöhe,Klangfarbe in seiner Beziehung zu visuellen Phänomenen und geometrischen Konzepten. Das Vorhaben verstehtsich als Beitrag zu einem interdisziplinären Forschungsgebiet und erforscht seine adäquaten Darstellungs-und Vermittlungsformen.</p><p>Zahlreiche Wissenschaftler und Philosophen von der Antike bis zur heutigen Zeit haben die Beziehungenzwischen Ton, Farbe und Geometrie untersucht. Viele ihrer Visualisierungen zu akustischen, optischen undwahrnehmungsbezogenen Themen sprechen zu den Augen und sollen vergleichend studiert werden. Da ein gegebenesBild oder Diagramm in verschiedenen Kontexten und mit unterschiedlichen Implikationen auftreten kann,erlaubt eine ausgeprägte Netzwerkarchitektur eine redundanzfreie Darstellung der betreffenden Inhalte. Nebender Entwicklung einer exemplarischen Webanwendung, wird das Themengebiet mit Beiträgen aus unterschiedlichenDisziplinen und mit künstlerischen Anwendungen bearbeitet und in einen aktuellen Forschungskontext gestellt.</p></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("homepage", context || {}, callback); };
+(function(dust){dust.register("homepage",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-8 small-offset-2 columns\"><img src=\"").f(ctx.get(["STATIC_URL"], false),ctx,"h").w("img/fig_0_head_1456_464.jpg\"/><br/><br/><h4>Sound Colour Space – A Virtual Museum</h4><p>By investigating the conceptual field of sound, tone, pitch, and timbre in its relation to visual phenomenaand geometrical concepts, the project ”Sound Colour Space – A Virtual Museum” contributes to aninterdisciplinary field of research and explores its adequate modes of representation and communication.</p><p>Many scientists and philosophers from antiquity to modern times have studied the relationships betweensound, light and geometry. Many of their visualisations of acoustical, optical and perceptual topics speakto the eye and can be studied comparatively. These pictures are interesting because of their diagrammaticstructure, in the way they combine text, images and spatial structures on a flat surface and in the way theyaddress topological, philosophical and psychological questions. They often have an aesthetic value of theirown.</p><p>The collection and study of these materials and the attempts to present them as a sequential text lead tothe question of adequate forms of representation. Since a given picture or graphic can appear in variouscontexts and with different implications, a distinct network architecture permits forms of contentrepresentation free of redundancies in a way that is difficult to achieve in textual form. Accordingly, acollection of scientific illustrations and diagrams (currently about 600 image files) together with relatedmaterials and findings is presented within an open, dynamical online publication. The metaphor «museum» isthus rendered as a place where people and objects meet and interact in various dynamic modes. Visitors gainaccess to the collection of pictures and they can compare and regroup the pictures, read explanations andinteract with audio-visual applications, or just follow guided tours. Scientists and scholars use the museumas a research tool and add to the contents of the underlying database. The application is based on the MediaArchive of the Arts developed at the Zurich University of Arts and contributes to the further development ofthis online platform as a research tool.</p></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("homepage", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],68:[function(require,module,exports){
@@ -50577,7 +50590,7 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],71:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("navigation",body_0);function body_0(chk,ctx){return chk.w("<div><nav><div class=\"row\"><div class=\"column text-center\" style=\"margin:5px;\"><a href=\"/\"><h1>Sound Colour Space - A Virtual Museum</h1></a></div></div><div class=\"row\"><div class=\"column\"><ul class=\"menu align-center\">").s(ctx.get(["menu"], false),ctx,{"block":body_1},{"current":ctx.get(["currentUrl"], false)}).w("</ul></div></div></nav></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<li ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["url"], false),"value":ctx.get(["current"], false)},"h").w("><a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\">").f(ctx.get(["text"], false),ctx,"h").w("</a></li>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("class=\"active\"");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("navigation", context || {}, callback); };
+(function(dust){dust.register("navigation",body_0);function body_0(chk,ctx){return chk.w("<div><nav><div class=\"row\"><div class=\"column text-center\" style=\"margin:5px;\"><a href=\"/\"><h3>Sound Colour Space - A Virtual Museum</h3></a></div></div><div class=\"row\"><div class=\"column\"><ul class=\"menu align-center\">").s(ctx.get(["menu"], false),ctx,{"block":body_1},{"current":ctx.get(["currentUrl"], false)}).w("</ul></div></div></nav></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<li ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["url"], false),"value":ctx.get(["current"], false)},"h").w("><a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\">").f(ctx.get(["text"], false),ctx,"h").w("</a></li>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("class=\"active\"");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("navigation", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],72:[function(require,module,exports){
@@ -50589,7 +50602,7 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":5}],73:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("set_detail",body_0);function body_0(chk,ctx){return chk.w("<div id=\"set\"><div class=\"row\"><div class=\"small-12 columns\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1><h4>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h4></div></div><div id=\"description\" class=\"row description\"><div class=\"small-12 columns\"><p>").f(ctx.get(["description"], false),ctx,"h").w("</p></div></div><div class=\"row align-right\"><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_1},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_3},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("active");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("active");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("active");}body_3.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_detail", context || {}, callback); };
+(function(dust){dust.register("set_detail",body_0);function body_0(chk,ctx){return chk.w("<div id=\"set\"><div class=\"row\"><div class=\"small-12 columns\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1><h4>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h4></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"description\" class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div></div></div><div class=\"row align-right\"><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_1},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_3},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("active");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("active");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("active");}body_3.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_detail", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":5}],74:[function(require,module,exports){
@@ -50734,6 +50747,12 @@ var HeaderView = Base.TemplateView.extend({
         'click .label.colour_systems': function (e) {
             $(e.currentTarget).toggleClass('selected');
             $('.label.tone_systems').removeClass('selected');
+        },
+
+        'click button.category.clear': function (e) {
+            $('.label.colour_systems').removeClass('selected');
+            $('.label.tone_systems').removeClass('selected');
+            this.options.parent.query();
         },
 
         'click button.search': function () {
@@ -50926,7 +50945,7 @@ module.exports = Base.ListView.extend({
 });
 
 
-},{"../apiUrl":31,"../templates/archive.dust":50,"../templates/entry_list_header.dust":60,"../templates/entry_list_header_meta.dust":61,"../templates/search_field_mask.dust":72,"../views/swap.js":102,"./base":81,"./entry_even_grid":84,"./entry_grid":86,"./entry_list":88,"lodash":14,"urijs":27}],81:[function(require,module,exports){
+},{"../apiUrl":31,"../templates/archive.dust":51,"../templates/entry_list_header.dust":60,"../templates/entry_list_header_meta.dust":61,"../templates/search_field_mask.dust":72,"../views/swap.js":102,"./base":81,"./entry_even_grid":84,"./entry_grid":86,"./entry_list":88,"lodash":14,"urijs":27}],81:[function(require,module,exports){
 /* Base Views */
 'use strict';
 
@@ -51571,11 +51590,23 @@ var _ = require('lodash');
 var foundation = require('foundation-sites');
 Backbone.$ = $;
 
+var marked = require('marked');
+
 var Base = require('./base');
 
 var Lightbox = require('../helpers/lightbox');
 
+var renderer = new marked.Renderer();
 
+// override link rendering
+renderer.link = function (href, title, text) {
+
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
+    } else {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '">' + text + '</a>';
+    }
+};
 
 module.exports = Base.DetailView.extend({
 
@@ -51586,18 +51617,18 @@ module.exports = Base.DetailView.extend({
     },
 
     onShow: function () {
+
         // scroll to top
         $(window).scrollTop(0);
 
-        /*
-        if (this.model.get('image')) {
-            console.log(this.model.get('image').url);
-            this.model.set('originalImage', this.model.get('image').url.split('.')[0] + '.jpg');
-        }
-        */
+        MathJax.Hub.Queue(
+            ["Typeset", MathJax.Hub, "description"],
+            function () {
+                $('.description').html(marked($('.description').html(), {renderer: renderer}));
+                $('.description').css('visibility', 'visible');
+            }
+        );
 
-        // typeset math
-        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
     },
 
     events: {
@@ -51614,7 +51645,6 @@ module.exports = Base.DetailView.extend({
 
             lightbox.open(this.model.get('image').url.split('.')[0] + '.' + this.model.get('image').url.split('.')[1]);
 
-
         }
 
     },
@@ -51624,7 +51654,7 @@ module.exports = Base.DetailView.extend({
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../helpers/lightbox":37,"../templates/entry_detail.dust":54,"./base":81,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14}],84:[function(require,module,exports){
+},{"../helpers/lightbox":37,"../templates/entry_detail.dust":54,"./base":81,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14,"marked":15}],84:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -51903,6 +51933,20 @@ Backbone.$ = $;
 
 var Base = require('./base');
 
+var marked = require('marked');
+
+var renderer = new marked.Renderer();
+
+// override link rendering
+renderer.link = function (href, title, text) {
+
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
+    } else {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '">' + text + '</a>';
+    }
+};
+
 module.exports = Base.SingleView.extend({
 
     data: {},
@@ -51919,11 +51963,17 @@ module.exports = Base.SingleView.extend({
                 $(this).removeClass("active");
             }
         });
+
+        // we skip mathjax, but pretty render the markdown (even link not working, because the whole element is a link)
+        $d = this.$el.find('.description');
+        $d.html(marked($d.html(), {renderer: renderer}));
+        this.$el.find('.description').css('visibility', 'visible');
+
     },
 
     events: {}
 });
-},{"../templates/entry_list_single.dust":62,"./base":81,"backbone":2,"jquery":12,"lodash":14}],90:[function(require,module,exports){
+},{"../templates/entry_list_single.dust":62,"./base":81,"backbone":2,"jquery":12,"lodash":14,"marked":15}],90:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -52187,7 +52237,7 @@ module.exports = Base.TemplateView.extend({
     }
 });
 
-},{"../templates/base.dust":51,"./base.js":81}],97:[function(require,module,exports){
+},{"../templates/base.dust":52,"./base.js":81}],97:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -52263,8 +52313,8 @@ module.exports = Base.TemplateView.extend({
                 "text": "Virtual Lab"
             },
             {
-                "url": "/documentation",
-                "text": "Documentation"
+                "url": "/about",
+                "text": "About"
             }
         ]
 
@@ -52308,6 +52358,20 @@ var EntryListView = require('./entry_list');
 var EntryGridView = require('./entry_grid');
 var EntryEvenGridView = require('./entry_even_grid');
 
+var marked = require('marked');
+
+var renderer = new marked.Renderer();
+
+// override link rendering
+renderer.link = function (href, title, text) {
+
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
+    } else {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '">' + text + '</a>';
+    }
+};
+
 module.exports = Base.DetailView.extend({
 
     template: require('../templates/set_detail.dust'),
@@ -52341,6 +52405,14 @@ module.exports = Base.DetailView.extend({
         }
 
         swap($('[data-js-region="entry_list"]'), view);
+
+        MathJax.Hub.Queue(
+            ["Typeset", MathJax.Hub, "description"],
+            function () {
+                $('.description').html(marked($('.description').html(), {renderer: renderer}));
+                $('.description').css('visibility', 'visible');
+            }
+        );
     },
 
     events: {
@@ -52348,7 +52420,10 @@ module.exports = Base.DetailView.extend({
         'click .toggle-list': function () {
             App.preferredView = "list";
             this.data.preferredView = App.preferredView;
-            this.render();
+            // instead of calling render() we do rendering here because of flickering (mathjax+markdown)
+            $('.button.toggle-list').addClass('active');
+            $('.button.toggle-grid').removeClass('active');
+            $('.button.toggle-even-grid').removeClass('active');
             var view = new EntryListView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
         },
@@ -52356,7 +52431,10 @@ module.exports = Base.DetailView.extend({
         'click .toggle-even-grid': function () {
             App.preferredView = "even-grid";
             this.data.preferredView = App.preferredView;
-            this.render();
+            // instead of calling render() we do rendering here because of flickering (mathjax+markdown)
+            $('.button.toggle-even-grid').addClass('active');
+            $('.button.toggle-grid').removeClass('active');
+            $('.button.toggle-list').removeClass('active');
             var view = new EntryEvenGridView({
                 collection: this.collection,
                 data: {num_columns: this.model.get('num_columns')}
@@ -52366,7 +52444,10 @@ module.exports = Base.DetailView.extend({
         'click .toggle-grid': function () {
             App.preferredView = "grid";
             this.data.preferredView = App.preferredView;
-            this.render();
+            // instead of calling render() we do rendering here because of flickering (mathjax+markdown)
+            $('.button.toggle-grid').addClass('active');
+            $('.button.toggle-even-grid').removeClass('active');
+            $('.button.toggle-list').removeClass('active');
             var view = new EntryGridView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
         },
@@ -52376,7 +52457,7 @@ module.exports = Base.DetailView.extend({
 });
 
 
-},{"../templates/set_detail.dust":73,"./base":81,"./entry_even_grid":84,"./entry_grid":86,"./entry_list":88,"./swap":102,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14}],100:[function(require,module,exports){
+},{"../templates/set_detail.dust":73,"./base":81,"./entry_even_grid":84,"./entry_grid":86,"./entry_list":88,"./swap":102,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14,"marked":15}],100:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');

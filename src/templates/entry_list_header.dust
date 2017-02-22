@@ -95,8 +95,12 @@
                                 <fieldset  class="fieldset category">
                                     <legend><i class="fi-filter"></i> Choose Category</legend>
                                     <button class="label tone_systems" id="tone_systems">Tone Systems</button><br>
-                                    <button class="label colour_systems" id="colour_systems">Colour Systems</button>
-                                    <button class="button normal radius float-right search"><i class="fi-magnifying-glass"></i>&nbsp;Apply</button>
+                                    <button class="label colour_systems" id="colour_systems">Colour Systems</button><br><br>
+                                    <div class="button-group float-right">
+                                        <button class="button normal radius search"><i class="fi-magnifying-glass"></i>&nbsp;Apply</button>
+                                        <button class="button normal radius secondary category clear"><i class="fi-x"></i></button>
+                                    </div>
+
                                 </fieldset>
                             </div>
                             {?meta.tags}

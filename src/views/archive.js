@@ -100,6 +100,12 @@ var HeaderView = Base.TemplateView.extend({
             $('.label.tone_systems').removeClass('selected');
         },
 
+        'click button.category.clear': function (e) {
+            $('.label.colour_systems').removeClass('selected');
+            $('.label.tone_systems').removeClass('selected');
+            this.options.parent.query();
+        },
+
         'click button.search': function () {
             this.options.parent.query();
         },

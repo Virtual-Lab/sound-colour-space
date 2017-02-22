@@ -13,11 +13,14 @@
 
     <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
+        skipStartupTypeset: true,
         tex2jax: {
             inlineMath: [['$','$'], ['\\(','\\)']],
+            showProcessingMessages: true,
             skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'] // removed 'code' entry
-        }
+        },
     });
+    MathJax.Hub.Configured();
     </script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 

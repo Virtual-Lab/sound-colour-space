@@ -30,9 +30,9 @@ class Command(BaseCommand):
                         self.stdout.write(self.style.WARNING('multiple sets for %s, ref: %s' % (item[0], item[3])))
                     else:
                         annotation = item[2]
-                        annotation = annotation.replace('####', '\r\n\r\n')
-                        # two spaces before newline for markdown newline
+                        # two spaces before newline for markdown break
                         annotation = annotation.replace('##', '  \r\n')
+                        annotation = annotation.replace('####', '\r\n\r\n')
                         sets[0].description = annotation
                         sets[0].doc_id = item[3]
                         sets[0].save()
@@ -42,41 +42,32 @@ class Command(BaseCommand):
         elif options['type'] == 'diagrams':
             with codecs.open(options['path'], 'r', encoding='cp1252') as f:
                 for line in f:
+                    # split by § (section)
                     item = line.split(u"\u00A7")
-                    #print ("#%s: %s \n\n%s") % (item[2], item[0], item[1])
-
-                    # check by image (jpg) name
-                    entries = (x for x in Entry.objects.all() if x.filename == item[0])
+                    # check by image (jpg) name, entries should have only one entry, but we capture all
+                    # for error handling
+                    entries = (x for x in Entry.objects.all() if x.filename == item[2])
                     i = 0
                     for e in entries:
                         if i > 0:
                             self.stdout.write(
-                                self.style.WARNING('multiple entries for %s doc_id: %s' % (e, e.doc_id)))
+                                self.stdout.write(self.style.WARNING('multiple entries for %s doc_id: %s' % (e, e.doc_id))))
                             continue
 
-                        annotation = item[1]
+                        annotation = item[3]
+                        # two spaces before newline for markdown break
+                        annotation = annotation.replace('##', '  \r\n')
                         annotation = annotation.replace('####', '\r\n\r\n')
-                        annotation = annotation.replace('##',
-                                                        '  \r\n')  # two spaces before newline for markdown newline
                         e.description = annotation
                         try:
-                            e.doc_id = item[2]
+                            e.doc_id = int(item[0])
                             e.save()
-                        except IntegrityError:
-                            self.style.WARNING('multiple keys for %s doc_id: %s' % (e, e.doc_id))
+                            total += 1
+                        except Exception as err:
+                            self.stdout.write(self.style.WARNING('warning:  %s: %s' % (e.doc_id, err)))
+                            continue
 
                         i += 1
-
-                    total += 1
-
-                    '''
-                    if len(entries) == 0:
-                        self.stdout.write(self.style.WARNING('no entries for %s' % (item[0])))
-                    elif len(entries) > 1:
-                        self.stdout.write(self.style.WARNING('multiple entries for %s doc_id: %s' % (item[0], item[2])))
-                        for e in entries:
-                            self.stdout.write(self.style.WARNING('multiple entries for %s doc_id: %s' % (e.doc_id, e.image)))
-                    '''
 
             self.stdout.write(self.style.SUCCESS('Updated %s entries.' % total))
 
@@ -95,9 +86,9 @@ class Command(BaseCommand):
                         self.stdout.write(self.style.WARNING('multiple keywords for %s' % name))
                     else:
                         annotation = item[2]
-                        annotation = annotation.replace('####', '\r\n\r\n')
-                        # two spaces before newline for markdown newline
+                        # two spaces before newline for markdown break
                         annotation = annotation.replace('##', '  \r\n')
+                        annotation = annotation.replace('####', '\r\n\r\n')
                         keywords[0].description = annotation
                         keywords[0].save()
 
