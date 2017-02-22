@@ -2,13 +2,14 @@
     <div class="row">
         <div class="small-8 columns">
             <h4>About</h4>
-            </div>
         </div>
+    </div>
     <div class="row">
         <div class="small-8 columns">
             <p>
-                The research project Sound Colour Space – A Virtual Museum is based at ZHdK
-                (Zurich University of the Arts), ICST (Institute for Computer Music and Sound Technology)
+                The project "Sound Colour Space – A Virtual Museum", based at the Zurich University of the Arts (ZHdK),
+                is a collaboration between the Institute for Computer Music and Sound Technology (ICST), the Institut
+                für Theorie (ith) and the Medien- und Informationszentrum (MIZ).
             </p>
         </div>
     </div>
@@ -39,11 +40,11 @@
             <dl>
                 <dt>Team</dt>
                 <dd>Lucas Bennett, ICST, ZHdK</dd>
-                <dd>Jeroen Visser, ith, ZHdK</dd>
                 <dd>Philippe Kocher, ICST, ZHdK</dd>
-                <dd>Raimund Vogtenhuber, ICST, ZHdK</dd>
-                <dd>Susanne Schumacher, MIZ, ZHdK</dd>
+                <dd>Dr. Susanne Schumacher, MIZ, ZHdK</dd>
                 <dd>Christoph Stähli, ICST, ZHdK</dd>
+                <dd>Jeroen Visser, ith, ZHdK</dd>
+                <dd>Raimund Vogtenhuber, ICST, ZHdK</dd>
             </dl>
         </div>
     </div>
@@ -53,34 +54,33 @@
                 <dt>Partners</dt>
                 <dd>Prof. Dr. Christoph Reuter, Institut für Systematische Musikwissenschaft, Universität Wien</dd>
                 <dd>Prof. Dr. Benjamin Wardhaugh, All Souls College, Oxford</dd>
+                <dd>Gerhard Dirmoser, Linz</dd>
             </dl>
         </div>
     </div>
     <div class="row">
         <div class="small-8 columns">
+            <h4>Funding</h4>
+            <p>Schweizerischer Nationalfond (SNF: 105216_156979)</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-8 columns">
+            <h4>How to quote this website?</h4>
+            <p>
+                „Sound Colour Space – A Virtual Museum“, Zurich University of the Arts, 2017, http://sound-colour-space.zhdk.ch
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="small-8 columns">
+            <h4>More information and additional material</h4>
             <dl>
-                <dt>Funding</dt>
-                <dd>Schweizerischer Nationalfond (SNF)</dd>
+                <dd><a href="https://www.zhdk.ch/forschungsprojekt/426348" target="_blank" data-bypass>Zürcher Hochschule der Künste - Forschungsprojekte: Sound Colour Space</a></dd>
+                <dd><a href="https://medienarchiv.zhdk.ch/sets/4222fb4a-f454-421f-b646-c679007bd8ed" target="_blank" data-bypass>Forschungsprojekt «Sound Color Space»: Quellen, Ergebnisse und Dokumentation</a></dd>
             </dl>
         </div>
     </div>
-    <div class="row">
-        <div class="small-8 columns">
-            <h4>Inhalte vernetzen</h4>
-            <h5>Diagrammatische Modelle der Vermittlung im Projekt "Sound Colour Space"</h5>
-        </div>
-    </div>
-    <div class="row">
-        <div class="small-8 columns">
-            <iframe src="https://player.vimeo.com/video/190070646?color=559e7a&byline=0" width="640" height="360"
-                    frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-        </div>
-    </div>
-    s
-    <div class="row">
-        <div class="small-8 columns">
-            <iframe src="https://player.vimeo.com/video/190072380?color=559e7a&byline=0" width="640" height="360"
-                    frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-        </div>
-    </div>
+
 </div>
