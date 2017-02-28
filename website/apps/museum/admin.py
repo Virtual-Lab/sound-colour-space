@@ -204,7 +204,7 @@ class CollectionAdmin(admin.ModelAdmin):
 
     list_display = ('title', 'view', 'madek', 'doc_id')
     search_fields = ('title', )
-    readonly_fields = ('uuid', 'madek', 'doc_id', 'created', 'modified', 'title', 'slug', 'subtitle', 'author', 'show_image')
+    readonly_fields = ('uuid', 'madek', 'created', 'modified', 'title', 'slug', 'subtitle', 'author', 'show_image')
 
     fieldsets = (
         (None, {
