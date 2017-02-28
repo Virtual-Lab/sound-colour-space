@@ -56,15 +56,16 @@ module.exports = Base.DetailView.extend({
             });
         }
 
-        swap($('[data-js-region="entry_list"]'), view);
-
         MathJax.Hub.Queue(
             ["Typeset", MathJax.Hub, "description"],
             function () {
-                $('.description').html(marked($('.description').html(), {renderer: renderer}));
-                $('.description').css('visibility', 'visible');
+                $('.set.description').html(marked($('.set.description').html(), {renderer: renderer}));
+                $('.set.description').css('opacity', '1');
+                swap($('[data-js-region="entry_list"]'), view);
             }
         );
+
+
     },
 
     events: {
@@ -78,6 +79,7 @@ module.exports = Base.DetailView.extend({
             $('.button.toggle-even-grid').removeClass('active');
             var view = new EntryListView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'list');
         },
 
         'click .toggle-even-grid': function () {
@@ -92,6 +94,7 @@ module.exports = Base.DetailView.extend({
                 data: {num_columns: this.model.get('num_columns')}
             });
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'even-grid');
         },
         'click .toggle-grid': function () {
             App.preferredView = "grid";
@@ -102,6 +105,7 @@ module.exports = Base.DetailView.extend({
             $('.button.toggle-list').removeClass('active');
             var view = new EntryGridView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'grid');
         },
 
     },

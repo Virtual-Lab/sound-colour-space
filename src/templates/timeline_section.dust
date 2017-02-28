@@ -1,0 +1,18 @@
+<section class="section" id="{class}">
+    <div class="section-header text-center">
+        <h1>{title}</h1>
+        <div class="circle"></div>
+    </div>
+
+    <div class="row">
+        <div class="medium-12 columns">
+            <div class="entries grid {class}"></div>
+        </div>
+    </div>
+
+    <div class="load_more text-center">
+        <button class="large button secondary">LOAD MORE</button>
+        <div class="circle"></div>
+    </div>
+
+</section>

@@ -1,0 +1,1 @@
+<span class="back_link" onclick="javascript:App.Router.r.back();">back</span>

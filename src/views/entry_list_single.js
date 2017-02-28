@@ -39,7 +39,7 @@ module.exports = Base.SingleView.extend({
         // we skip mathjax, but pretty render the markdown (even link not working, because the whole element is a link)
         $d = this.$el.find('.description');
         $d.html(marked($d.html(), {renderer: renderer}));
-        this.$el.find('.description').css('visibility', 'visible');
+        this.$el.find('.description').css('opacity', '1');
 
     },
 

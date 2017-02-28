@@ -1,18 +1,30 @@
 <div>
     <nav>
-        <div class="row">
-            <div class="column text-center" style="margin:5px;">
+        <div class="row text-center">
+
+
+            <div class="small-2 show-for-small-only text-center columns">
+                <button class="medium button menu"><i class="fi-list"></i></button>
+                <div id="mobile_menu" style="display: none; margin-top: 14px;">
+                    <div class="row">
+                        <div class="column">
+                            <ul class="menu vertical align-center">
+                                {#menu current=currentUrl}
+                                <li {@eq key=url value=current}class="active"{/eq}><a href="{url}">{text}</a></li>
+                                {/menu}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="small-8 medium-12 columns" style="margin:5px;">
                 <a href="/"><h3>Sound Colour Space - A Virtual Museum</h3></a>
             </div>
         </div>
-        <div class="row">
-            {!
-            <div class="shrink column">
-                <ul class="menu">
-                    <li><a href="/">Sound Colour Space</a></li>
-                </ul>
-            </div>
-            !}
+
+        <div class="row show-for-medium">
             <div class="column">
                 <ul class="menu align-center">
                     {#menu current=currentUrl}
@@ -21,5 +33,7 @@
                 </ul>
             </div>
         </div>
+
+
     </nav>
 </div>

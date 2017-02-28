@@ -27,5 +27,6 @@
                 License: {#license}<a href="{url}" data-bypass target="_blank">{label}</a>{/license}
             </div>
         </div>
+        {>"history_go_back" /}
     </div>
 </div>

@@ -1,44 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-'use strict';
-
-var Backbone  = require('backbone');
-var nprogress = require('nprogress');
-var counter   = 0;
-var debounce  = 500;
-
-// Patch Backbone
-patch(Backbone.Collection.prototype, 'fetch');
-patch(Backbone.Model.prototype, 'fetch');
-patch(Backbone.Model.prototype, 'save');
-
-
-// Start progress
-function start() {
-  if (counter++ === 0) nprogress.start();
-}
-
-// Finish progress
-function done() {
-  if (--counter > 0) return;
-  done.timer && clearTimeout(done.timer);
-  done.timer = setTimeout(function() {
-    if (!counter) nprogress.done();
-  }, debounce);
-}
-
-// Patch given method
-function patch(parent, method) {
-  var original = parent[method];
-  parent[method] = function() {
-    start();
-    return original
-      .apply(this, arguments)
-      .always(done)
-    ;
-  };
-}
-
-},{"backbone":2,"nprogress":16}],2:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.3.3
 
@@ -1963,7 +1923,7 @@ function patch(parent, method) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"jquery":12,"underscore":24}],3:[function(require,module,exports){
+},{"jquery":11,"underscore":24}],2:[function(require,module,exports){
 /**
  * matchesSelector v2.0.1
  * matchesSelector( element, '.selector' )
@@ -2018,7 +1978,7 @@ function patch(parent, method) {
 
 }));
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 (function(root, factory) {
   if (typeof define === 'function' && define.amd && define.amd.dust === true) {
     define(['dust.core'], factory);
@@ -2477,7 +2437,7 @@ return dust;
 
 }));
 
-},{"dustjs-linkedin":5}],5:[function(require,module,exports){
+},{"dustjs-linkedin":4}],4:[function(require,module,exports){
 (function (process){
 (function (root, factory) {
   if (typeof define === 'function' && define.amd && define.amd.dust === true) {
@@ -3625,7 +3585,7 @@ return dust;
 
 }).call(this,require('_process'))
 
-},{"_process":23}],6:[function(require,module,exports){
+},{"_process":23}],5:[function(require,module,exports){
 /**
  * EvEmitter v1.0.3
  * Lil' event emitter
@@ -3736,7 +3696,7 @@ return EvEmitter;
 
 }));
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /**
  * Fizzy UI utils v2.0.3
  * MIT license
@@ -3975,7 +3935,7 @@ return utils;
 
 }));
 
-},{"desandro-matches-selector":3}],8:[function(require,module,exports){
+},{"desandro-matches-selector":2}],7:[function(require,module,exports){
 'use strict';var _typeof=typeof Symbol==="function"&&typeof Symbol.iterator==="symbol"?function(obj){return typeof obj;}:function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol?"symbol":typeof obj;};!function($){"use strict";var FOUNDATION_VERSION='6.2.4';// Global Foundation object
 // This is attached to the window, or used as a module for AMD/Browserify
 var Foundation={version:FOUNDATION_VERSION,/**
@@ -6403,7 +6363,7 @@ if(!_this.options.clickOpen){isFocus=false;}return false;}else{_this.show();}}).
    */// Window exports
 Foundation.plugin(Tooltip,'Tooltip');}(jQuery);
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /*!
  * getSize v2.0.2
  * measure size of elements
@@ -6614,7 +6574,7 @@ return getSize;
 
 });
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /*!
  * imagesLoaded v4.1.1
  * JavaScript is all like "You images are done yet or what?"
@@ -6986,7 +6946,7 @@ return ImagesLoaded;
 
 });
 
-},{"ev-emitter":6}],11:[function(require,module,exports){
+},{"ev-emitter":5}],10:[function(require,module,exports){
 /**
  * Bridget makes jQuery widgets
  * v2.0.1
@@ -7131,7 +7091,7 @@ return jQueryBridget;
 
 }));
 
-},{"jquery":12}],12:[function(require,module,exports){
+},{"jquery":11}],11:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
@@ -16945,6 +16905,164 @@ if ( !noGlobal ) {
 }
 
 return jQuery;
+}));
+
+},{}],12:[function(require,module,exports){
+/*!
+ * JavaScript Cookie v2.1.3
+ * https://github.com/js-cookie/js-cookie
+ *
+ * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
+ * Released under the MIT license
+ */
+;(function (factory) {
+	var registeredInModuleLoader = false;
+	if (typeof define === 'function' && define.amd) {
+		define(factory);
+		registeredInModuleLoader = true;
+	}
+	if (typeof exports === 'object') {
+		module.exports = factory();
+		registeredInModuleLoader = true;
+	}
+	if (!registeredInModuleLoader) {
+		var OldCookies = window.Cookies;
+		var api = window.Cookies = factory();
+		api.noConflict = function () {
+			window.Cookies = OldCookies;
+			return api;
+		};
+	}
+}(function () {
+	function extend () {
+		var i = 0;
+		var result = {};
+		for (; i < arguments.length; i++) {
+			var attributes = arguments[ i ];
+			for (var key in attributes) {
+				result[key] = attributes[key];
+			}
+		}
+		return result;
+	}
+
+	function init (converter) {
+		function api (key, value, attributes) {
+			var result;
+			if (typeof document === 'undefined') {
+				return;
+			}
+
+			// Write
+
+			if (arguments.length > 1) {
+				attributes = extend({
+					path: '/'
+				}, api.defaults, attributes);
+
+				if (typeof attributes.expires === 'number') {
+					var expires = new Date();
+					expires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);
+					attributes.expires = expires;
+				}
+
+				try {
+					result = JSON.stringify(value);
+					if (/^[\{\[]/.test(result)) {
+						value = result;
+					}
+				} catch (e) {}
+
+				if (!converter.write) {
+					value = encodeURIComponent(String(value))
+						.replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
+				} else {
+					value = converter.write(value, key);
+				}
+
+				key = encodeURIComponent(String(key));
+				key = key.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);
+				key = key.replace(/[\(\)]/g, escape);
+
+				return (document.cookie = [
+					key, '=', value,
+					attributes.expires ? '; expires=' + attributes.expires.toUTCString() : '', // use expires attribute, max-age is not supported by IE
+					attributes.path ? '; path=' + attributes.path : '',
+					attributes.domain ? '; domain=' + attributes.domain : '',
+					attributes.secure ? '; secure' : ''
+				].join(''));
+			}
+
+			// Read
+
+			if (!key) {
+				result = {};
+			}
+
+			// To prevent the for loop in the first place assign an empty array
+			// in case there are no cookies at all. Also prevents odd result when
+			// calling "get()"
+			var cookies = document.cookie ? document.cookie.split('; ') : [];
+			var rdecode = /(%[0-9A-Z]{2})+/g;
+			var i = 0;
+
+			for (; i < cookies.length; i++) {
+				var parts = cookies[i].split('=');
+				var cookie = parts.slice(1).join('=');
+
+				if (cookie.charAt(0) === '"') {
+					cookie = cookie.slice(1, -1);
+				}
+
+				try {
+					var name = parts[0].replace(rdecode, decodeURIComponent);
+					cookie = converter.read ?
+						converter.read(cookie, name) : converter(cookie, name) ||
+						cookie.replace(rdecode, decodeURIComponent);
+
+					if (this.json) {
+						try {
+							cookie = JSON.parse(cookie);
+						} catch (e) {}
+					}
+
+					if (key === name) {
+						result = cookie;
+						break;
+					}
+
+					if (!key) {
+						result[name] = cookie;
+					}
+				} catch (e) {}
+			}
+
+			return result;
+		}
+
+		api.set = api;
+		api.get = function (key) {
+			return api.call(api, key);
+		};
+		api.getJSON = function () {
+			return api.apply({
+				json: true
+			}, [].slice.call(arguments));
+		};
+		api.defaults = {};
+
+		api.remove = function (key, attributes) {
+			api(key, '', extend(attributes, {
+				expires: -1
+			}));
+		};
+
+		api.withConverter = init;
+
+		return api;
+	}
+
+	return init(function () {});
 }));
 
 },{}],13:[function(require,module,exports){
@@ -36639,7 +36757,7 @@ return Item;
 
 }));
 
-},{"ev-emitter":6,"get-size":9}],18:[function(require,module,exports){
+},{"ev-emitter":5,"get-size":8}],18:[function(require,module,exports){
 /*!
  * Outlayer v2.1.0
  * the brains and guts of a layout library
@@ -37580,7 +37698,7 @@ return Outlayer;
 
 }));
 
-},{"./item":17,"ev-emitter":6,"fizzy-ui-utils":7,"get-size":9}],19:[function(require,module,exports){
+},{"./item":17,"ev-emitter":5,"fizzy-ui-utils":6,"get-size":8}],19:[function(require,module,exports){
 /**
  * Packery Item Element
 **/
@@ -38580,7 +38698,7 @@ return Packery;
 
 }));
 
-},{"./item":19,"./packer":20,"./rect":22,"get-size":9,"outlayer":18}],22:[function(require,module,exports){
+},{"./item":19,"./packer":20,"./rect":22,"get-size":8,"outlayer":18}],22:[function(require,module,exports){
 /**
  * Rect
  * low-level utility class for basic geometry
@@ -48474,6 +48592,13 @@ var URLs = {
         return URLs.experiments() + slug;
     },
 
+    exhibitions: function () {
+        return api_url + 'exhibition/';
+    },
+    exhibition: function (slug) {
+        return URLs.exhibitions() + slug;
+    },
+
     sets: function () {
         return api_url + 'collection/';      // CAUTION: API URI IS 'COLLECTION' NOT SET FOR DJANGO COMPATIBILITY
     },
@@ -48486,6 +48611,10 @@ var URLs = {
     },
     keyword: function (slug) {
         return URLs.keywords() + slug;
+    },
+
+    source: function (slug) {
+        return api_url + 'source/' + slug;
     },
 
 
@@ -48511,18 +48640,22 @@ global.$ = global.jQuery = require('jquery');
 var _ = require('lodash');
 
 // foundation needs global.$ because it doesn't "require" jquery for some reason
-require('foundation-sites');
+var foundation = require('foundation-sites');
 
 var Regions = require('../views/regions.js');
 var swap = require('../views/swap.js');
 
 var URI = require('urijs');
 
+var dust = require('dustjs-linkedin');
+
+
 // models
 var Entries = require('../models/entries');
 var Entry = require('../models/entry');
 
 // views
+var Base = require('../views/base');
 var ArchiveView = require('../views/archive');
 var TimelineView = require('../views/timeline');
 var EntryDetailView = require('../views/entry_detail');
@@ -48559,7 +48692,10 @@ module.exports.Archive = function (query) {
     if (oldQuery != query || !App.ArchiveEntries) {
         App.ArchiveEntries = new Entries();
         var params = URI.parseQuery(query);
-        App.ArchiveEntries.query = _.defaults(params, {limit: 30, order_by: 'date', match: 'OR', image_size: 'x-small'});
+        App.ArchiveEntries.query = _.defaults(
+            params, {
+            limit: 15, order_by: 'date', match: 'OR', image_size: 'x-small'}
+            );
     }
 
     var archive = new ArchiveView({
@@ -48579,14 +48715,32 @@ module.exports.Archive = function (query) {
 module.exports.Timeline = function (query) {
     console.debug('##### Controller -> Timeline');
 
-
     App.TimelineEntries = new Entries();
-    App.TimelineEntries.query = { limit: 30, order_by: 'date', image_size: 'medium' };
 
-    var timeline = new TimelineView({collection: App.TimelineEntries});
-    swap(Regions.content, timeline);
+    console.debug(Foundation.MediaQuery.current);
 
-    App.View.timeline = timeline; // for debug only
+    var image_size = 'x-small';
+
+    if (Foundation.MediaQuery.atLeast('large')) {
+         image_size = 'medium'
+    }
+
+    if (Foundation.MediaQuery.atLeast('medium')) {
+
+        App.TimelineEntries.query = {limit: 10, order_by: 'date', image_size: image_size};
+
+        var timeline = new TimelineView({collection: App.TimelineEntries});
+
+        swap(Regions.content, timeline);
+
+    } else {
+
+        var noMobileView = Base.TemplateView.extend({
+            template: require('../templates/not_on_mobile.dust'),
+        });
+        swap(Regions.content, new noMobileView({}));
+
+    }
 
 };
 
@@ -48608,13 +48762,56 @@ module.exports.Detail = function (doc_id) {
                 // render
                 swap(Regions.content, new EntryDetailView({model: entry}));
             },
+            error: function(model, response, options) {
+                // error handling is done in main.js
+            }
         }
     );
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../models/entries":40,"../models/entry":41,"../views/archive":80,"../views/entry_detail":83,"../views/regions.js":98,"../views/swap.js":102,"../views/timeline":103,"foundation-sites":8,"jquery":12,"lodash":14,"urijs":27}],33:[function(require,module,exports){
+},{"../models/entries":41,"../models/entry":42,"../templates/not_on_mobile.dust":78,"../views/archive":88,"../views/base":90,"../views/entry_detail":92,"../views/regions.js":109,"../views/swap.js":114,"../views/timeline":115,"dustjs-linkedin":4,"foundation-sites":7,"jquery":11,"lodash":14,"urijs":27}],33:[function(require,module,exports){
+var _ = require('lodash');
+var $ = require('jquery');
+
+var Regions = require('../views/regions.js');
+var swap = require('../views/swap.js');
+
+// models
+var Exhibitions = require('../models/exhibitions');
+var Exhibition = require('../models/exhibition');
+
+// views
+var VirtualLabListView = require('../views/exhibition_list');
+var VirtualLabDetailView = require('../views/exhibition_detail');
+
+
+module.exports.List = function () {
+    console.debug('##### Virtual Lab Controller -> List');
+    if (!App.Exhibitions)
+        App.Exhibitions = new Exhibitions();
+
+    var virtuallab = new VirtualLabListView({collection: App.Exhibitions});
+    swap(Regions.content, virtuallab);
+    App.Exhibitions.fetch();
+};
+
+
+module.exports.Detail = function (slug) {
+    console.debug('##### Virtual Lab Controller -> Detail', slug);
+
+    //var entry = new Entry({doc_id: doc_id});
+    var exhibition = new Exhibition({ slug: slug });
+
+    // render
+    swap(Regions.content, new VirtualLabDetailView({model: exhibition}));
+
+    // fetch
+    exhibition.fetch();
+};
+
+},{"../models/exhibition":43,"../models/exhibitions":44,"../views/exhibition_detail":99,"../views/exhibition_list":100,"../views/regions.js":109,"../views/swap.js":114,"jquery":11,"lodash":14}],34:[function(require,module,exports){
 var _ = require('lodash');
 var $ = require('jquery');
 
@@ -48665,7 +48862,7 @@ module.exports.Detail = function (slug) {
     });
 };
 
-},{"../models/keyword":44,"../models/keywords":45,"../views/keyword_detail":94,"../views/keyword_list":95,"../views/regions.js":98,"../views/swap.js":102,"jquery":12,"lodash":14}],34:[function(require,module,exports){
+},{"../models/keyword":47,"../models/keywords":48,"../views/keyword_detail":105,"../views/keyword_list":106,"../views/regions.js":109,"../views/swap.js":114,"jquery":11,"lodash":14}],35:[function(require,module,exports){
 var _ = require('lodash');
 var $ = require('jquery');
 
@@ -48680,9 +48877,6 @@ var Set = require('../models/set');
 var SetListView = require('../views/set_list');
 var SetDetailView = require('../views/set_detail');
 
-
-if (!App.preferredView)
-    App.preferredView = 'list';
 
 module.exports.List = function () {
     console.debug('##### Set Controller -> List');
@@ -48703,6 +48897,7 @@ module.exports.Detail = function (doc_id) {
     console.debug('##### Set Controller -> Detail', doc_id);
 
     var set = new Set({doc_id: doc_id});
+
     // render
     swap(Regions.content, new SetDetailView({model: set, data: {preferredView: App.preferredView}}));
 
@@ -48710,11 +48905,14 @@ module.exports.Detail = function (doc_id) {
     set.fetch({
         data: {
             image_size: 'x-small',
+        },
+        success: function() {
+
         }
     });
 };
 
-},{"../models/set":46,"../models/sets":47,"../views/regions.js":98,"../views/set_detail":99,"../views/set_list":100,"../views/swap.js":102,"jquery":12,"lodash":14}],35:[function(require,module,exports){
+},{"../models/set":49,"../models/sets":50,"../views/regions.js":109,"../views/set_detail":110,"../views/set_list":111,"../views/swap.js":114,"jquery":11,"lodash":14}],36:[function(require,module,exports){
 var _ = require('lodash');
 var $ = require('jquery');
 
@@ -48754,34 +48952,23 @@ module.exports.Detail = function (slug) {
     experiment.fetch();
 };
 
-},{"../models/experiment":42,"../models/experiments":43,"../views/experiment_detail":90,"../views/experiment_list":91,"../views/regions.js":98,"../views/swap.js":102,"jquery":12,"lodash":14}],36:[function(require,module,exports){
+},{"../models/experiment":45,"../models/experiments":46,"../views/experiment_detail":101,"../views/experiment_list":102,"../views/regions.js":109,"../views/swap.js":114,"jquery":11,"lodash":14}],37:[function(require,module,exports){
 // dust filters
 var dust = require('dustjs-linkedin');
 
-// KEPT FOR REFERENCE
 
-/*
 var marked = require('marked');
-var md5 = require('blueimp-md5');
+
+//var md5 = require('blueimp-md5');
 
 var renderer = new marked.Renderer();
 
 // override link rendering
 renderer.link = function (href, title, text) {
 
-    //console.warn(href);
-
     if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
         return '<a href="' + href + '" title="' + (title != null ? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
     }
-
-//  else if (href.split('/')[0].indexOf('diagram') === 0) {
-//        return '<a href="/diagrams/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
-//  }
-//  else if (href.split('/')[0].indexOf('set') === 0) {
-//      return '<a href="/sets/' + href.split('/')[1] + '" title="' + (title != null ? title : "") + '" target="_blank">' + text + '</a>';
-//  }
-
 
     else {
         return '<a href="' + href + '" title="' + (title != null ? title : "") + '">' + text + '</a>';
@@ -48811,16 +48998,17 @@ dust.filters.humanFileSize = function (bytes) {
     return bytes.toFixed(1) + ' ' + units[u];
 };
 
+/*
 // md5 hash filter
-
  dust.filters.md5 = function(value) {
  return md5(value);
  };
+ */
 
 
-*/
 
-},{"dustjs-linkedin":5}],37:[function(require,module,exports){
+
+},{"dustjs-linkedin":4,"marked":15}],38:[function(require,module,exports){
 'use strict';
 
 /**
@@ -49730,7 +49918,7 @@ module.exports = function() {
   };
 };
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 // Generated by CoffeeScript 1.6.2
 /**
  @license Sticky-kit v1.1.3 | WTFPL | Leaf Corcoran 2015 | http://leafo.net
@@ -49997,7 +50185,7 @@ $.fn.stick_in_parent = function (opts) {
 };
 
 
-},{"jquery":12}],39:[function(require,module,exports){
+},{"jquery":11}],40:[function(require,module,exports){
 (function (global){
 window.App = {
     Helper: {},
@@ -50012,6 +50200,14 @@ global.$ = global.jQuery = require('jquery');
 var _ = require('lodash');
 var Backbone = require('backbone');
 Backbone.$ = $;
+
+Cookies= require('js-cookie');
+
+App.preferredView = Cookies.get('preferredView');
+if (!App.preferredView) {
+    App.preferredView = 'list';
+    Cookies.set('preferredView', App.preferredView);
+}
 
 
 // we do need this for dustjs helpers!!!
@@ -50088,11 +50284,15 @@ $(function () {
     // set the csrftoken
     //Backbone.Tastypie.csrfToken = Cookies.get('csrftoken');
 
-    // catch 401
+    $(document).foundation();
+
+    // catch xhr errors globally
     $(document).ajaxError(function (event, xhr) {
-        if (xhr.status == 401) {
-            // window.location = '/login';
-            console.log("LOGIN!");
+        if (xhr.status == 404) {
+            App.Router.r.navigate('/404', {trigger: true, replace: true});
+        }
+        else if (xhr.status == 401) {
+            console.warn("401: NEEDS LOGIN!");
         }
     });
 
@@ -50138,6 +50338,7 @@ $(function () {
      });
      */
 
+    // override href clicks
     $(document).on('click', 'a:not([data-bypass])', function (evt) {
 
         var href = $(this).attr('href');
@@ -50168,7 +50369,7 @@ $(function () {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./dust-filters.js":36,"./router.js":48,"./views/navigation.js":97,"./views/regions.js":98,"./views/swap.js":102,"backbone":2,"dustjs-helpers":4,"jquery":12,"keymaster":13,"lodash":14}],40:[function(require,module,exports){
+},{"./dust-filters.js":37,"./router.js":52,"./views/navigation.js":108,"./views/regions.js":109,"./views/swap.js":114,"backbone":1,"dustjs-helpers":3,"jquery":11,"js-cookie":12,"keymaster":13,"lodash":14}],41:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -50222,7 +50423,7 @@ module.exports = Backbone.Collection.extend({
      */
 });
 
-},{"../apiUrl":31,"./entry":41,"backbone":2,"jquery":12}],41:[function(require,module,exports){
+},{"../apiUrl":31,"./entry":42,"backbone":1,"jquery":11}],42:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -50241,7 +50442,44 @@ module.exports = Backbone.Model.extend({
 
 });
 
-},{"../apiUrl":31,"backbone":2,"jquery":12}],42:[function(require,module,exports){
+},{"../apiUrl":31,"backbone":1,"jquery":11}],43:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+Backbone.$ = $;
+var apiUrl = require('../apiUrl');
+
+module.exports = Backbone.Model.extend({
+
+    idAttribute: 'slug',
+
+    initialize: function() {
+    },
+
+    url: function() {
+        return apiUrl('exhibition', this.id);
+    },
+
+});
+
+},{"../apiUrl":31,"backbone":1,"jquery":11}],44:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+Backbone.$ = $;
+var apiUrl = require('../apiUrl');
+
+var Exhibition = require('./exhibition');
+
+module.exports = Backbone.Collection.extend({
+
+    model: Exhibition,
+
+    url: function () {
+        return apiUrl('exhibitions');
+    },
+
+});
+
+},{"../apiUrl":31,"./exhibition":43,"backbone":1,"jquery":11}],45:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -50260,7 +50498,7 @@ module.exports = Backbone.Model.extend({
 
 });
 
-},{"../apiUrl":31,"backbone":2,"jquery":12}],43:[function(require,module,exports){
+},{"../apiUrl":31,"backbone":1,"jquery":11}],46:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -50278,7 +50516,7 @@ module.exports = Backbone.Collection.extend({
 
 });
 
-},{"../apiUrl":31,"./experiment":42,"backbone":2,"jquery":12}],44:[function(require,module,exports){
+},{"../apiUrl":31,"./experiment":45,"backbone":1,"jquery":11}],47:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -50297,7 +50535,8 @@ module.exports = Backbone.Model.extend({
 
 });
 
-},{"../apiUrl":31,"backbone":2,"jquery":12}],45:[function(require,module,exports){
+},{"../apiUrl":31,"backbone":1,"jquery":11}],48:[function(require,module,exports){
+var _ = require('lodash');
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -50313,9 +50552,19 @@ module.exports = Backbone.Collection.extend({
         return apiUrl('keywords');
     },
 
+    search: function (letters) {
+        if (letters == "") return this;
+
+        var pattern = new RegExp(letters, "gi");
+
+        return this.filter(function (data) {
+            return pattern.test(data.get("name"));
+        });
+    }
+
 });
 
-},{"../apiUrl":31,"./keyword":44,"backbone":2,"jquery":12}],46:[function(require,module,exports){
+},{"../apiUrl":31,"./keyword":47,"backbone":1,"jquery":11,"lodash":14}],49:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -50334,7 +50583,7 @@ module.exports = Backbone.Model.extend({
 
 });
 
-},{"../apiUrl":31,"backbone":2,"jquery":12}],47:[function(require,module,exports){
+},{"../apiUrl":31,"backbone":1,"jquery":11}],50:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -50352,7 +50601,26 @@ module.exports = Backbone.Collection.extend({
 
 });
 
-},{"../apiUrl":31,"./set":46,"backbone":2,"jquery":12}],48:[function(require,module,exports){
+},{"../apiUrl":31,"./set":49,"backbone":1,"jquery":11}],51:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+Backbone.$ = $;
+var apiUrl = require('../apiUrl');
+
+module.exports = Backbone.Model.extend({
+
+    idAttribute: 'slug',
+
+    initialize: function() {
+    },
+
+    url: function() {
+        return apiUrl('source', this.id);
+    },
+
+});
+
+},{"../apiUrl":31,"backbone":1,"jquery":11}],52:[function(require,module,exports){
 // Application router
 // ==================
 'use strict';
@@ -50364,6 +50632,8 @@ var entryController = require('./controllers/entry_controller');
 var setController = require('./controllers/set_controller');
 var keywordController = require('./controllers/keyword_controller');
 var virtualLabController = require('./controllers/virtual_lab_controller');
+var exhibitionController = require('./controllers/exhibition_controller');
+
 
 // views
 var Base = require('./views/base.js');
@@ -50376,11 +50646,14 @@ var Error404View = require('./views/404.js');
 var EditorView = require('./views/editor.js');
 var ArchiveView = require('./views/archive.js');
 
+var Source = require('./models/source.js');
+var SourceDetailView = require('./views/source_detail.js');
+
 
 ArchiveView.viewState = new Backbone.Model();
 ArchiveView.viewState.set('scrollPosition', 0);
 
-var defaultRoute = function (actions) {
+var route404 = function (actions) {
     swap(Regions.content, new Error404View({}));
 };
 
@@ -50391,7 +50664,7 @@ var home = function () {
 var exhibitions = function () {
     var ExhibitionsView = Base.TemplateView.extend({
         data: {
-          MEDIA_URL: MEDIA_URL,
+            MEDIA_URL: MEDIA_URL,
         },
         template: require('./templates/exhibitions.dust'),
     });
@@ -50409,11 +50682,28 @@ var editor = function (actions) {
     swap(Regions.content, new EditorView({}));
 };
 
+var sources = function (slug) {
+
+    var source = new Source({slug: slug});
+
+    App.source = source;
+
+    source.fetch(
+        {
+            success: function (model, response, options) {
+                var view = new SourceDetailView({model: source});
+                swap(Regions.content, view);
+            }
+        }
+    )
+};
+
 
 module.exports = Backbone.Router.extend({
 
     initialize: function () {
         console.debug("##################################initialize router");
+        this.routesHit = 0;
         // render the base layout
         this.renderBase();
         // define regions RIGHT HERE after base layout has been rendered
@@ -50421,23 +50711,29 @@ module.exports = Backbone.Router.extend({
         Regions.content = $('[data-js-region="content"]');
         // render navigation
         //this.renderNavigation();
+
+        // keep count of number of routes handled by the application
+        Backbone.history.on('route', function() { this.routesHit++; }, this);
     },
 
     routes: {
         '(/)': home,
+        '404(/)': route404,
         'archive(?*query)(/)': entryController.Archive,
         'sets(/)': setController.List,
         'sets/:doc_id(/)': setController.Detail,
         'timeline(?*query)(/)': entryController.Timeline,
         'keywords(/)': keywordController.List,
         'keywords/:slug(/)': keywordController.Detail,
+        'sources/:slug(/)': sources,
         'editor(/)': editor,
         'diagrams/:doc_id(/)': entryController.Detail,
-        'exhibitions(/)': exhibitions,
+        'exhibitions(/)': exhibitionController.List,
+        'exhibition/:slug(/)': exhibitionController.Detail,
         'virtuallab(/)': virtualLabController.List,
         'virtuallab/:slug(/)': virtualLabController.Detail,
         'about(/)': about,
-        '*actions': defaultRoute
+        '*actions': route404
     },
 
     renderBase: function () {
@@ -50449,204 +50745,264 @@ module.exports = Backbone.Router.extend({
 
     renderNavigation: function () {
         //swap(Regions.navigation, new NavigationView({}));
+    },
+
+    back: function () {
+        if (this.routesHit > 1) {
+            // More than one route hit -> user did not land to current page directly
+            // Subtract 2 from routesHit, then when its redirected to the "back" page it'll gain only 1
+            this.routesHit = this.routesHit - 2;
+            window.history.back();
+        } else {
+            // otherwise go to the home page. Use replaceState if available so
+            // the navigation doesn't create an extra history entry
+            if (Backbone.history.getFragment() != '/')
+                this.routesHit = 0;
+            this.navigate('/', {trigger: true, replace: true});
+        }
     }
 });
 
 
-},{"./controllers/entry_controller":32,"./controllers/keyword_controller":33,"./controllers/set_controller":34,"./controllers/virtual_lab_controller":35,"./templates/about.dust":50,"./templates/exhibitions.dust":63,"./views/404.js":79,"./views/archive.js":80,"./views/base.js":81,"./views/editor.js":82,"./views/homepage.js":93,"./views/layout.js":96,"./views/regions.js":98,"./views/swap.js":102,"backbone":2,"jquery":12}],49:[function(require,module,exports){
+},{"./controllers/entry_controller":32,"./controllers/exhibition_controller":33,"./controllers/keyword_controller":34,"./controllers/set_controller":35,"./controllers/virtual_lab_controller":36,"./models/source.js":51,"./templates/about.dust":54,"./templates/exhibitions.dust":68,"./views/404.js":87,"./views/archive.js":88,"./views/base.js":90,"./views/editor.js":91,"./views/homepage.js":104,"./views/layout.js":107,"./views/regions.js":109,"./views/source_detail.js":113,"./views/swap.js":114,"backbone":1,"jquery":11}],53:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("404",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 column text-center\"><h1>404 Not Found</h1></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("404", context || {}, callback); };
+(function(dust){dust.register("404",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 column text-center\"><h1>404: Not Found.</h1><h5>We're sorry, the page you are looking for does not exist.</h5><br /></div></div><div class=\"row\"><div class=\"small-12 medium-6 medium-offset-3 columns\"><div class=\"input-group\"><input class=\"input-group-field search\" type=\"search\" placeholder=\"\" value=\"\"><div class=\"input-group-button\"><button class=\"button normal radius float-right search\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Search</button></div></div></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("404", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],50:[function(require,module,exports){
+},{"dustjs-linkedin":4}],54:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("about",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"large-10 large-offset-2 columns\"><div class=\"row\"><div class=\"small-8 columns\"><h4>About</h4></div></div><div class=\"row\"><div class=\"small-8 columns\"><p>The project \"Sound Colour Space – A Virtual Museum\", based at the Zurich University of the Arts(ZHdK),is a collaboration between the Institute for Computer Music and Sound Technology (ICST), theInstitutfür Theorie (ith) and the Medien- und Informationszentrum (MIZ).</p></div></div><div class=\"row\"><div class=\"small-8 columns\"><h4>Project Team</h4></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Applicants</dt><dd>Prof. Dr. Martin Neukom, ICST, ZHdK</dd><dd>Prof. Dr. Dieter Mersch, ith, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Project Management</dt><dd>Dr. Daniel Muzzulini, ICST, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Team</dt><dd>Lucas Bennett, ICST, ZHdK</dd><dd>Philippe Kocher, ICST, ZHdK</dd><dd>Dr. Susanne Schumacher, MIZ, ZHdK</dd><dd>Christoph Stähli, ICST, ZHdK</dd><dd>Jeroen Visser, ith, ZHdK</dd><dd>Raimund Vogtenhuber, ICST, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><dl><dt>Partners</dt><dd>Prof. Dr. Christoph Reuter, Institut für Systematische Musikwissenschaft, Universität Wien</dd><dd>Prof. Dr. Benjamin Wardhaugh, All Souls College, Oxford</dd><dd>Gerhard Dirmoser, Linz</dd></dl></div></div><div class=\"row\"><div class=\"small-8 columns\"><h4>Funding</h4><p>Schweizerischer Nationalfond (SNF: 105216_156979)</p></div></div><div class=\"row\"><div class=\"small-8 columns\"><h4>How to quote this website?</h4><p>„Sound Colour Space – A Virtual Museum“, Zurich University of the Arts, 2017,&nbsp;http://sound-colour-space.zhdk.ch</p></div></div><div class=\"row\"><div class=\"small-8 columns\"><h4>More information and additional material</h4><dl><dd><a href=\"https://www.zhdk.ch/forschungsprojekt/426348\" target=\"_blank\" data-bypass>ZürcherHochschule der Künste - Forschungsprojekte: Sound Colour Space</a></dd><dd><a href=\"https://medienarchiv.zhdk.ch/sets/4222fb4a-f454-421f-b646-c679007bd8ed\"target=\"_blank\" data-bypass>Forschungsprojekt «Sound Color Space»: Quellen, Ergebnisseund Dokumentation</a></dd></dl></div></div></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("about", context || {}, callback); };
+(function(dust){dust.register("about",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 medium-8 medium-offset-2 columns\"><div class=\"row\"><div class=\"small-12 columns\"><h4>About</h4></div></div><div class=\"row\"><div class=\"small-12 columns\"><p>The project \"Sound Colour Space – A Virtual Museum\", based at the Zurich University of the Arts(ZHdK),is a collaboration between the Institute for Computer Music and Sound Technology (ICST), theInstitutfür Theorie (ith) and the Medien- und Informationszentrum (MIZ).</p></div></div><div class=\"row\"><div class=\"small-12 columns\"><h4>Project Team</h4></div></div><div class=\"row\"><div class=\"small-12 columns\"><dl><dt>Applicants</dt><dd>Prof. Dr. Martin Neukom, ICST, ZHdK</dd><dd>Prof. Dr. Dieter Mersch, ith, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-12 columns\"><dl><dt>Project Management</dt><dd>Dr. Daniel Muzzulini, ICST, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-12 columns\"><dl><dt>Team</dt><dd>Lucas Bennett, ICST, ZHdK</dd><dd>Philippe Kocher, ICST, ZHdK</dd><dd>Dr. Susanne Schumacher, MIZ, ZHdK</dd><dd>Christoph Stähli, ICST, ZHdK</dd><dd>Jeroen Visser, ith, ZHdK</dd><dd>Raimund Vogtenhuber, ICST, ZHdK</dd></dl></div></div><div class=\"row\"><div class=\"small-12 columns\"><dl><dt>Partners</dt><dd>Prof. Dr. Christoph Reuter, Institut für Systematische Musikwissenschaft, Universität Wien</dd><dd>Prof. Dr. Benjamin Wardhaugh, All Souls College, Oxford</dd><dd>Gerhard Dirmoser, Linz</dd></dl></div></div><div class=\"row\"><div class=\"small-12 columns\"><h4>Funding</h4><p>Schweizerischer Nationalfond (SNF: 105216_156979)</p></div></div><div class=\"row\"><div class=\"small-12 columns\"><h4>How to quote this website?</h4><p>„Sound Colour Space – A Virtual Museum“, Zurich University of the Arts, 2017,&nbsp;http://sound-colour-space.zhdk.ch</p></div></div><div class=\"row\"><div class=\"small-12 columns\"><h4>More information and additional material</h4><dl><dd><a href=\"https://www.zhdk.ch/forschungsprojekt/426348\" target=\"_blank\" data-bypass>ZürcherHochschule der Künste - Forschungsprojekte: Sound Colour Space</a></dd><dd><a href=\"https://medienarchiv.zhdk.ch/sets/4222fb4a-f454-421f-b646-c679007bd8ed\"target=\"_blank\" data-bypass>Forschungsprojekt «Sound Color Space»: Quellen, Ergebnisseund Dokumentation</a></dd></dl></div></div></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("about", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],51:[function(require,module,exports){
+},{"dustjs-linkedin":4}],55:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("archive",body_0);function body_0(chk,ctx){return chk.w("<div><div id=\"entry_list_header\" data-js-region=\"entry_list_header\"></div><div id=\"entry_list_header_meta\" data-js-region=\"entry_list_header_meta\"></div><div class=\"row\"><div class=\"small-12 columns\">").s(ctx.get(["meta"], false),ctx,{"block":body_1},{}).w("</div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.h("gt",ctx,{"block":body_2},{"key":ctx.get(["total_count"], false),"value":"0"},"h");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<div id=\"entry_list\" data-js-region=\"entry_list\"></div>");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("archive", context || {}, callback); };
+(function(dust){dust.register("archive",body_0);function body_0(chk,ctx){return chk.w("<div><div id=\"entry_list_header\" data-js-region=\"entry_list_header\"></div><div id=\"entry_list_header_meta\" data-js-region=\"entry_list_header_meta\"></div><div class=\"row\"><div class=\"small-12 columns\">").s(ctx.get(["meta"], false),ctx,{"block":body_1},{}).w("</div></div><div class=\"row\"><div class=\"small-12 columns text-center\"><button class=\"large button load_more\">LOAD MORE</button></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.h("gt",ctx,{"block":body_2},{"key":ctx.get(["total_count"], false),"value":"0"},"h");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<div id=\"entry_list\" data-js-region=\"entry_list\"></div>");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("archive", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],52:[function(require,module,exports){
+},{"dustjs-linkedin":4}],56:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("base",body_0);function body_0(chk,ctx){return chk.w("<div data-js-region=\"base\"><div id=\"navigation\" data-js-region=\"navigation\"></div><div id=\"content\" data-js-region=\"content\"></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("base", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],53:[function(require,module,exports){
+},{"dustjs-linkedin":4}],57:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("editor",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row full align-stretch\"><div class=\"columns align-left\"><input type=\"search\" placeholder=\"search\" class=\"search\"><div id=\"stencil_holder\"></div></div><div class=\"columns align-self-stretch\"><div id=\"paper\"></div></div></div><div class=\"row full\"><div class=\"columns large-12 left\"><div id=\"selection-info\"></div><button type=\"button\" class=\"success button\" id=\"btn_open_svg\">Save SVG</button></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("editor", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],54:[function(require,module,exports){
+},{"dustjs-linkedin":4}],58:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h3>").f(ctx.get(["title"], false),ctx,"h").w("</h3><h6>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h6><h6><i>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</i></h6><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_3},{}).f(ctx.get(["originalImage"], false),ctx,"h").w("<img class=\"diagram\" src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div id=\"description\" class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div>").x(ctx.get(["related"], false),ctx,{"block":body_6},{}).w("<br/><div class=\"row\"><div class=\"large-12 medium-12 small-12 column text-left\">Source: ").f(ctx.get(["source"], false),ctx,"h").w("<br/>Copyright: ").f(ctx.get(["copyright_notice"], false),ctx,"h").w("<br/>License: ").s(ctx.get(["license"], false),ctx,{"block":body_8},{}).w("</div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_4},{}).w("</h6>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(" <a href=\"/keywords/").f(ctx.get(["slug"], false),ctx,"h").w("\">").f(ctx.get(["name"], false),ctx,"h").w("</a>").h("sep",ctx,{"block":body_5},{},"h");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w(",");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("<div class=\"related text-left\">See also:<ul>").s(ctx.get(["related"], false),ctx,{"block":body_7},{}).w("</ul></div>");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w(" (").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w(")</a></li>\n");}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\" data-bypass target=\"_blank\">").f(ctx.get(["label"], false),ctx,"h").w("</a>");}body_8.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
+require('./history_go_back.dust');
+(function(dust){dust.register("entry_detail",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"entry detail large-12 medium-12 small-12 column text-center\"><h3>").f(ctx.get(["title"], false),ctx,"h").w("</h3><h6>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h6><h6><i>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</i></h6><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6>").x(ctx.get(["tags"], false),ctx,{"block":body_3},{}).f(ctx.get(["originalImage"], false),ctx,"h").w("<img class=\"diagram\" src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div id=\"description\" class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div>").x(ctx.get(["related"], false),ctx,{"block":body_6},{}).w("<br/><div class=\"row\"><div class=\"large-12 medium-12 small-12 column text-left\">Source: ").f(ctx.get(["source"], false),ctx,"h").w("<br/>Copyright: ").f(ctx.get(["copyright_notice"], false),ctx,"h").w("<br/>License: ").s(ctx.get(["license"], false),ctx,{"block":body_8},{}).w("</div></div>").p("history_go_back",ctx,ctx,{}).w("</div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<h6>Tags:").s(ctx.get(["tags"], false),ctx,{"block":body_4},{}).w("</h6>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w(" <a href=\"/keywords/").f(ctx.get(["slug"], false),ctx,"h").w("\">").f(ctx.get(["name"], false),ctx,"h").w("</a>").h("sep",ctx,{"block":body_5},{},"h");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w(",");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("<div class=\"related text-left\">See also:<ul>").s(ctx.get(["related"], false),ctx,{"block":body_7},{}).w("</ul></div>");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.w("<li><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w(" (").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w(")</a></li>\n");}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\" data-bypass target=\"_blank\">").f(ctx.get(["label"], false),ctx,"h").w("</a>");}body_8.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_detail", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],55:[function(require,module,exports){
+},{"./history_go_back.dust":72,"dustjs-linkedin":4}],59:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("entry_even_grid",body_0);function body_0(chk,ctx){return chk.w("<section id=\"entries\"><div class=\"row entries\"></div></section>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_even_grid", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],56:[function(require,module,exports){
+},{"dustjs-linkedin":4}],60:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("entry_even_grid_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-").f(ctx.get(["num_columns"], false),ctx,"h").w(" columns\" style=\"margin-bottom: 40px;\"><a href=\"/").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" style=\"max-height: 200px;\"/></a></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_even_grid_single", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],57:[function(require,module,exports){
+},{"dustjs-linkedin":4}],61:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("entry_grid",body_0);function body_0(chk,ctx){return chk.w("<section id=\"entries\"><div class=\"row\"><div class=\"medium-12 columns\"><div class=\"entries grid\"></div></div></div></section>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_grid", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],58:[function(require,module,exports){
+},{"dustjs-linkedin":4}],62:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_grid_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry grid-item ").f(ctx.get(["uuid"], false),ctx,"h").w("\"><!--<div class=\"entry column align-self-bottom grid-item\">--><div class=\"entry_wrapper text-center grow\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" height=\"200\"/> ").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("<span>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</span></a></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br />");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_grid_single", context || {}, callback); };
+(function(dust){dust.register("entry_grid_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry grid-item ").f(ctx.get(["uuid"], false),ctx,"h").w("\"><!--<div class=\"entry column align-self-bottom grid-item\">--><div class=\"entry_wrapper text-center grow\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" /> ").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("<span>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</span></a></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br />");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_grid_single", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],59:[function(require,module,exports){
+},{"dustjs-linkedin":4}],63:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_list",body_0);function body_0(chk,ctx){return chk.w("<div><section id=\"entries\"><div class=\"row\"><div class=\"small-12 columns\"><table class=\"stack hover\"><thead><tr><th>Title / Author</th><th>Date</th><th>Diagram</th><th>Annotation</th></tr></thead><tbody class=\"entries\"></tbody></table></div></div></section></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list", context || {}, callback); };
+(function(dust){dust.register("entry_list",body_0);function body_0(chk,ctx){return chk.w("<div><section id=\"entries\"><div class=\"row\"><div class=\"small-12 columns\"><table class=\"stack unstriped\"><thead><tr><th>Title / Author</th><th>Date</th><th>Diagram</th><th>Annotation</th></tr></thead><tbody class=\"entries\"></tbody></table></div></div></section></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],60:[function(require,module,exports){
+},{"dustjs-linkedin":4}],64:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 require('./search_field_mask.dust');
 require('./search_field_mask.dust');
-(function(dust){dust.register("entry_list_header",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns text-center\"><h4>Search</h4></div></div><div class=\"row\"><div class=\"small-1 shrink columns\"><label>Match:<select class=\"match\"><option ").h("eq",ctx,{"block":body_1},{"key":ctx.getPath(false, ["meta","match"]),"value":"OR"},"h").w(" value=\"OR\">Any of the terms</option><option ").h("eq",ctx,{"block":body_2},{"key":ctx.getPath(false, ["meta","match"]),"value":"AND"},"h").w(" value=\"AND\">All of the terms</option></select></label></div></div><div id=\"search_field_masks\">").s(ctx.get(["meta"], false),ctx,{"block":body_3},{}).w("</div><div class=\"row\"><div class=\"small-6 columns\"><h5><button class=\"tiny secondary radius button add_search_field\">Add search field</button></h5></div><div class=\"small-6 columns\"><h5><button class=\"button normal radius float-right search\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Search</button></h5></div></div><div class=\"row\"><div class=\"small-12 columns\"><ul id=\"refine_search\" class=\"accordion\" data-accordion data-allow-all-closed=\"true\"><li class=\"accordion-item\" data-accordion-item><a href=\"#\" data-bypass class=\"accordion-title\" style=\"padding:0;display: inline-block;\"><button class=\"button small radius\" style=\"margin:0;\"><i class=\"fi-widget\"></i> Refine Search</u_></button></a><div class=\"accordion-content\" data-tab-content><div class=\"row\"><div class=\"small-6 columns\"><fieldset class=\"fieldset\"><legend><i class=\"fi-filter\"></i> Select date range</legend><div class=\"row\"><div class=\"small-8 columns\"><div id=\"date_slider\" class=\"slider\"><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"aria-controls=\"dateSliderStart\"></span><span class=\"slider-fill\" data-slider-fill></span><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"aria-controls=\"dateSliderEnd\"></span><input type=\"hidden\"><input type=\"hidden\"></div><div class=\"row\"><div class=\"small-5 columns align-left\"><input type=\"number\" class=\"float-left\" id=\"dateSliderStart\"></div><div class=\"small-5 small-offset-2 columns align-right\"><input type=\"number\" class=\"float-right\" id=\"dateSliderEnd\"></div></div></div><div class=\"small-4 columns align-self-middle align-right\"><div class=\"switch small\"><input class=\"switch-input\" id=\"date_range_toggle\" type=\"checkbox\"name=\"toggle date range filter\"><label class=\"switch-paddle\" for=\"date_range_toggle\"><span class=\"show-for-sr\">Filter by date range?</span><span class=\"switch-active\" aria-hidden=\"true\">On</span><span class=\"switch-inactive\" aria-hidden=\"true\">Off</span></label></div><button class=\"button normal radius float-right apply_date_range\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Apply</button></div></div></fieldset></div><div class=\"small-6 columns\"><fieldset  class=\"fieldset category\"><legend><i class=\"fi-filter\"></i> Choose Category</legend><button class=\"label tone_systems\" id=\"tone_systems\">Tone Systems</button><br><button class=\"label colour_systems\" id=\"colour_systems\">Colour Systems</button><br><br><div class=\"button-group float-right\"><button class=\"button normal radius search\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Apply</button><button class=\"button normal radius secondary category clear\"><i class=\"fi-x\"></i></button></div></fieldset></div>").x(ctx.getPath(false, ["meta","tags"]),ctx,{"block":body_6},{}).w("</div></div></li></ul></div></div><div class=\"row align-right\"><div class=\"small-2 columns\"><select class=\"order_by\"><option value=\"-date\">Date (newest first)</option><option value=\"date\">Date (oldest first)</option><option value=\"title\">Title (A-Z)</option><option value=\"-title\">Title (Z-A)</option><option value=\"author__last_name\">Author (A-Z)</option><option value=\"-author__last_name\">Author (Z-A)</option></select></div><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_11},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_12},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_13},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("selected");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("selected");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.s(ctx.get(["search_query"], false),ctx,{"else":body_4,"block":body_5},{});}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.p("search_field_mask",ctx,ctx,{"term":""});}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.p("search_field_mask",ctx,ctx,{}).w(" ");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("<div class=\"small-12 columns\"><fieldset class=\"fieldset\"><legend><i class=\"fi-filter\"></i> Keywords</legend><div>").s(ctx.get(["meta"], false),ctx,{"block":body_7},{}).w("</div></fieldset></div>");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.s(ctx.get(["tags"], false),ctx,{"block":body_8},{});}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<span class=\"tag label ").x(ctx.get(["selected"], false),ctx,{"block":body_9},{}).w("\" data-slug=").f(ctx.get(["slug"], false),ctx,"h").w(">").f(ctx.get(["name"], false),ctx,"h").w("</span>").h("sep",ctx,{"block":body_10},{},"h");}body_8.__dustBody=!0;function body_9(chk,ctx){return chk.w("selected");}body_9.__dustBody=!0;function body_10(chk,ctx){return chk.w("&nbsp;");}body_10.__dustBody=!0;function body_11(chk,ctx){return chk.w("active");}body_11.__dustBody=!0;function body_12(chk,ctx){return chk.w("active");}body_12.__dustBody=!0;function body_13(chk,ctx){return chk.w("active");}body_13.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_header", context || {}, callback); };
+(function(dust){dust.register("entry_list_header",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns text-center\"><h1>Search</h1></div></div><div class=\"row\"><div class=\"small-1 shrink columns\"><label>Match:<select class=\"match\"><option ").h("eq",ctx,{"block":body_1},{"key":ctx.getPath(false, ["meta","match"]),"value":"OR"},"h").w(" value=\"OR\">Any of the terms</option><option ").h("eq",ctx,{"block":body_2},{"key":ctx.getPath(false, ["meta","match"]),"value":"AND"},"h").w(" value=\"AND\">All of the terms</option></select></label></div></div><div id=\"search_field_masks\">").s(ctx.get(["meta"], false),ctx,{"block":body_3},{}).w("</div><div class=\"row\"><div class=\"small-6 columns\"><h5><button class=\"tiny secondary radius button add_search_field\">Add search field</button></h5></div><div class=\"small-6 columns\"><h5><button class=\"button normal radius float-right search\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Search</button></h5></div></div><div class=\"row\"><div class=\"small-12 columns\"><ul id=\"refine_search\" class=\"accordion\" data-accordion data-allow-all-closed=\"true\"><li class=\"accordion-item\" data-accordion-item><a href=\"#\" data-bypass class=\"accordion-title\" style=\"padding:0;display: inline-block;\"><button class=\"button small radius\" style=\"margin:0;\"><i class=\"fi-widget\"></i> Refine Search</u_></button></a><div class=\"accordion-content\" data-tab-content><div class=\"row\"><div class=\"small-12 large-6 columns\"><fieldset class=\"fieldset\"><legend><i class=\"fi-filter\"></i> Select date range</legend><div class=\"row\"><div class=\"small-8 columns\"><div id=\"date_slider\" class=\"slider\"><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"aria-controls=\"dateSliderStart\"></span><span class=\"slider-fill\" data-slider-fill></span><span class=\"slider-handle\" data-slider-handle role=\"slider\" tabindex=\"1\"aria-controls=\"dateSliderEnd\"></span><input type=\"hidden\"><input type=\"hidden\"></div><div class=\"row\"><div class=\"small-5 columns align-left\"><input type=\"number\" class=\"float-left\" id=\"dateSliderStart\"></div><div class=\"small-5 small-offset-2 columns align-right\"><input type=\"number\" class=\"float-right\" id=\"dateSliderEnd\"></div></div></div><div class=\"small-4 columns align-self-middle align-right\"><div class=\"switch small\"><input class=\"switch-input\" id=\"date_range_toggle\" type=\"checkbox\"name=\"toggle date range filter\"><label class=\"switch-paddle\" for=\"date_range_toggle\"><span class=\"show-for-sr\">Filter by date range?</span><span class=\"switch-active\" aria-hidden=\"true\">On</span><span class=\"switch-inactive\" aria-hidden=\"true\">Off</span></label></div><button class=\"button normal radius float-right apply_date_range\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Apply</button></div></div></fieldset></div><div class=\"small-12 large-6 columns\"><fieldset  class=\"fieldset category\"><legend><i class=\"fi-filter\"></i> Choose Category</legend><button class=\"label tone_systems\" id=\"tone_systems\">Tone Systems</button><br><button class=\"label colour_systems\" id=\"colour_systems\">Colour Systems</button><br><br><div class=\"button-group float-right\"><button class=\"button normal radius search\"><i class=\"fi-magnifying-glass\"></i>&nbsp;Apply</button><button class=\"button normal radius secondary category clear\"><i class=\"fi-x\"></i></button></div></fieldset></div>").x(ctx.getPath(false, ["meta","tags"]),ctx,{"block":body_6},{}).w("</div></div></li></ul></div></div><div class=\"row align-right\"><div class=\"small-6 large-3 columns\"><select class=\"order_by\"><option value=\"-date\">Date (newest first)</option><option value=\"date\">Date (oldest first)</option><option value=\"title\">Title (A-Z)</option><option value=\"-title\">Title (Z-A)</option><option value=\"author__last_name\">Author (A-Z)</option><option value=\"-author__last_name\">Author (Z-A)</option></select></div><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_11},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_12},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_13},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("selected");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("selected");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.s(ctx.get(["search_query"], false),ctx,{"else":body_4,"block":body_5},{});}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.p("search_field_mask",ctx,ctx,{"term":""});}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.p("search_field_mask",ctx,ctx,{}).w(" ");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("<div class=\"small-12 columns\"><fieldset class=\"fieldset\"><legend><i class=\"fi-filter\"></i> Keywords</legend><div>").s(ctx.get(["meta"], false),ctx,{"block":body_7},{}).w("</div></fieldset></div>");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.s(ctx.get(["tags"], false),ctx,{"block":body_8},{});}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<span class=\"tag label ").x(ctx.get(["selected"], false),ctx,{"block":body_9},{}).w("\" data-slug=").f(ctx.get(["slug"], false),ctx,"h").w(">").f(ctx.get(["name"], false),ctx,"h").w("</span>").h("sep",ctx,{"block":body_10},{},"h");}body_8.__dustBody=!0;function body_9(chk,ctx){return chk.w("selected");}body_9.__dustBody=!0;function body_10(chk,ctx){return chk.w("&nbsp;");}body_10.__dustBody=!0;function body_11(chk,ctx){return chk.w("active");}body_11.__dustBody=!0;function body_12(chk,ctx){return chk.w("active");}body_12.__dustBody=!0;function body_13(chk,ctx){return chk.w("active");}body_13.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_header", context || {}, callback); };
 }).call(this);
 
-},{"./search_field_mask.dust":72,"dustjs-linkedin":5}],61:[function(require,module,exports){
+},{"./search_field_mask.dust":79,"dustjs-linkedin":4}],65:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("entry_list_header_meta",body_0);function body_0(chk,ctx){return chk.s(ctx.get(["meta"], false),ctx,{"block":body_1},{});}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.h("gt",ctx,{"else":body_2,"block":body_8},{"key":ctx.get(["total_count"], false),"value":"0"},"h");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 large-expand columns text-center\">").x(ctx.getPath(false, ["meta","search_query"]),ctx,{"else":body_3,"block":body_4},{}).w("</div></div></div>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<h5 class=\"text-center\">No results, try to adjust your query or filter.</h5>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w("<h5>Nothing found for: <b>").s(ctx.getPath(false, ["meta","search_query"]),ctx,{"block":body_5},{"sep":body_7}).w("</b></h5>");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.f(ctx.get(["term"], false),ctx,"h").h("sep",ctx,{"block":body_6},{},"h");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w(" ").f(ctx.get(["sep"], false),ctx,"h").w(" ");}body_6.__dustBody=!0;function body_7(chk,ctx){return chk.f(ctx.get(["match"], false),ctx,"h");}body_7.__dustBody=!0;function body_8(chk,ctx){return chk.w("<div>").x(ctx.getPath(false, ["meta","search_query"]),ctx,{"block":body_9},{}).w("<div class=\"row\"><div class=\"small-12 column text-center\"><!--<p>Showing ").f(ctx.get(["totalItems"], false),ctx,"h").w("/").f(ctx.get(["total_count"], false),ctx,"h").w(" diagrams.</p>--></div></div></div>");}body_8.__dustBody=!0;function body_9(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 large-expand columns text-center\"><h5>").f(ctx.get(["total_count"], false),ctx,"h").w(" results for: <b>").s(ctx.getPath(false, ["meta","search_query"]),ctx,{"block":body_10},{"sep":body_12}).w("</b></h5></div></div>");}body_9.__dustBody=!0;function body_10(chk,ctx){return chk.f(ctx.get(["term"], false),ctx,"h").h("sep",ctx,{"block":body_11},{},"h");}body_10.__dustBody=!0;function body_11(chk,ctx){return chk.w(" ").f(ctx.get(["sep"], false),ctx,"h").w(" ");}body_11.__dustBody=!0;function body_12(chk,ctx){return chk.f(ctx.get(["match"], false),ctx,"h");}body_12.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_header_meta", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],62:[function(require,module,exports){
+},{"dustjs-linkedin":4}],66:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("entry_list_single",body_0);function body_0(chk,ctx){return chk.w("<tr class=\"entry\"><td><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\" style=\"display: block;\"><span class=\"title\">").f(ctx.get(["title"], false),ctx,"h").w("</span><br/>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</a></td><td>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</td><td class=\"diagram\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" /></a></td><td class=\"annotation\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><div class=\"truncate\"><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div></div></a></td></tr>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_single", context || {}, callback); };
+(function(dust){dust.register("entry_list_single",body_0);function body_0(chk,ctx){return chk.w("<tr class=\"entry\"><td><div class=\"truncate\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\" style=\"display: block;\"><span class=\"title\">").f(ctx.get(["title"], false),ctx,"h").w("</span><br/>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</a></div></td><td>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</td><td class=\"diagram\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\" /></a></td><td class=\"annotation\" style=\"width: 450px;\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><div class=\"truncate\"><div class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div></div></a></td></tr>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").x(ctx.get(["pseudonym"], false),ctx,{"block":body_2},{});}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("(").f(ctx.get(["pseudonym"], false),ctx,"h").w(")");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("entry_list_single", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],63:[function(require,module,exports){
+},{"dustjs-linkedin":4}],67:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("exhibitions",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><a href=\"https://virtual-lab.github.io/presentation2_impress\" target=\"_self\" data-bypass><img src=\"").f(ctx.get(["MEDIA_URL"], false),ctx,"h").w("exhibitions/chromatic_scale.jpg\" width=\"1330\"/></a></div></div><div class=\"row\"><div class=\"small-12 columns\"><video src=\"").f(ctx.get(["MEDIA_URL"], false),ctx,"h").w("videos/2016_SoCoSpa_Präsentation_kurz_1440x1080.m4v\" width=\"1300\" controls></video></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("exhibitions", context || {}, callback); };
+(function(dust){dust.register("exhibition_detail",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns text-center\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1></div></div><div class=\"row\"><div class=\"small-12 columns text-center\">").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</div></div><div class=\"row\"><div class=\"small-12 columns text-center\"><a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\" data-bypass>Open ").f(ctx.get(["title"], false),ctx,"h").w("&nbsp;&nbsp;<i class=\"fi-arrows-out\"></i></a></div></div><div class=\"row iframe\"><div class=\"small-12 columns\"><iframe width=\"100%\" height=\"1000px\" style=\"border: none;\" src=\"").f(ctx.get(["url"], false),ctx,"h").w("\"></iframe></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("exhibition_detail", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],64:[function(require,module,exports){
+},{"dustjs-linkedin":4}],68:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("experiment_detail",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns\"><h4>").f(ctx.get(["title"], false),ctx,"h").w("</h4></div></div><div class=\"row\"><div class=\"small-12 columns\">").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</div></div><div class=\"row iframe\"><div class=\"small-12 columns\"><iframe width=\"100%\" height=\"1000px\" style=\"border: none;\" src=\"").f(ctx.get(["url"], false),ctx,"h").w("\"></iframe></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_detail", context || {}, callback); };
+(function(dust){dust.register("exhibitions",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><div class=\"row entries\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("exhibitions", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],65:[function(require,module,exports){
+},{"dustjs-linkedin":4}],69:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("experiment_detail",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1></div></div><div class=\"row\"><div class=\"small-12 columns\">").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</div></div><div class=\"row iframe\"><div class=\"small-12 columns\"><iframe width=\"100%\" height=\"1000px\" style=\"border: none;\" src=\"").f(ctx.get(["url"], false),ctx,"h").w("\"></iframe></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_detail", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":4}],70:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("experiment_list",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><div class=\"row entries\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_list", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],66:[function(require,module,exports){
+},{"dustjs-linkedin":4}],71:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("experiment_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-4 column experiment text-center\"><h4><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></h4><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.get(["cover"], false),ctx,"h").w("\" /></a></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("experiment_single", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],67:[function(require,module,exports){
+},{"dustjs-linkedin":4}],72:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("homepage",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-8 small-offset-2 columns\"><img src=\"").f(ctx.get(["STATIC_URL"], false),ctx,"h").w("img/fig_0_head_1456_464.jpg\"/><br/><br/><h4>Sound Colour Space – A Virtual Museum</h4><p>By investigating the conceptual field of sound, tone, pitch, and timbre in its relation to visual phenomenaand geometrical concepts, the project ”Sound Colour Space – A Virtual Museum” contributes to aninterdisciplinary field of research and explores its adequate modes of representation and communication.</p><p>Many scientists and philosophers from antiquity to modern times have studied the relationships betweensound, light and geometry. Many of their visualisations of acoustical, optical and perceptual topics speakto the eye and can be studied comparatively. These pictures are interesting because of their diagrammaticstructure, in the way they combine text, images and spatial structures on a flat surface and in the way theyaddress topological, philosophical and psychological questions. They often have an aesthetic value of theirown.</p><p>The collection and study of these materials and the attempts to present them as a sequential text lead tothe question of adequate forms of representation. Since a given picture or graphic can appear in variouscontexts and with different implications, a distinct network architecture permits forms of contentrepresentation free of redundancies in a way that is difficult to achieve in textual form. Accordingly, acollection of scientific illustrations and diagrams (currently about 600 image files) together with relatedmaterials and findings is presented within an open, dynamical online publication. The metaphor «museum» isthus rendered as a place where people and objects meet and interact in various dynamic modes. Visitors gainaccess to the collection of pictures and they can compare and regroup the pictures, read explanations andinteract with audio-visual applications, or just follow guided tours. Scientists and scholars use the museumas a research tool and add to the contents of the underlying database. The application is based on the MediaArchive of the Arts developed at the Zurich University of Arts and contributes to the further development ofthis online platform as a research tool.</p></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("homepage", context || {}, callback); };
+(function(dust){dust.register("history_go_back",body_0);function body_0(chk,ctx){return chk.w("<span class=\"back_link\" onclick=\"javascript:App.Router.r.back();\">back</span>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("history_go_back", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],68:[function(require,module,exports){
+},{"dustjs-linkedin":4}],73:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("keyword_detail",body_0);function body_0(chk,ctx){return chk.w("<div id=\"keyword\"><div class=\"row\"><div class=\"small-12 columns text-center\"><h4>&#171;").f(ctx.get(["name"], false),ctx,"h").w("&#187;</h4></div></div><div class=\"row description\"><div class=\"small-12 columns\"><p>").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</p></div></div><div class=\"row align-right\"><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_1},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_3},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("active");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("active");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("active");}body_3.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_detail", context || {}, callback); };
+(function(dust){dust.register("homepage",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 medium-8 medium-offset-2 columns\"><img src=\"").f(ctx.get(["STATIC_URL"], false),ctx,"h").w("img/fig_0_head_1456_464.jpg\"/><br/><br/><h4>Sound Colour Space – A Virtual Museum</h4><p>By investigating the conceptual field of sound, tone, pitch, and timbre in its relation to visual phenomenaand geometrical concepts, the project ”Sound Colour Space – A Virtual Museum” contributes to aninterdisciplinary field of research and explores its adequate modes of representation and communication.</p><p>Many scientists and philosophers from antiquity to modern times have studied the relationships betweensound, light and geometry. Many of their visualisations of acoustical, optical and perceptual topics speakto the eye and can be studied comparatively. These pictures are interesting because of their diagrammaticstructure, in the way they combine text, images and spatial structures on a flat surface and in the way theyaddress topological, philosophical and psychological questions. They often have an aesthetic value of theirown.</p><p>The collection and study of these materials and the attempts to present them as a sequential text lead tothe question of adequate forms of representation. Since a given picture or graphic can appear in variouscontexts and with different implications, a distinct network architecture permits forms of contentrepresentation free of redundancies in a way that is difficult to achieve in textual form. Accordingly, acollection of scientific illustrations and diagrams (currently about 600 image files) together with relatedmaterials and findings is presented within an open, dynamical online publication. The metaphor «museum» isthus rendered as a place where people and objects meet and interact in various dynamic modes. Visitors gainaccess to the collection of pictures and they can compare and regroup the pictures, read explanations andinteract with audio-visual applications, or just follow guided tours. Scientists and scholars use the museumas a research tool and add to the contents of the underlying database. The application is based on the MediaArchive of the Arts developed at the Zurich University of Arts and contributes to the further development ofthis online platform as a research tool.</p></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("homepage", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],69:[function(require,module,exports){
+},{"dustjs-linkedin":4}],74:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("keyword_list",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns\"><h4 class=\"text-center\">Keywords</h4></div></div><div class=\"row\"><div class=\"small-12 columns\"><ul class=\"row entries\"></ul></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_list", context || {}, callback); };
+require('./history_go_back.dust');
+require('./history_go_back.dust');
+(function(dust){dust.register("keyword_detail",body_0);function body_0(chk,ctx){return chk.w("<div id=\"keyword\"><div class=\"row\"><div class=\"small-12 columns text-center\"><h1>&#171;").f(ctx.get(["name"], false),ctx,"h").w("&#187;</h1>").p("history_go_back",ctx,ctx,{}).w("</div></div><div class=\"row description\"><div class=\"small-12 columns\"><p>").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</p></div></div><div class=\"row align-right\"><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_1},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_3},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div><div class=\"row\"><div class=\"small-12 columns text-center\">").p("history_go_back",ctx,ctx,{}).w("</div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("active");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("active");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("active");}body_3.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_detail", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],70:[function(require,module,exports){
+},{"./history_go_back.dust":72,"dustjs-linkedin":4}],75:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("keyword_single",body_0);function body_0(chk,ctx){return chk.w("<li><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><span class=\"tag label\">").f(ctx.get(["name"], false),ctx,"h").w("</span></a>&nbsp;</li>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_single", context || {}, callback); };
+(function(dust){dust.register("keyword_list",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 columns\"><h1 class=\"text-center\">Keywords</h1></div><div class=\"small-4 small-offset-1 medium-6 medium-offset-3 columns\"><div class=\"input-group\"><input class=\"input-group-field search\" type=\"search\" placeholder=\"filter\"><div class=\"input-group-button\"><button class=\"radius secondary button remove_filter\"><i class=\"fi-x\"></i></button></div></div></div></div><div class=\"row\"><div class=\"small-offset-1 small-10 columns\"><div class=\"row entries\"></div></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_list", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],71:[function(require,module,exports){
+},{"dustjs-linkedin":4}],76:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("navigation",body_0);function body_0(chk,ctx){return chk.w("<div><nav><div class=\"row\"><div class=\"column text-center\" style=\"margin:5px;\"><a href=\"/\"><h3>Sound Colour Space - A Virtual Museum</h3></a></div></div><div class=\"row\"><div class=\"column\"><ul class=\"menu align-center\">").s(ctx.get(["menu"], false),ctx,{"block":body_1},{"current":ctx.get(["currentUrl"], false)}).w("</ul></div></div></nav></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<li ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["url"], false),"value":ctx.get(["current"], false)},"h").w("><a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\">").f(ctx.get(["text"], false),ctx,"h").w("</a></li>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("class=\"active\"");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("navigation", context || {}, callback); };
+(function(dust){dust.register("keyword_single",body_0);function body_0(chk,ctx){return chk.w("<div><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><span class=\"tag label\">").f(ctx.get(["name"], false),ctx,"h").w("</span></a>&nbsp;</div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_single", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],72:[function(require,module,exports){
+},{"dustjs-linkedin":4}],77:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("search_field_mask",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row search_field_mask\"><div class=\"small-2 columns\"><label><select class=\"type\">").h("eq",ctx,{"else":body_1,"block":body_2},{"key":ctx.get(["scope"], false),"value":"fulltext"},"h").h("eq",ctx,{"else":body_3,"block":body_4},{"key":ctx.get(["scope"], false),"value":"title"},"h").h("eq",ctx,{"else":body_5,"block":body_6},{"key":ctx.get(["scope"], false),"value":"author"},"h").w("</select></label></div><div class=\"small-10 column\"><div class=\"input-group\"><input class=\"input-group-field search\" type=\"search\" placeholder=\"\" value=\"").f(ctx.get(["term"], false),ctx,"h").w("\"><div class=\"input-group-button\"><button class=\"radius secondary button remove_search_field\"><i class=\"fi-x\"></i></button></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<option value=\"fulltext\">Fulltext</option>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<option selected value=\"fulltext\">Fulltext</option>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<option value=\"title\">Title</option>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w("<option selected value=\"title\">Title</option>");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w("<option value=\"author\">Author</option>");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("<option selected value=\"author\">Author</option>");}body_6.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("search_field_mask", context || {}, callback); };
+(function(dust){dust.register("navigation",body_0);function body_0(chk,ctx){return chk.w("<div><nav><div class=\"row text-center\"><div class=\"small-2 show-for-small-only text-center columns\"><button class=\"medium button menu\"><i class=\"fi-list\"></i></button><div id=\"mobile_menu\" style=\"display: none; margin-top: 14px;\"><div class=\"row\"><div class=\"column\"><ul class=\"menu vertical align-center\">").s(ctx.get(["menu"], false),ctx,{"block":body_1},{"current":ctx.get(["currentUrl"], false)}).w("</ul></div></div></div></div><div class=\"small-8 medium-12 columns\" style=\"margin:5px;\"><a href=\"/\"><h3>Sound Colour Space - A Virtual Museum</h3></a></div></div><div class=\"row show-for-medium\"><div class=\"column\"><ul class=\"menu align-center\">").s(ctx.get(["menu"], false),ctx,{"block":body_3},{"current":ctx.get(["currentUrl"], false)}).w("</ul></div></div></nav></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<li ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["url"], false),"value":ctx.get(["current"], false)},"h").w("><a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\">").f(ctx.get(["text"], false),ctx,"h").w("</a></li>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("class=\"active\"");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<li ").h("eq",ctx,{"block":body_4},{"key":ctx.get(["url"], false),"value":ctx.get(["current"], false)},"h").w("><a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\">").f(ctx.get(["text"], false),ctx,"h").w("</a></li>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w("class=\"active\"");}body_4.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("navigation", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],73:[function(require,module,exports){
+},{"dustjs-linkedin":4}],78:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("set_detail",body_0);function body_0(chk,ctx){return chk.w("<div id=\"set\"><div class=\"row\"><div class=\"small-12 columns\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1><h4>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h4></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"description\" class=\"description\">").f(ctx.get(["description"], false),ctx,"h").w("</div></div></div><div class=\"row align-right\"><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_1},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_3},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("active");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("active");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("active");}body_3.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_detail", context || {}, callback); };
+(function(dust){dust.register("not_on_mobile",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"small-12 text-center\"><h4>Not available on mobile.</h4></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("not_on_mobile", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],74:[function(require,module,exports){
+},{"dustjs-linkedin":4}],79:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("set_list",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><h4 class=\"text-center\">Sets</h4><div class=\"row entries\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_list", context || {}, callback); };
+(function(dust){dust.register("search_field_mask",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row search_field_mask\"><div class=\"small-4 large-2 columns\"><label><select class=\"type\">").h("eq",ctx,{"else":body_1,"block":body_2},{"key":ctx.get(["scope"], false),"value":"fulltext"},"h").h("eq",ctx,{"else":body_3,"block":body_4},{"key":ctx.get(["scope"], false),"value":"title"},"h").h("eq",ctx,{"else":body_5,"block":body_6},{"key":ctx.get(["scope"], false),"value":"author"},"h").w("</select></label></div><div class=\"large-10 column\"><div class=\"input-group\"><input class=\"input-group-field search\" type=\"search\" placeholder=\"\" value=\"").f(ctx.get(["term"], false),ctx,"h").w("\"><div class=\"input-group-button\"><button class=\"radius secondary button remove_search_field\"><i class=\"fi-x\"></i></button></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<option value=\"fulltext\">Fulltext</option>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("<option selected value=\"fulltext\">Fulltext</option>");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<option value=\"title\">Title</option>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w("<option selected value=\"title\">Title</option>");}body_4.__dustBody=!0;function body_5(chk,ctx){return chk.w("<option value=\"author\">Author</option>");}body_5.__dustBody=!0;function body_6(chk,ctx){return chk.w("<option selected value=\"author\">Author</option>");}body_6.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("search_field_mask", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],75:[function(require,module,exports){
+},{"dustjs-linkedin":4}],80:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("set_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-2 column set align-self-middle\" style=\"margin-bottom: 40px;\"><div class=\"row\"><div class=\"small-12 column text-center set\"><span><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></span><br /><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.get(["cover"], false),ctx,"h").w("\"/></a></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_single", context || {}, callback); };
+(function(dust){dust.register("set_detail",body_0);function body_0(chk,ctx){return chk.w("<div id=\"set\"><div class=\"row\"><div class=\"small-12 columns\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1><h4>").f(ctx.get(["subtitle"], false),ctx,"h").w("</h4></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"description\" class=\"set description\">").f(ctx.get(["description"], false),ctx,"h").w("</div></div></div><div class=\"row align-right\"><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_1},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_3},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("active");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("active");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("active");}body_3.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_detail", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],76:[function(require,module,exports){
+},{"dustjs-linkedin":4}],81:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("timeline",body_0);function body_0(chk,ctx){return chk.w("<div><div id=\"timeline_header\" data-js-region=\"timeline_header\"></div><div id=\"timeline_wrapper\"><div id=\"timeline_navigator_sizer\" data-sticky_navigator_parent><div id=\"timeline_navigator\" data-sticky_navigator><ul id=\"timeline_menu\" class=\"vertical menu\">").s(ctx.get(["ranges"], false),ctx,{"block":body_1},{}).w("</ul></div></div><div id=\"timeline\"></div><div id=\"timeline_content\"></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<li class=\"").f(ctx.get(["class"], false),ctx,"h").w("\"><a href=\"#").f(ctx.get(["class"], false),ctx,"h").w("\" data-bypass>").f(ctx.get(["class"], false),ctx,"h").w("</a></li>");}body_1.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline", context || {}, callback); };
+(function(dust){dust.register("set_list",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><h1 class=\"text-center\">Sets</h1><div class=\"row entries\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_list", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],77:[function(require,module,exports){
+},{"dustjs-linkedin":4}],82:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("timeline_section_header",body_0);function body_0(chk,ctx){return chk.w("<div id=\"").f(ctx.get(["class"], false),ctx,"h").w("\" class=\"section\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1><div class=\"connector\"><div class=\"circle\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_section_header", context || {}, callback); };
+(function(dust){dust.register("set_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-6 large-3 column set align-self-middle\" style=\"margin-bottom: 40px;\"><div class=\"row\"><div class=\"small-12 column text-center set\"><span class=\"truncate\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></span><br /><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.get(["cover"], false),ctx,"h").w("\"/></a></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_single", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],78:[function(require,module,exports){
+},{"dustjs-linkedin":4}],83:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("timeline_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry\"><div class=\"wrapper\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"overlay\"></div><div class=\"eye\"><i class=\"fi-eye\"></i></div><div class=\"description\"><h7>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</h7><h4>").f(ctx.get(["title"], false),ctx,"h").w("</h4><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6><p>").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</p></div></div><div class=\"connector\"><div class=\"circle\"></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br/>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_single", context || {}, callback); };
+require('./history_go_back.dust');
+(function(dust){dust.register("source_detail",body_0);function body_0(chk,ctx){return chk.w("<div><div class=\"row\"><div class=\"column large-12 text-center\"><div class=\"source\"><h4>").f(ctx.get(["title"], false),ctx,"h").w("</h4><div>").f(ctx.get(["text"], false),ctx,"h",["markdown","s"]).w("</div>").x(ctx.get(["url"], false),ctx,{"block":body_1},{}).p("history_go_back",ctx,ctx,{}).w("</div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<div><a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\" data-bypass>").f(ctx.get(["url"], false),ctx,"h").w("</a></div><br />");}body_1.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("source_detail", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":5}],79:[function(require,module,exports){
+},{"./history_go_back.dust":72,"dustjs-linkedin":4}],84:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("timeline",body_0);function body_0(chk,ctx){return chk.w("<div><div id=\"timeline_header\" data-js-region=\"timeline_header\"></div><div id=\"timeline_wrapper\"><div id=\"timeline_navigator\"><ul id=\"timeline_menu\" class=\"vertical menu\">").s(ctx.get(["ranges"], false),ctx,{"block":body_1},{}).w("</ul></div><div id=\"timeline\"></div><div id=\"timeline_content\"><div id=\"timeline_sections\" data-js-region=\"timeline_sections\"></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<li class=\"").f(ctx.get(["class"], false),ctx,"h").w("\"><a href=\"#").f(ctx.get(["class"], false),ctx,"h").w("\" data-bypass>").f(ctx.get(["class"], false),ctx,"h").w("</a></li>");}body_1.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":4}],85:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("timeline_section",body_0);function body_0(chk,ctx){return chk.w("<section class=\"section\" id=\"").f(ctx.get(["class"], false),ctx,"h").w("\"><div class=\"section-header text-center\"><h1>").f(ctx.get(["title"], false),ctx,"h").w("</h1><div class=\"circle\"></div></div><div class=\"row\"><div class=\"medium-12 columns\"><div class=\"entries grid ").f(ctx.get(["class"], false),ctx,"h").w("\"></div></div></div><div class=\"load_more text-center\"><button class=\"large button secondary\">LOAD MORE</button><div class=\"circle\"></div></div></section>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_section", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":4}],86:[function(require,module,exports){
+(function() {
+var dust = require('dustjs-linkedin');
+(function(dust){dust.register("timeline_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"entry grid-item ").f(ctx.get(["uuid"], false),ctx,"h").w("\"><div><h4>").f(ctx.get(["title"], false),ctx,"h").w("</h4></div><div class=\"wrapper\"><img src=\"").f(ctx.getPath(false, ["image","url"]),ctx,"h").w("\"/><div class=\"overlay\"></div><div class=\"eye\"><i class=\"fi-eye\"></i></div><div class=\"card\"><h7>").f(ctx.get(["portrayed_object_date"], false),ctx,"h").w("</h7><h4><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\" class=\"permalink\">&nbsp;<i class=\"fi-link\"></i></a></h4><h6>").s(ctx.get(["author"], false),ctx,{"block":body_1},{}).w("</h6><div id=\"").f(ctx.get(["uuid"], false),ctx,"h").w("\">").f(ctx.get(["description"], false),ctx,"h").w("</div></div><div class=\"connector\"><div class=\"circle\"></div></div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<span>").f(ctx.get(["first_name"], false),ctx,"h").w(" ").f(ctx.get(["last_name"], false),ctx,"h").w(" ").h("sep",ctx,{"block":body_2},{},"h").w("</span><br/>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w(" and ");}body_2.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("timeline_single", context || {}, callback); };
+}).call(this);
+
+},{"dustjs-linkedin":4}],87:[function(require,module,exports){
 var Base = require('./base.js');
+
+var URI = require('urijs');
 
 // layout template
 module.exports = Base.TemplateView.extend({
     template: require('../templates/404.dust'),
 
-    onShow: function() {
+    search: function () {
+        var query = this.$el.find('input.search').val();
+        if (query == '') return;
+        var params = 'q=fulltext::' + query;
+        var uri = new URI('/archive?' + params).readable();
+        App.Router.r.navigate(uri, {trigger: true, replace: false});
+    },
 
+    keyPressed: function (e) {
+        if (e.which !== 13) return;  // return if not RETURN pressed
+        this.search();
+    },
+
+    events: {
+        'click .button.search': 'search',
+        'keypress input[type=search]': 'keyPressed',
+        'search input[type=search]': 'keyPressed'
     }
 });
-},{"../templates/404.dust":49,"./base.js":81}],80:[function(require,module,exports){
+},{"../templates/404.dust":53,"./base.js":90,"urijs":27}],88:[function(require,module,exports){
 var _ = require('lodash');
 
 var Base = require('./base');
@@ -50780,7 +51136,7 @@ module.exports = Base.ListView.extend({
     template: require('../templates/archive.dust'),
 
     data: {
-        logged_in_slug: SLUG    // used in the template to check if the user is on his own profile page
+        logged_in_slug: SLUG,    // used in the template to check if the user is on his own profile page
     },
 
     addOne: function (model) {
@@ -50789,8 +51145,11 @@ module.exports = Base.ListView.extend({
 
     onShow: function () {
         // render and fetch entries
-        if (!App.preferredView)
+        App.preferredView = Cookies.get('preferredView');
+        if (!App.preferredView) {
             App.preferredView = 'list';
+            Cookies.set('preferredView', 'list');
+        }
 
         if (App.preferredView === 'list')
             var view = new EntryListView({collection: this.collection});
@@ -50803,26 +51162,60 @@ module.exports = Base.ListView.extend({
 
         this.header();
 
+        if (this.collection.meta !== undefined && this.collection.meta.next == null) {
+            this.disableLoadMore()
+        }
+
         // fetch on bottom
-        $(window).on("scroll", _.bind(function () {
-            var scrollHeight = $(document).height();
-            var scrollPosition = $(window).height() + $(window).scrollTop();
-            // console.log((scrollHeight - scrollPosition) / scrollHeight);
-            if ((scrollHeight - scrollPosition) / scrollHeight < 0.1) {
-                // load more!
-                if (this.collection.meta !== undefined && this.collection.meta.next != null) {
-                    //console.warn(this.collection.meta.next);
-                    this.collection.url = this.collection.meta.next;
-                    this.collection.fetch({
-                        remove: false,
-                        success: function (collection, response, options) {
-                            //console.warn("adding", response.objects.length, "total", this.collection.length);
-                            this.entry_list_header_meta();
-                        }.bind(this)
-                    });
-                }
-            }
-        }, this));
+        /*
+         $(window).on("scroll", _.bind(function () {
+         var scrollHeight = $(document).height();
+         var scrollPosition = $(window).height() + $(window).scrollTop();
+         // console.log((scrollHeight - scrollPosition) / scrollHeight);
+         if ((scrollHeight - scrollPosition) / scrollHeight < 0.1) {
+         // load more!
+         if (this.collection.meta !== undefined && this.collection.meta.next != null) {
+         //console.warn(this.collection.meta.next);
+         this.collection.url = this.collection.meta.next;
+
+         this.collection.fetch({
+         remove: false,
+         success: function (collection, response, options) {
+         //console.warn("adding", response.objects.length, "total", this.collection.length);
+         this.entry_list_header_meta();
+
+         }.bind(this)
+         });
+         }
+         }
+         }, this));
+         */
+    },
+
+    loadMore: function () {
+        // load more!
+        if (this.collection.meta !== undefined && this.collection.meta.next != null) {
+            //console.warn(this.collection.meta.next);
+            this.collection.url = this.collection.meta.next;
+
+            this.collection.fetch({
+                remove: false,
+                success: function (collection, response, options) {
+                    //console.warn("adding", response.objects.length, "total", this.collection.length);
+                    this.entry_list_header_meta();
+
+                    if (this.collection.meta.next == null) {
+                        this.disableLoadMore();
+                    }
+
+                }.bind(this)
+            });
+        }
+    },
+
+    disableLoadMore: function () {
+        this.$el.find('.load_more').addClass('secondary');
+        this.$el.find('.load_more').html("All diagrams loaded.");
     },
 
     onRemove: function () {
@@ -50885,7 +51278,7 @@ module.exports = Base.ListView.extend({
         else if ($('.label.tone_systems').hasClass('selected'))
             this.collection.query.category = 'tone_systems';
         else
-            // make sure we remove category
+        // make sure we remove category
             this.collection.query = _.omit(this.collection.query, 'category');
 
         // set date__range
@@ -50912,6 +51305,8 @@ module.exports = Base.ListView.extend({
 
     events: {
 
+        'click .load_more': 'loadMore',
+
         'click #date_range_toggle': function (e) {
             this.query({trigger: true, replace: true});
         },
@@ -50926,18 +51321,21 @@ module.exports = Base.ListView.extend({
             this.header(); // re-render header for button
             var view = new EntryEvenGridView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'even-grid');
         },
         'click .toggle-grid': function () {
             App.preferredView = "grid";
             this.header(); // re-render header for button
             var view = new EntryGridView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'grid');
         },
         'click .toggle-list': function () {
             App.preferredView = "list";
             this.header(); // re-render header for button
             var view = new EntryListView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'list');
         },
 
     }
@@ -50945,7 +51343,54 @@ module.exports = Base.ListView.extend({
 });
 
 
-},{"../apiUrl":31,"../templates/archive.dust":51,"../templates/entry_list_header.dust":60,"../templates/entry_list_header_meta.dust":61,"../templates/search_field_mask.dust":72,"../views/swap.js":102,"./base":81,"./entry_even_grid":84,"./entry_grid":86,"./entry_list":88,"lodash":14,"urijs":27}],81:[function(require,module,exports){
+},{"../apiUrl":31,"../templates/archive.dust":55,"../templates/entry_list_header.dust":64,"../templates/entry_list_header_meta.dust":65,"../templates/search_field_mask.dust":79,"../views/swap.js":114,"./base":90,"./entry_even_grid":93,"./entry_grid":95,"./entry_list":97,"lodash":14,"urijs":27}],89:[function(require,module,exports){
+(function (global){
+'use strict';
+
+global.$ = global.jQuery = require('jquery');
+var Backbone = require('backbone');
+Backbone.$ = $;
+
+var nprogress = require('nprogress');
+var counter = 0;
+var debounce = 500;
+
+// Patch Backbone
+patch(Backbone.Collection.prototype, 'fetch');
+patch(Backbone.Model.prototype, 'fetch');
+patch(Backbone.Model.prototype, 'save');
+
+
+// Start progress
+function start() {
+    if (counter++ === 0) nprogress.start();
+}
+
+// Finish progress
+function done() {
+    if (--counter > 0) return;
+    done.timer && clearTimeout(done.timer);
+    done.timer = setTimeout(function () {
+        if (!counter) nprogress.done();
+    }, debounce);
+}
+
+// Patch given method
+function patch(parent, method) {
+    var original = parent[method];
+    parent[method] = function () {
+        start();
+        return original
+            .apply(this, arguments)
+            .always(done)
+            ;
+    };
+}
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"backbone":1,"jquery":11,"nprogress":16}],90:[function(require,module,exports){
 /* Base Views */
 'use strict';
 
@@ -51279,6 +51724,8 @@ module.exports.ListView = Backbone.View.extend({
 
     template: '',   // template name
 
+    data: {},
+
     initialize: function (options) {
         this.options = _.extend({}, options);
         //this.data = _.extend({}, options.data);
@@ -51349,7 +51796,7 @@ module.exports.ListView = Backbone.View.extend({
     },
 });
 
-},{"backbone":2,"jquery":12,"lodash":14}],82:[function(require,module,exports){
+},{"backbone":1,"jquery":11,"lodash":14}],91:[function(require,module,exports){
  /*
  var Backbone = require('backbone');
  var $ = require('jquery');
@@ -51582,7 +52029,7 @@ module.exports = Base.TemplateView.extend({
 
     }
 });
-},{"../models/entries":40,"../templates/editor.dust":53,"./base.js":81}],83:[function(require,module,exports){
+},{"../models/entries":41,"../templates/editor.dust":57,"./base.js":90}],92:[function(require,module,exports){
 (function (global){
 var Backbone = require('backbone');
 global.$ = global.jQuery = require('jquery');
@@ -51625,7 +52072,7 @@ module.exports = Base.DetailView.extend({
             ["Typeset", MathJax.Hub, "description"],
             function () {
                 $('.description').html(marked($('.description').html(), {renderer: renderer}));
-                $('.description').css('visibility', 'visible');
+                $('.description').css('opacity', '1');
             }
         );
 
@@ -51638,12 +52085,19 @@ module.exports = Base.DetailView.extend({
             var lightbox = new Lightbox();
 
             lightbox.load({
-                maxImgSize: 1.0,
+                //maxImgSize: 1.0,
             });
-
             e.preventDefault();
 
-            lightbox.open(this.model.get('image').url.split('.')[0] + '.' + this.model.get('image').url.split('.')[1]);
+            var img = new Image();
+            // hack to get the full size image
+            img.src = this.model.get('image').url.split('.')[0] + '.' + this.model.get('image').url.split('.')[1];
+            // set caption
+            img.setAttribute('data-jslghtbx-caption', this.model.get('title'));
+
+            lightbox.open(
+                img
+            );
 
         }
 
@@ -51654,7 +52108,7 @@ module.exports = Base.DetailView.extend({
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../helpers/lightbox":37,"../templates/entry_detail.dust":54,"./base":81,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14,"marked":15}],84:[function(require,module,exports){
+},{"../helpers/lightbox":38,"../templates/entry_detail.dust":58,"./base":90,"backbone":1,"foundation-sites":7,"jquery":11,"lodash":14,"marked":15}],93:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -51707,7 +52161,7 @@ module.exports = Base.ListView.extend({
 
     events: {}
 });
-},{"../templates/entry_even_grid.dust":55,"../views/swap.js":102,"./base":81,"./entry_even_grid_single":85,"backbone":2,"jquery":12,"lodash":14}],85:[function(require,module,exports){
+},{"../templates/entry_even_grid.dust":59,"../views/swap.js":114,"./base":90,"./entry_even_grid_single":94,"backbone":1,"jquery":11,"lodash":14}],94:[function(require,module,exports){
 var $ = require('jquery');
 var _ = require('lodash');
 var Backbone = require('backbone');
@@ -51735,7 +52189,7 @@ module.exports = Base.SingleView.extend({
 
     events: {}
 });
-},{"../templates/entry_even_grid_single.dust":56,"./base":81,"backbone":2,"jquery":12,"lodash":14}],86:[function(require,module,exports){
+},{"../templates/entry_even_grid_single.dust":60,"./base":90,"backbone":1,"jquery":11,"lodash":14}],95:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -51793,14 +52247,8 @@ module.exports = Base.ListView.extend({
         return this;
     },
 
-    onSync: function () {
-        //Base.ListView.prototype.onSync.call(this);
-        console.debug('############################################onSync list');
-    },
-
-
     onShow: function () {
-        console.debug("############################################onShow list");
+        //console.debug("############################################onShow list");
 
         $('.grid').append('<div class="grid-sizer"></div>');
         //this.$el.find(".entries").append('<div class="gutter-sizer"></div>');
@@ -51814,13 +52262,12 @@ module.exports = Base.ListView.extend({
 
         this.collection.each(this.addOne, this);
 
-
     },
 
     events: {},
 
 });
-},{"../templates/entry_grid.dust":57,"../views/swap.js":102,"./base":81,"./entry_grid_single":87,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":14,"packery":21}],87:[function(require,module,exports){
+},{"../templates/entry_grid.dust":61,"../views/swap.js":114,"./base":90,"./entry_grid_single":96,"backbone":1,"imagesloaded":9,"jquery":11,"jquery-bridget":10,"lodash":14,"packery":21}],96:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -51877,7 +52324,7 @@ module.exports = Base.SingleView.extend({
 
     events: {}
 });
-},{"../templates/entry_grid_single.dust":58,"./base":81,"backbone":2,"imagesloaded":10,"jquery":12,"jquery-bridget":11,"lodash":14,"packery":21,"velocity-animate":29,"velocity-animate/velocity.ui":30}],88:[function(require,module,exports){
+},{"../templates/entry_grid_single.dust":62,"./base":90,"backbone":1,"imagesloaded":9,"jquery":11,"jquery-bridget":10,"lodash":14,"packery":21,"velocity-animate":29,"velocity-animate/velocity.ui":30}],97:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -51901,31 +52348,14 @@ module.exports = Base.ListView.extend({
         view.onShow();
     },
 
-    /*
-    // override render function because adding items must be done in the onShow() function
-    render: function () {
-
-        this.template(_.extend(this.data, {meta: this.collection.meta}), function (err, out) {
-            if (err) {
-                console.error(err);
-            }
-            else {
-                this.$el.html($(out).html());
-                this.$el.attr($(out).attr());
-            }
-        }.bind(this));
-
-        return this;
-    },
-
     onShow: function () {
-        //console.debug("############################################onShow list");
-        this.collection.each(this.addOne, this);
-    },
-    */
 
+        this.collection.each(this.addOne, this);
+
+
+    },
 });
-},{"../templates/entry_list.dust":59,"../views/swap.js":102,"./base":81,"./entry_list_single":89,"backbone":2,"jquery":12,"lodash":14}],89:[function(require,module,exports){
+},{"../templates/entry_list.dust":63,"../views/swap.js":114,"./base":90,"./entry_list_single":98,"backbone":1,"jquery":11,"lodash":14}],98:[function(require,module,exports){
 var $ = require('jquery');
 var _ = require('lodash');
 var Backbone = require('backbone');
@@ -51967,13 +52397,13 @@ module.exports = Base.SingleView.extend({
         // we skip mathjax, but pretty render the markdown (even link not working, because the whole element is a link)
         $d = this.$el.find('.description');
         $d.html(marked($d.html(), {renderer: renderer}));
-        this.$el.find('.description').css('visibility', 'visible');
+        this.$el.find('.description').css('opacity', '1');
 
     },
 
     events: {}
 });
-},{"../templates/entry_list_single.dust":62,"./base":81,"backbone":2,"jquery":12,"lodash":14,"marked":15}],90:[function(require,module,exports){
+},{"../templates/entry_list_single.dust":66,"./base":90,"backbone":1,"jquery":11,"lodash":14,"marked":15}],99:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -51985,26 +52415,16 @@ var Base = require('./base');
 
 module.exports = Base.DetailView.extend({
 
-    template: require('../templates/experiment_detail.dust'),
-
-    data: {
-
-    },
+    template: require('../templates/exhibition_detail.dust'),
 
     onShow: function () {
         // scroll to top
         $(window).scrollTop(0);
     },
-
-    events: {},
-
-
-
-
 });
 
 
-},{"../templates/experiment_detail.dust":64,"./base":81,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14}],91:[function(require,module,exports){
+},{"../templates/exhibition_detail.dust":67,"./base":90,"backbone":1,"foundation-sites":7,"jquery":11,"lodash":14}],100:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
@@ -52042,7 +52462,40 @@ module.exports = Base.ListView.extend({
     events: {
     }
 });
-},{"../templates/experiment_list.dust":65,"../views/swap.js":102,"./base":81,"./experiment_single":92,"backbone":2,"jquery":12,"lodash":14}],92:[function(require,module,exports){
+},{"../templates/experiment_list.dust":70,"../views/swap.js":114,"./base":90,"./experiment_single":103,"backbone":1,"jquery":11,"lodash":14}],101:[function(require,module,exports){
+var Backbone = require('backbone');
+var $ = require('jquery');
+var _ = require('lodash');
+var foundation = require('foundation-sites');
+Backbone.$ = $;
+
+var Base = require('./base');
+
+
+module.exports = Base.DetailView.extend({
+
+    template: require('../templates/experiment_detail.dust'),
+
+    data: {
+
+    },
+
+    onShow: function () {
+        // scroll to top
+        $(window).scrollTop(0);
+    },
+
+    events: {},
+
+
+
+
+});
+
+
+},{"../templates/experiment_detail.dust":69,"./base":90,"backbone":1,"foundation-sites":7,"jquery":11,"lodash":14}],102:[function(require,module,exports){
+arguments[4][100][0].apply(exports,arguments)
+},{"../templates/experiment_list.dust":70,"../views/swap.js":114,"./base":90,"./experiment_single":103,"backbone":1,"dup":100,"jquery":11,"lodash":14}],103:[function(require,module,exports){
 var $ = require('jquery');
 var _ = require('lodash');
 var Backbone = require('backbone');
@@ -52070,7 +52523,7 @@ module.exports = Base.SingleView.extend({
 
     events: {}
 });
-},{"../templates/experiment_single.dust":66,"./base":81,"backbone":2,"jquery":12,"lodash":14}],93:[function(require,module,exports){
+},{"../templates/experiment_single.dust":71,"./base":90,"backbone":1,"jquery":11,"lodash":14}],104:[function(require,module,exports){
 var Base = require('./base.js');
 
 // layout template
@@ -52084,7 +52537,7 @@ module.exports = Base.TemplateView.extend({
     onShow: function () {
     }
 });
-},{"../templates/homepage.dust":67,"./base.js":81}],94:[function(require,module,exports){
+},{"../templates/homepage.dust":73,"./base.js":90}],105:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -52159,6 +52612,7 @@ module.exports = Base.DetailView.extend({
             this.render();
             var view = new EntryListView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'list');
         },
 
         'click .toggle-even-grid': function () {
@@ -52170,6 +52624,7 @@ module.exports = Base.DetailView.extend({
                 data: {num_columns: this.model.get('num_columns')}
             });
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'even-grid');
         },
         'click .toggle-grid': function () {
             App.preferredView = "grid";
@@ -52177,6 +52632,7 @@ module.exports = Base.DetailView.extend({
             this.render();
             var view = new EntryGridView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'grid');
         },
 
     },
@@ -52184,17 +52640,14 @@ module.exports = Base.DetailView.extend({
 });
 
 
-},{"../apiUrl":31,"../models/entries":40,"../templates/keyword_detail.dust":68,"./base":81,"./entry_even_grid":84,"./entry_grid":86,"./entry_list":88,"./swap":102,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14,"urijs":27}],95:[function(require,module,exports){
-var Backbone = require('backbone');
+},{"../apiUrl":31,"../models/entries":41,"../templates/keyword_detail.dust":74,"./base":90,"./entry_even_grid":93,"./entry_grid":95,"./entry_list":97,"./swap":114,"backbone":1,"foundation-sites":7,"jquery":11,"lodash":14,"urijs":27}],106:[function(require,module,exports){
 var _ = require('lodash');
-var $ = require('jquery');
-Backbone.$ = $;
 
 var Base = require('./base');
-var swap = require('../views/swap.js');
+
+var Keywords = require('../models/keywords.js');
 
 var KeywordSingleView = Base.SingleView.extend({
-    tagName: 'li',
     template: require('../templates/keyword_single.dust'),
 });
 
@@ -52210,21 +52663,44 @@ module.exports = Base.ListView.extend({
         view.onShow();
     },
 
-    onSync: function () {
-        //Base.ListView.prototype.onSync.call(this);
-        console.debug('############################################onSync list');
+    doFilter: function () {
+
+
+        var name = this.$el.find('input[type=search]').val();
+
+        App.Keywords.fetch({
+            data: {
+                order_by: 'name',
+                name__icontains: name,
+                limit: 10000 // make sure we get all
+            }
+        });
+
+
     },
 
+    removeFilter: function () {
+        App.Keywords.fetch({
+            data: {
+                order_by: 'name',
+                limit: 10000 // make sure we get all
+            }
+        });
+    },
 
-    onShow: function () {
-        console.debug("############################################onShow list");
-        this.collection.each(this.addOne, this);
+    keyPressed: function (e) {
+        if (e.which !== 13) return;  // return if not RETURN pressed
+        this.doFilter();
     },
 
     events: {
+        'keypress input[type=search]': 'keyPressed',
+        'search input[type=search]': 'keyPressed',
+        'click .remove_filter': 'removeFilter',
     }
+
 });
-},{"../templates/keyword_list.dust":69,"../templates/keyword_single.dust":70,"../views/swap.js":102,"./base":81,"backbone":2,"jquery":12,"lodash":14}],96:[function(require,module,exports){
+},{"../models/keywords.js":48,"../templates/keyword_list.dust":75,"../templates/keyword_single.dust":76,"./base":90,"lodash":14}],107:[function(require,module,exports){
 var Base = require('./base.js');
 
 // layout template
@@ -52237,7 +52713,7 @@ module.exports = Base.TemplateView.extend({
     }
 });
 
-},{"../templates/base.dust":52,"./base.js":81}],97:[function(require,module,exports){
+},{"../templates/base.dust":56,"./base.js":90}],108:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -52257,7 +52733,7 @@ nprogress.configure({
     speed: 50
 });
 // patch backbone
-require('backbone-nprogress');
+require('./backbone-nprogress');
 
 
 //var sticky = require('../helpers/sticky-kit');
@@ -52336,6 +52812,13 @@ module.exports = Base.TemplateView.extend({
 
     },
 
+    events: {
+        'click .menu': function () {
+            //this.$el.find('#mobile_menu').css('display', 'block');
+            this.$el.find('#mobile_menu').toggle();
+        }
+    }
+
 })
 ;
 
@@ -52343,9 +52826,9 @@ module.exports = Base.TemplateView.extend({
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../apiUrl":31,"../templates/navigation.dust":71,"./base.js":81,"backbone":2,"backbone-nprogress":1,"foundation-sites":8,"jquery":12,"lodash":14,"nprogress":16,"urijs":27}],98:[function(require,module,exports){
+},{"../apiUrl":31,"../templates/navigation.dust":77,"./backbone-nprogress":89,"./base.js":90,"backbone":1,"foundation-sites":7,"jquery":11,"lodash":14,"nprogress":16,"urijs":27}],109:[function(require,module,exports){
 module.exports = {};
-},{}],99:[function(require,module,exports){
+},{}],110:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
@@ -52404,15 +52887,16 @@ module.exports = Base.DetailView.extend({
             });
         }
 
-        swap($('[data-js-region="entry_list"]'), view);
-
         MathJax.Hub.Queue(
             ["Typeset", MathJax.Hub, "description"],
             function () {
-                $('.description').html(marked($('.description').html(), {renderer: renderer}));
-                $('.description').css('visibility', 'visible');
+                $('.set.description').html(marked($('.set.description').html(), {renderer: renderer}));
+                $('.set.description').css('opacity', '1');
+                swap($('[data-js-region="entry_list"]'), view);
             }
         );
+
+
     },
 
     events: {
@@ -52426,6 +52910,7 @@ module.exports = Base.DetailView.extend({
             $('.button.toggle-even-grid').removeClass('active');
             var view = new EntryListView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'list');
         },
 
         'click .toggle-even-grid': function () {
@@ -52440,6 +52925,7 @@ module.exports = Base.DetailView.extend({
                 data: {num_columns: this.model.get('num_columns')}
             });
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'even-grid');
         },
         'click .toggle-grid': function () {
             App.preferredView = "grid";
@@ -52450,6 +52936,7 @@ module.exports = Base.DetailView.extend({
             $('.button.toggle-list').removeClass('active');
             var view = new EntryGridView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'grid');
         },
 
     },
@@ -52457,18 +52944,16 @@ module.exports = Base.DetailView.extend({
 });
 
 
-},{"../templates/set_detail.dust":73,"./base":81,"./entry_even_grid":84,"./entry_grid":86,"./entry_list":88,"./swap":102,"backbone":2,"foundation-sites":8,"jquery":12,"lodash":14,"marked":15}],100:[function(require,module,exports){
+},{"../templates/set_detail.dust":80,"./base":90,"./entry_even_grid":93,"./entry_grid":95,"./entry_list":97,"./swap":114,"backbone":1,"foundation-sites":7,"jquery":11,"lodash":14,"marked":15}],111:[function(require,module,exports){
 var Backbone = require('backbone');
 var _ = require('lodash');
 var $ = require('jquery');
 Backbone.$ = $;
 
-
 var Base = require('./base');
 var SetSingleView = require('./set_single');
 
 var swap = require('../views/swap.js');
-
 
 module.exports = Base.ListView.extend({
 
@@ -52481,21 +52966,8 @@ module.exports = Base.ListView.extend({
         view.onShow();
     },
 
-    onSync: function () {
-        //Base.ListView.prototype.onSync.call(this);
-        console.debug('############################################onSync list');
-    },
-
-
-    onShow: function () {
-        console.debug("############################################onShow list");
-        this.collection.each(this.addOne, this);
-    },
-
-    events: {
-    }
 });
-},{"../templates/set_list.dust":74,"../views/swap.js":102,"./base":81,"./set_single":101,"backbone":2,"jquery":12,"lodash":14}],101:[function(require,module,exports){
+},{"../templates/set_list.dust":81,"../views/swap.js":114,"./base":90,"./set_single":112,"backbone":1,"jquery":11,"lodash":14}],112:[function(require,module,exports){
 var $ = require('jquery');
 var _ = require('lodash');
 var Backbone = require('backbone');
@@ -52523,7 +52995,26 @@ module.exports = Base.SingleView.extend({
 
     events: {}
 });
-},{"../templates/set_single.dust":75,"./base":81,"backbone":2,"jquery":12,"lodash":14}],102:[function(require,module,exports){
+},{"../templates/set_single.dust":82,"./base":90,"backbone":1,"jquery":11,"lodash":14}],113:[function(require,module,exports){
+(function (global){
+var Backbone = require('backbone');
+global.$ = global.jQuery = require('jquery');
+var _ = require('lodash');
+var foundation = require('foundation-sites');
+Backbone.$ = $;
+
+var Base = require('./base');
+
+module.exports = Base.DetailView.extend({
+
+    template: require('../templates/source_detail.dust'),
+
+});
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"../templates/source_detail.dust":83,"./base":90,"backbone":1,"foundation-sites":7,"jquery":11,"lodash":14}],114:[function(require,module,exports){
 module.exports = function (region, newView) {
 
     // if there's an old View in the region, grab a reference to it
@@ -52563,7 +53054,7 @@ module.exports = function (region, newView) {
 
 
 
-},{}],103:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 (function (global){
 global.$ = global.jQuery = require('jquery');
 
@@ -52576,6 +53067,10 @@ var imagesLoaded = require('imagesloaded');
 imagesLoaded.makeJQueryPlugin($);
 
 var Base = require('./base');
+
+var Entries = require('../models/entries');
+
+var TimelineSection = require('./timeline_section.js');
 var EntrySingleTimelineView = require('./timeline_single');
 
 require('../helpers/sticky-kit');
@@ -52586,10 +53081,6 @@ module.exports = Base.TemplateView.extend({
     template: require('../templates/timeline.dust'),
 
     data: {
-        item_counter: 0,
-        item_margin: 25,  // margin
-        top_right_column: 0,
-        top_left_column: 0,
 
         ranges: [
             {range: "900,1199", title: "10th century", class: "10th"},
@@ -52602,105 +53093,40 @@ module.exports = Base.TemplateView.extend({
             {range: "1800,1899", title: "19th century", class: "19th"},
             {range: "1900," + new Date().getFullYear(), title: "20th century", class: "20th"},
         ],
-        currentRange: 0,
-        readyToFetch: true,
 
-    },
-
-    addOne: function (model) {
-
-        //console.debug('add', model.id);
-        var view = new EntrySingleTimelineView({model: model});
-        this.$("#timeline_content").append(view.render().el);
-        view.onShow();
-
-        view.$el.css('position', 'absolute');
-
-        // increase counter
-        this.data.item_counter++;
-
-        //var height = Math.min(model.get('image').height, 108); // TODO set height according to settings.py / browser
-        var height = model.get('image').height;
-
-        if (this.data.top_left_column >= this.data.top_right_column) {
-            view.$el.css('right', '0px');
-            view.$el.css('top', this.data.top_right_column + 'px');
-            this.data.top_right_column += height + this.data.item_margin;
-        }
-        else {
-            view.$el.addClass('left-col');
-            view.$el.css('top', this.data.top_left_column + 'px');
-            this.data.top_left_column += height + this.data.item_margin;
-        }
-
-        view.$el.imagesLoaded()
-            .progress(function (instance, image) {
-                this.$('#timeline').css('height', $(document).height() + "px");
-                //this.$('#timeline_navigator_sizer').css('height', $(document).height() + "px");
-            }.bind(this));
-    },
-
-    removeOne: function (model, collection, options) {
-        //$('.grid').packery('remove', this.$('.'+model.get('uuid'))).packery('shiftLayout');
-    },
-
-    onSync: function () {
-        //Base.ListView.prototype.onSync.call(this);
-        console.debug('############################################onSync timeline');
-        //swap($('[data-js-region="timeline_header"]'), new MetaView({parent: this, data: {meta: this.collection.meta}}));
-    },
-
-    addSection: function() {
-        var Section = Base.TemplateView.extend({
-            template: require('../templates/timeline_section_header.dust'),
-            data: this.data.ranges[this.data.currentRange],
-        });
-        var $header = new Section({}).render().$el;
-        if (this.data.top_right_column > this.data.top_left_column) {
-            $header.css('top', this.data.top_right_column + 'px');
-            this.$('#timeline_content').append($header);
-            this.data.top_right_column += $header.height();
-            this.data.top_left_column = this.data.top_right_column
-        } else {
-            $header.css('top', this.data.top_left_column + 'px');
-            var $h = this.$('#timeline_content').append($header);
-            this.data.top_left_column +=  $header.height();
-            this.data.top_right_column = this.data.top_left_column;
-        }
     },
 
     onShow: function () {
 
-        /*
-        this.data.top_right_column = 0;
-        this.data.top_left_column = 0;
-        this.data.item_counter = 0;
-        this.data.currentRange = 0;
-        this.data.readyToFetch = true;
-        */
+        var offset_top = 140;
 
-        var offset_top = 180;
+        /*
 
         $("[data-sticky_navigator]").stick_in_parent({
             parent: "[data-sticky_navigator_parent]",
             offset_top: offset_top,
-            bottoming: false
+            bottoming: false,
         });
+        */
 
-        this.listenTo(this.options.collection, 'add', this.addOne);
-        this.listenTo(this.options.collection, 'remove', this.removeOne);
 
-        // add 1st header
-        this.addSection();
 
-        var params = _.extend({date__range: this.data.ranges[this.data.currentRange].range}, this.collection.query);
 
-        this.collection.search({
-            reset: true,
-            data: params,
-            success: function (collection, response, options) {
+        var _sectionViews = [];
+        _.each(this.data.ranges, function (element, index, list) {
+            console.log(element.title, index);
 
-            }.bind(this)
+            var collection = new Entries({});
+
+            var image_size = 'x-small';
+            if (Foundation.MediaQuery.atLeast('large')) {
+                image_size = 'medium'
+            }
+            collection.query = {limit: 4, order_by: 'date', image_size: image_size};
+            var view = new TimelineSection({collection: collection, data: element});
+            this.$('[data-js-region="timeline_sections"]').append(view.render().el);
+            view.onShow();
+            view.search();
         });
 
 
@@ -52756,65 +53182,68 @@ module.exports = Base.TemplateView.extend({
 
         });
 
+        /*
+         // fetch on scroll
 
-        // fetch on scroll
+         $(window).on("scroll", _.bind(function () {
 
-        $(window).on("scroll", _.bind(function () {
+         var scrollHeight = $(document).height();
+         var scrollPosition = $(window).height() + $(window).scrollTop();
 
-            var scrollHeight = $(document).height();
-            var scrollPosition = $(window).height() + $(window).scrollTop();
+         // user scrolling upwards
+         if ($(window).scrollTop() === 0) {
 
-            // user scrolling upwards
-            if ($(window).scrollTop() === 0) {
+         }
 
-            }
+         // user scrolled to bottom of page
+         else if ((scrollHeight - scrollPosition) / scrollHeight < 0.1) {
 
-            // user scrolled to bottom of page
-            else if ((scrollHeight - scrollPosition) / scrollHeight < 0.1) {
+         // load more of the same if we have more pages!
+         if (this.options.collection.meta !== undefined && this.options.collection.meta.next != null) {
+         this.options.collection.url = this.options.collection.meta.next;
+         this.options.collection.fetch({
+         remove: false,
+         success: function (collection, response, options) {
+         //console.warn("adding", response.objects.length, "total: ", collection.models.length);
+         //App.entries.add(collection.models); // merge into App.entries
+         }
+         });
 
-                // load more of the same if we have more pages!
-                if (this.options.collection.meta !== undefined && this.options.collection.meta.next != null) {
-                    this.options.collection.url = this.options.collection.meta.next;
-                    this.options.collection.fetch({
-                        remove: false,
-                        success: function (collection, response, options) {
-                            //console.warn("adding", response.objects.length, "total: ", collection.models.length);
-                            //App.entries.add(collection.models); // merge into App.entries
-                        }
-                    });
+         }
+         // or else advance to next time period..
+         else if (this.data.readyToFetch) {
 
-                }
-                // or else advance to next time period..
-                else if (this.data.readyToFetch) {
+         this.data.readyToFetch = false;
 
-                    this.data.readyToFetch = false;
-
-                    this.data.currentRange += 1;
-                    this.addSection();
+         this.data.currentRange += 1;
+         this.addSection();
 
 
-                    var params = _.extend({date__range: this.data.ranges[this.data.currentRange].range}, this.collection.query);
+         var params = _.extend(
+         {date__range: this.data.ranges[this.data.currentRange].range},
+         this.collection.query);
 
-                    this.collection.search({
-                        remove: false,
-                        data: params,
-                        success: function (collection, response, options) {
+         this.collection.search({
+         remove: false,
+         data: params,
+         success: function (collection, response, options) {
 
-                            this.data.readyToFetch = true; // we can fetch another range
+         this.data.readyToFetch = true; // we can fetch another range
 
-                            // update sections
-                            this.scrollItems = menuItems.map(function () {
-                                var item = $($(this).attr("href"));
-                                if (item.length) {
-                                    return item;
-                                }
-                            });
+         // update sections
+         this.scrollItems = menuItems.map(function () {
+         var item = $($(this).attr("href"));
+         if (item.length) {
+         return item;
+         }
+         });
 
-                        }.bind(this)
-                    });
-                }
-            }
-        }, this));
+         }.bind(this)
+         });
+         }
+         }
+         }, this));
+         */
 
 
         // initialize foundation on $el
@@ -52830,11 +53259,154 @@ module.exports = Base.TemplateView.extend({
 });
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../helpers/sticky-kit":38,"../templates/timeline.dust":76,"../templates/timeline_section_header.dust":77,"./base":81,"./timeline_single":104,"backbone":2,"foundation-sites":8,"imagesloaded":10,"jquery":12,"lodash":14}],104:[function(require,module,exports){
+},{"../helpers/sticky-kit":39,"../models/entries":41,"../templates/timeline.dust":84,"./base":90,"./timeline_section.js":116,"./timeline_single":117,"backbone":1,"foundation-sites":7,"imagesloaded":9,"jquery":11,"lodash":14}],116:[function(require,module,exports){
+var Backbone = require('backbone');
+var _ = require('lodash');
+var $ = require('jquery');
+Backbone.$ = $;
+
+
+var imagesLoaded = require('imagesloaded');
+// provide jQuery argument
+imagesLoaded.makeJQueryPlugin($);
+
+var Packery = require('packery');
+// make Packery a jQuery plugin
+var jQueryBridget = require('jquery-bridget');
+jQueryBridget('packery', Packery, $);
+
+var Base = require('./base');
+var EntryGridSingleView = require('./entry_grid_single');
+
+var swap = require('../views/swap.js');
+
+var TimelineSingleView = require('./timeline_single.js');
+
+module.exports = Base.ListView.extend({
+
+    template: require('../templates/timeline_section.dust'),
+
+
+    addOne: function (model) {
+        //console.debug('add', model.id);
+        var view = new TimelineSingleView({model: model});
+        this.$(".entries").append(view.render().el);
+
+        view.onShow();
+
+        view.$el.imagesLoaded()
+            .progress(function (instance, image) {
+
+                $('.grid.' + this.options.data.class).packery('appended', view.$el);
+
+                if (view.$el.position().left < 400) { // TODO maybe calculate half of div width?
+                    view.$el.addClass("left-col");
+
+                } else {
+                    view.$el.addClass("right-col");
+                }
+
+                $('#timeline').height($(document).height());
+
+                //view.$el.find('.eye').css('opacity', 0.5);
+                //view.$el.find('.connector').css('opacity', 1.0);
+                //view.$el.find('.circle').css('opacity', 1.0);
+
+
+            }.bind(this));
+    },
+
+    removeOne: function (model, collection, options) {
+        $('.grid').packery('remove', this.$('.' + model.get('uuid'))).packery('shiftLayout');
+    },
+
+    // override render function because adding items must be done in the onShow() function
+    render: function () {
+
+        this.template(_.extend(this.data, {meta: this.collection.meta}), function (err, out) {
+            if (err) {
+                console.error(err);
+            }
+            else {
+                this.$el.html($(out).html());
+                this.$el.attr($(out).attr());
+            }
+        }.bind(this));
+
+        return this;
+    },
+
+    loadMore: function () {
+        // load more!
+        if (this.collection.meta !== undefined && this.collection.meta.next != null) {
+            //console.warn(this.collection.meta.next);
+            this.collection.url = this.collection.meta.next;
+
+            this.collection.fetch({
+                remove: false,
+                success: function (collection, response, options) {
+                    //console.warn("adding", response.objects.length, "total", this.collection.length);
+                    //this.entry_list_header_meta();
+
+                    if (this.collection.meta.next == null) {
+                        this.disableLoadMore();
+                    }
+
+                }.bind(this)
+            });
+        }
+    },
+
+    disableLoadMore: function () {
+        this.$el.find('.load_more').remove();
+        //this.$el.find('.load_more').html("All diagrams loaded.");
+    },
+
+    search: function () {
+        var params = _.extend({date__range: this.data.range}, this.collection.query);
+
+        this.collection.search({
+            reset: false,
+            //remove: false,
+            data: params,
+        });
+
+    },
+
+
+    onShow: function () {
+
+        //this.$el.find('.circle').css('opacity', 1.0);
+        //this.$el.css('opacity', 1.0);
+
+        $('.entries').append('<div class="grid-sizer"></div>');
+        this.$el.find(".entries").append('<div class="gutter-sizer"></div>');
+
+        var $entries = $('.entries').packery({
+            itemSelector: '.grid-item',
+            columnWidth: '.grid-sizer',
+            gutter: '.gutter-sizer',
+            //percentPosition: true,
+            transitionDuration: '0.2s'
+        });
+
+        this.collection.each(this.addOne, this);
+
+
+    },
+
+    events: {
+        'click .load_more': 'loadMore',
+    },
+
+});
+},{"../templates/timeline_section.dust":85,"../views/swap.js":114,"./base":90,"./entry_grid_single":96,"./timeline_single.js":117,"backbone":1,"imagesloaded":9,"jquery":11,"jquery-bridget":10,"lodash":14,"packery":21}],117:[function(require,module,exports){
 var Backbone = require('backbone');
 var $ = require('jquery');
 var _ = require('lodash');
 Backbone.$ = $;
+
+var marked = require('marked');
 
 var imagesLoaded = require('imagesloaded');
 // provide jQuery argument
@@ -52850,6 +53422,18 @@ delete window.$;
 
 var Base = require('./base');
 
+var renderer = new marked.Renderer();
+
+// override link rendering
+renderer.link = function (href, title, text) {
+
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
+    } else {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '">' + text + '</a>';
+    }
+};
+
 module.exports = Base.SingleView.extend({
 
     data: {
@@ -52857,18 +53441,6 @@ module.exports = Base.SingleView.extend({
     },
 
     template: require('../templates/timeline_single.dust'),
-
-    onShow: function () {
-
-        this.$el.on({
-            mouseenter: function () {
-                //$(this).addClass("active");
-            },
-            mouseleave: function () {
-                //$(this).removeClass("active");
-            }
-        });
-    },
 
     /*
      onRemove: function () {
@@ -52883,14 +53455,22 @@ module.exports = Base.SingleView.extend({
     events: {
         "click .eye": function () {
             this.$el.find('img').toggleClass('active');
-            this.$el.find('.description').toggleClass('active');
+            this.$el.find('.card').toggleClass('active');
             this.$el.find('.overlay').toggleClass('active');
+            var ID = this.model.get('uuid');
+            MathJax.Hub.Queue(
+                ["Typeset", MathJax.Hub, ID],
+                function () {
+                    $('#'+ID).html(marked($('#'+ID).html(), {renderer: renderer}));
+                    $('#'+ID).css('opacity', '1');
+                }
+            );
         }
     }
 });
 
 
-},{"../templates/timeline_single.dust":78,"./base":81,"backbone":2,"imagesloaded":10,"jquery":12,"lodash":14,"velocity-animate":29,"velocity-animate/velocity.ui":30}]},{},[39])
+},{"../templates/timeline_single.dust":86,"./base":90,"backbone":1,"imagesloaded":9,"jquery":11,"lodash":14,"marked":15,"velocity-animate":29,"velocity-animate/velocity.ui":30}]},{},[40])
 
 
 //# sourceMappingURL=bundle.js.map

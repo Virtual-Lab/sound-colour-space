@@ -55,14 +55,8 @@ module.exports = Base.ListView.extend({
         return this;
     },
 
-    onSync: function () {
-        //Base.ListView.prototype.onSync.call(this);
-        console.debug('############################################onSync list');
-    },
-
-
     onShow: function () {
-        console.debug("############################################onShow list");
+        //console.debug("############################################onShow list");
 
         $('.grid').append('<div class="grid-sizer"></div>');
         //this.$el.find(".entries").append('<div class="gutter-sizer"></div>');
@@ -75,7 +69,6 @@ module.exports = Base.ListView.extend({
         });
 
         this.collection.each(this.addOne, this);
-
 
     },
 

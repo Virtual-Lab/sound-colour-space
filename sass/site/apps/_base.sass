@@ -16,15 +16,24 @@ body
   background-color: $body-background
 
 li
-  list-style: none
+  //list-style: none
   margin-left: 0
 
 .button.active
   background-color: darken($button-background, 10)
 
+button:focus
+  outline: 0
+
 .fieldset
   legend
     background-color: transparent
+    
+.back_link
+  display: inline-block
+  cursor: pointer
+  color: $anchor-color
+
 
 ///////////////////////////////// NAVIGATION
 #navigation
@@ -55,9 +64,20 @@ li
 
 ////////////////////////////////////////// CONTENT
 #content
-  margin-top: 180px
+  @media screen
+    @include breakpoint(small)
+      margin-top: 80px
+    @include breakpoint(medium up)
+      margin-top: 130px
+
   margin-bottom: 50px
 
+  h1, h2, h3, h4, h5
+    margin-top: 10px
+
+
+///////////////////////////////////////// IMPORT HELPERS
+@import site/apps/nprogress
 ///////////////////////////////////////// IMPORT APPS
 @import site/apps/museum/base
 @import site/apps/editor/base

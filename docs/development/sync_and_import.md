@@ -45,6 +45,10 @@ Keywords:
     ./manage.py import_annotations keywords /path/to/__madek_keywords_toneSystems_LB_dm.csv
 
 
+Try to make a correct date field from portrayed_object_date:
+
+    ./manage.py make_dates
+
 # Parse annotations
 
 Parse Annotations (creates reference links in markdown for related diagrams, sets, primary and secondary sources):

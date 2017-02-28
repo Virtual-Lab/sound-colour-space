@@ -27,6 +27,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'gunicorn',
     'django_extensions',
+    'celery_haystack',
     'easy_thumbnails',
     'tastypie',
     'adminsortable2',
@@ -91,6 +92,7 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 LANGUAGES = [
     ('en', _('English')),
+    #('de', _('German')),
 ]
 
 # i18n
@@ -98,7 +100,8 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Zurich'
 USE_I18N = True
 USE_L10N = True
-USE_TZ = True
+#USE_TZ = True
+USE_TZ = False
 
 # static configuration
 STATICFILES_FINDERS = (
@@ -116,6 +119,8 @@ DIAGRAMS_ROOT = os.path.join(BASE_DIR, 'media/diagrams')
 DIAGRAMS_URL = '/media/diagrams/'
 EXPERIMENTS_ROOT = os.path.join(BASE_DIR, 'media/experiments')
 EXPERIMENTS_URL = '/media/experiments/'
+EXHIBITIONS_ROOT = os.path.join(BASE_DIR, 'media/exhibitions')
+EXHIBITIONS_URL = '/media/exhibitions/'
 
 # easy_thumbnails
 THUMBNAIL_QUALITY = 95
@@ -166,6 +171,9 @@ HAYSTACK_CONNECTIONS = {
         'INDEX_NAME': 'haystack',
     },
 }
+# auto update search index
+#HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SIGNAL_PROCESSOR = 'celery_haystack.signals.CelerySignalProcessor'
 
 # load local_settings
 try:

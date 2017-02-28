@@ -1,10 +1,11 @@
 # -*- coding: latin-1 -*-
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 import codecs
 
 from django.db import IntegrityError
-from museum.models import Entry, Collection, Keyword
+from museum.models import Entry, Collection, Keyword, Source
 
 
 class Command(BaseCommand):
@@ -21,7 +22,7 @@ class Command(BaseCommand):
             with codecs.open(options['path'], 'r', encoding='cp1252') as f:
                 for line in f:
                     item = line.split(u"\u00A7")
-                    print ("#%s: %s \n\n%s") % (item[3], item[0], item[2])
+                    #print ("#%s: %s \n\n%s") % (item[3], item[0], item[2])
 
                     sets = Collection.objects.filter(title__istartswith=item[0])
                     if len(sets) == 0:
@@ -95,3 +96,34 @@ class Command(BaseCommand):
                         total += 1
 
             self.stdout.write(self.style.SUCCESS('Updated %s keywords.' % total))
+
+        elif options['type'] == 'primary_sources' or options['type'] == 'secondary_sources':
+            with codecs.open(options['path'], 'r', encoding='cp1252') as f:
+                for line in f:
+                    item = line.split(u"\u00A7")
+                    ref = item[0].strip(' ')
+                    source, created = Source.objects.get_or_create(ref=ref)
+                    source.title = item[1]
+                    source.text = item[2]
+
+                    if options['type'] == 'primary_sources':
+                        source.type = 'PS'
+                    else:
+                        source.type = 'SS'
+
+                    if len(item) > 3 and item[3] != '':
+                        source.url = item[3]
+                    if len(item) > 4:
+                        # we just strip all white space from the filename
+                        file = item[4].strip(' ')
+                        if file != '':
+                            source.attachment = settings.ATTACHMENT_PATH + '/' + file
+
+                    source.save()
+                    total += 1
+
+            self.stdout.write(self.style.SUCCESS('Updated %s sources.' % total))
+
+        else:
+            self.stdout.write(self.style.ERROR('Invalid type: muste be one of sets, diagrams, keywords,'
+                                               ' primary_sources, secondary_sources'))

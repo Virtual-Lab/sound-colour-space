@@ -4,18 +4,22 @@ global.$ = global.jQuery = require('jquery');
 var _ = require('underscore');
 
 // foundation needs global.$ because it doesn't "require" jquery for some reason
-require('foundation-sites');
+var foundation = require('foundation-sites');
 
 var Regions = require('../views/regions.js');
 var swap = require('../views/swap.js');
 
 var URI = require('urijs');
 
+var dust = require('dustjs-linkedin');
+
+
 // models
 var Entries = require('../models/entries');
 var Entry = require('../models/entry');
 
 // views
+var Base = require('../views/base');
 var ArchiveView = require('../views/archive');
 var TimelineView = require('../views/timeline');
 var EntryDetailView = require('../views/entry_detail');
@@ -52,7 +56,10 @@ module.exports.Archive = function (query) {
     if (oldQuery != query || !App.ArchiveEntries) {
         App.ArchiveEntries = new Entries();
         var params = URI.parseQuery(query);
-        App.ArchiveEntries.query = _.defaults(params, {limit: 30, order_by: 'date', match: 'OR', image_size: 'x-small'});
+        App.ArchiveEntries.query = _.defaults(
+            params, {
+            limit: 15, order_by: 'date', match: 'OR', image_size: 'x-small'}
+            );
     }
 
     var archive = new ArchiveView({
@@ -72,14 +79,32 @@ module.exports.Archive = function (query) {
 module.exports.Timeline = function (query) {
     console.debug('##### Controller -> Timeline');
 
-
     App.TimelineEntries = new Entries();
-    App.TimelineEntries.query = { limit: 30, order_by: 'date', image_size: 'medium' };
 
-    var timeline = new TimelineView({collection: App.TimelineEntries});
-    swap(Regions.content, timeline);
+    console.debug(Foundation.MediaQuery.current);
 
-    App.View.timeline = timeline; // for debug only
+    var image_size = 'x-small';
+
+    if (Foundation.MediaQuery.atLeast('large')) {
+         image_size = 'medium'
+    }
+
+    if (Foundation.MediaQuery.atLeast('medium')) {
+
+        App.TimelineEntries.query = {limit: 10, order_by: 'date', image_size: image_size};
+
+        var timeline = new TimelineView({collection: App.TimelineEntries});
+
+        swap(Regions.content, timeline);
+
+    } else {
+
+        var noMobileView = Base.TemplateView.extend({
+            template: require('../templates/not_on_mobile.dust'),
+        });
+        swap(Regions.content, new noMobileView({}));
+
+    }
 
 };
 
@@ -101,6 +126,9 @@ module.exports.Detail = function (doc_id) {
                 // render
                 swap(Regions.content, new EntryDetailView({model: entry}));
             },
+            error: function(model, response, options) {
+                // error handling is done in main.js
+            }
         }
     );
 };

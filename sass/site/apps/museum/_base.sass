@@ -1,14 +1,24 @@
 /////////////////////////////////////
 // entry detail
 /////////////////////////////////////
+.description
+  //visibility: hidden
+  opacity: 0
+  transition-property: opacity
+  //transition: all 0.1s linear 0.2s
+  a
+    //color: darken($secondary-color, 25)
+    color: $body-font-color
+    text-decoration: underline
+
 .entry.detail
+
+  @include fadeIn(0.75s)
 
   .diagram
     cursor: pointer
-    width: 600px
 
   .description
-    visibility: hidden
     margin-top: 40px
     text-align: justify
 
@@ -21,5 +31,6 @@
 
 @import site/apps/museum/archive
 @import site/apps/museum/sets
+@import site/apps/museum/source
 @import site/apps/museum/timeline
 @import site/apps/museum/virtuallab

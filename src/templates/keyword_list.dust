@@ -1,13 +1,21 @@
 <div>
     <div class="row">
         <div class="small-12 columns">
-            <h4 class="text-center">Keywords</h4>
+            <h1 class="text-center">Keywords</h1>
         </div>
+        <div class="small-4 small-offset-1 medium-6 medium-offset-3 columns">
+            <div class="input-group">
+                <input class="input-group-field search" type="search" placeholder="filter">
+                <div class="input-group-button">
+                    <button class="radius secondary button remove_filter"><i class="fi-x"></i></button>
+                </div>
+            </div>
+        </div>
+
     </div>
     <div class="row">
-        <div class="small-12 columns">
-
-            <ul class="row entries"></ul>
+        <div class="small-offset-1 small-10 columns">
+            <div class="row entries"></div>
         </div>
 
     </div>

@@ -10,5 +10,10 @@
             {/meta}
         </div>
     </div>
+    <div class="row">
+        <div class="small-12 columns text-center">
+            <button class="large button load_more">LOAD MORE</button>
+        </div>
+    </div>
 </div>
 

@@ -12,6 +12,14 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 Backbone.$ = $;
 
+Cookies= require('js-cookie');
+
+App.preferredView = Cookies.get('preferredView');
+if (!App.preferredView) {
+    App.preferredView = 'list';
+    Cookies.set('preferredView', App.preferredView);
+}
+
 
 // we do need this for dustjs helpers!!!
 require('dustjs-helpers');
@@ -87,11 +95,15 @@ $(function () {
     // set the csrftoken
     //Backbone.Tastypie.csrfToken = Cookies.get('csrftoken');
 
-    // catch 401
+    $(document).foundation();
+
+    // catch xhr errors globally
     $(document).ajaxError(function (event, xhr) {
-        if (xhr.status == 401) {
-            // window.location = '/login';
-            console.log("LOGIN!");
+        if (xhr.status == 404) {
+            App.Router.r.navigate('/404', {trigger: true, replace: true});
+        }
+        else if (xhr.status == 401) {
+            console.warn("401: NEEDS LOGIN!");
         }
     });
 
@@ -137,6 +149,7 @@ $(function () {
      });
      */
 
+    // override href clicks
     $(document).on('click', 'a:not([data-bypass])', function (evt) {
 
         var href = $(this).attr('href');

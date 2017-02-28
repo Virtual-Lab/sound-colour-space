@@ -1,5 +1,20 @@
-<div class="row">
-    <div class="small-12 column text-center">
-        <h1>404 Not Found</h1>
+<div>
+    <div class="row">
+        <div class="small-12 column text-center">
+            <h1>404: Not Found.</h1>
+            <h5>We're sorry, the page you are looking for does not exist.</h5>
+            <br />
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 medium-6 medium-offset-3 columns">
+            <div class="input-group">
+                <input class="input-group-field search" type="search" placeholder="" value="">
+                <div class="input-group-button">
+                    <button class="button normal radius float-right search"><i class="fi-magnifying-glass"></i>&nbsp;Search
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

@@ -3,6 +3,8 @@ var $ = require('jquery');
 var _ = require('underscore');
 Backbone.$ = $;
 
+var marked = require('marked');
+
 var imagesLoaded = require('imagesloaded');
 // provide jQuery argument
 imagesLoaded.makeJQueryPlugin($);
@@ -17,6 +19,18 @@ delete window.$;
 
 var Base = require('./base');
 
+var renderer = new marked.Renderer();
+
+// override link rendering
+renderer.link = function (href, title, text) {
+
+    if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '" target="_blank" data-bypass>' + text + '</a>';
+    } else {
+        return '<a href="' + href + '" title="' + (title != null ? title : "") + '">' + text + '</a>';
+    }
+};
+
 module.exports = Base.SingleView.extend({
 
     data: {
@@ -24,18 +38,6 @@ module.exports = Base.SingleView.extend({
     },
 
     template: require('../templates/timeline_single.dust'),
-
-    onShow: function () {
-
-        this.$el.on({
-            mouseenter: function () {
-                //$(this).addClass("active");
-            },
-            mouseleave: function () {
-                //$(this).removeClass("active");
-            }
-        });
-    },
 
     /*
      onRemove: function () {
@@ -50,8 +52,16 @@ module.exports = Base.SingleView.extend({
     events: {
         "click .eye": function () {
             this.$el.find('img').toggleClass('active');
-            this.$el.find('.description').toggleClass('active');
+            this.$el.find('.card').toggleClass('active');
             this.$el.find('.overlay').toggleClass('active');
+            var ID = this.model.get('uuid');
+            MathJax.Hub.Queue(
+                ["Typeset", MathJax.Hub, ID],
+                function () {
+                    $('#'+ID).html(marked($('#'+ID).html(), {renderer: renderer}));
+                    $('#'+ID).css('opacity', '1');
+                }
+            );
         }
     }
 });

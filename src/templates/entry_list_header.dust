@@ -1,7 +1,7 @@
 <div>
     <div class="row">
         <div class="small-12 columns text-center">
-            <h4>Search</h4>
+            <h1>Search</h1>
         </div>
     </div>
 
@@ -51,7 +51,7 @@
                     <div class="accordion-content" data-tab-content>
 
                         <div class="row">
-                            <div class="small-6 columns">
+                            <div class="small-12 large-6 columns">
                                 <fieldset class="fieldset">
                                     <legend><i class="fi-filter"></i> Select date range</legend>
                                     <div class="row">
@@ -91,7 +91,7 @@
                                     </div>
                                 </fieldset>
                             </div>
-                            <div class="small-6 columns">
+                            <div class="small-12 large-6 columns">
                                 <fieldset  class="fieldset category">
                                     <legend><i class="fi-filter"></i> Choose Category</legend>
                                     <button class="label tone_systems" id="tone_systems">Tone Systems</button><br>
@@ -121,7 +121,7 @@
     </div>
 
     <div class="row align-right">
-        <div class="small-2 columns">
+        <div class="small-6 large-3 columns">
             <select class="order_by">
                 <option value="-date">Date (newest first)</option>
                 <option value="date">Date (oldest first)</option>

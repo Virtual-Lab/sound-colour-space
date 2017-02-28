@@ -1,0 +1,4 @@
+<div class="small-4 column experiment text-center">
+    <h4><a href="{uri}">{title}</a></h4>
+    <a href="{uri}"><img src="{cover}" /></a>
+</div>

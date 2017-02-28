@@ -1,5 +1,5 @@
 <div class="row search_field_mask">
-    <div class="small-2 columns">
+    <div class="small-4 large-2 columns">
         <label>
             <select class="type">
                 {@eq key=scope value="fulltext"}<option selected value="fulltext">Fulltext</option>{:else}<option value="fulltext">Fulltext</option>{/eq}
@@ -8,7 +8,7 @@
             </select>
         </label>
     </div>
-    <div class="small-10 column">
+    <div class="large-10 column">
         <div class="input-group">
             <input class="input-group-field search" type="search" placeholder="" value="{term}">
             <div class="input-group-button">

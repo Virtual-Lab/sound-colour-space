@@ -9,6 +9,10 @@ var imagesLoaded = require('imagesloaded');
 imagesLoaded.makeJQueryPlugin($);
 
 var Base = require('./base');
+
+var Entries = require('../models/entries');
+
+var TimelineSection = require('./timeline_section.js');
 var EntrySingleTimelineView = require('./timeline_single');
 
 require('../helpers/sticky-kit');
@@ -19,10 +23,6 @@ module.exports = Base.TemplateView.extend({
     template: require('../templates/timeline.dust'),
 
     data: {
-        item_counter: 0,
-        item_margin: 25,  // margin
-        top_right_column: 0,
-        top_left_column: 0,
 
         ranges: [
             {range: "900,1199", title: "10th century", class: "10th"},
@@ -35,105 +35,40 @@ module.exports = Base.TemplateView.extend({
             {range: "1800,1899", title: "19th century", class: "19th"},
             {range: "1900," + new Date().getFullYear(), title: "20th century", class: "20th"},
         ],
-        currentRange: 0,
-        readyToFetch: true,
 
-    },
-
-    addOne: function (model) {
-
-        //console.debug('add', model.id);
-        var view = new EntrySingleTimelineView({model: model});
-        this.$("#timeline_content").append(view.render().el);
-        view.onShow();
-
-        view.$el.css('position', 'absolute');
-
-        // increase counter
-        this.data.item_counter++;
-
-        //var height = Math.min(model.get('image').height, 108); // TODO set height according to settings.py / browser
-        var height = model.get('image').height;
-
-        if (this.data.top_left_column >= this.data.top_right_column) {
-            view.$el.css('right', '0px');
-            view.$el.css('top', this.data.top_right_column + 'px');
-            this.data.top_right_column += height + this.data.item_margin;
-        }
-        else {
-            view.$el.addClass('left-col');
-            view.$el.css('top', this.data.top_left_column + 'px');
-            this.data.top_left_column += height + this.data.item_margin;
-        }
-
-        view.$el.imagesLoaded()
-            .progress(function (instance, image) {
-                this.$('#timeline').css('height', $(document).height() + "px");
-                //this.$('#timeline_navigator_sizer').css('height', $(document).height() + "px");
-            }.bind(this));
-    },
-
-    removeOne: function (model, collection, options) {
-        //$('.grid').packery('remove', this.$('.'+model.get('uuid'))).packery('shiftLayout');
-    },
-
-    onSync: function () {
-        //Base.ListView.prototype.onSync.call(this);
-        console.debug('############################################onSync timeline');
-        //swap($('[data-js-region="timeline_header"]'), new MetaView({parent: this, data: {meta: this.collection.meta}}));
-    },
-
-    addSection: function() {
-        var Section = Base.TemplateView.extend({
-            template: require('../templates/timeline_section_header.dust'),
-            data: this.data.ranges[this.data.currentRange],
-        });
-        var $header = new Section({}).render().$el;
-        if (this.data.top_right_column > this.data.top_left_column) {
-            $header.css('top', this.data.top_right_column + 'px');
-            this.$('#timeline_content').append($header);
-            this.data.top_right_column += $header.height();
-            this.data.top_left_column = this.data.top_right_column
-        } else {
-            $header.css('top', this.data.top_left_column + 'px');
-            var $h = this.$('#timeline_content').append($header);
-            this.data.top_left_column +=  $header.height();
-            this.data.top_right_column = this.data.top_left_column;
-        }
     },
 
     onShow: function () {
 
-        /*
-        this.data.top_right_column = 0;
-        this.data.top_left_column = 0;
-        this.data.item_counter = 0;
-        this.data.currentRange = 0;
-        this.data.readyToFetch = true;
-        */
+        var offset_top = 140;
 
-        var offset_top = 180;
+        /*
 
         $("[data-sticky_navigator]").stick_in_parent({
             parent: "[data-sticky_navigator_parent]",
             offset_top: offset_top,
-            bottoming: false
+            bottoming: false,
         });
+        */
 
-        this.listenTo(this.options.collection, 'add', this.addOne);
-        this.listenTo(this.options.collection, 'remove', this.removeOne);
 
-        // add 1st header
-        this.addSection();
 
-        var params = _.extend({date__range: this.data.ranges[this.data.currentRange].range}, this.collection.query);
 
-        this.collection.search({
-            reset: true,
-            data: params,
-            success: function (collection, response, options) {
+        var _sectionViews = [];
+        _.each(this.data.ranges, function (element, index, list) {
+            console.log(element.title, index);
 
-            }.bind(this)
+            var collection = new Entries({});
+
+            var image_size = 'x-small';
+            if (Foundation.MediaQuery.atLeast('large')) {
+                image_size = 'medium'
+            }
+            collection.query = {limit: 4, order_by: 'date', image_size: image_size};
+            var view = new TimelineSection({collection: collection, data: element});
+            this.$('[data-js-region="timeline_sections"]').append(view.render().el);
+            view.onShow();
+            view.search();
         });
 
 
@@ -189,65 +124,68 @@ module.exports = Base.TemplateView.extend({
 
         });
 
+        /*
+         // fetch on scroll
 
-        // fetch on scroll
+         $(window).on("scroll", _.bind(function () {
 
-        $(window).on("scroll", _.bind(function () {
+         var scrollHeight = $(document).height();
+         var scrollPosition = $(window).height() + $(window).scrollTop();
 
-            var scrollHeight = $(document).height();
-            var scrollPosition = $(window).height() + $(window).scrollTop();
+         // user scrolling upwards
+         if ($(window).scrollTop() === 0) {
 
-            // user scrolling upwards
-            if ($(window).scrollTop() === 0) {
+         }
 
-            }
+         // user scrolled to bottom of page
+         else if ((scrollHeight - scrollPosition) / scrollHeight < 0.1) {
 
-            // user scrolled to bottom of page
-            else if ((scrollHeight - scrollPosition) / scrollHeight < 0.1) {
+         // load more of the same if we have more pages!
+         if (this.options.collection.meta !== undefined && this.options.collection.meta.next != null) {
+         this.options.collection.url = this.options.collection.meta.next;
+         this.options.collection.fetch({
+         remove: false,
+         success: function (collection, response, options) {
+         //console.warn("adding", response.objects.length, "total: ", collection.models.length);
+         //App.entries.add(collection.models); // merge into App.entries
+         }
+         });
 
-                // load more of the same if we have more pages!
-                if (this.options.collection.meta !== undefined && this.options.collection.meta.next != null) {
-                    this.options.collection.url = this.options.collection.meta.next;
-                    this.options.collection.fetch({
-                        remove: false,
-                        success: function (collection, response, options) {
-                            //console.warn("adding", response.objects.length, "total: ", collection.models.length);
-                            //App.entries.add(collection.models); // merge into App.entries
-                        }
-                    });
+         }
+         // or else advance to next time period..
+         else if (this.data.readyToFetch) {
 
-                }
-                // or else advance to next time period..
-                else if (this.data.readyToFetch) {
+         this.data.readyToFetch = false;
 
-                    this.data.readyToFetch = false;
-
-                    this.data.currentRange += 1;
-                    this.addSection();
+         this.data.currentRange += 1;
+         this.addSection();
 
 
-                    var params = _.extend({date__range: this.data.ranges[this.data.currentRange].range}, this.collection.query);
+         var params = _.extend(
+         {date__range: this.data.ranges[this.data.currentRange].range},
+         this.collection.query);
 
-                    this.collection.search({
-                        remove: false,
-                        data: params,
-                        success: function (collection, response, options) {
+         this.collection.search({
+         remove: false,
+         data: params,
+         success: function (collection, response, options) {
 
-                            this.data.readyToFetch = true; // we can fetch another range
+         this.data.readyToFetch = true; // we can fetch another range
 
-                            // update sections
-                            this.scrollItems = menuItems.map(function () {
-                                var item = $($(this).attr("href"));
-                                if (item.length) {
-                                    return item;
-                                }
-                            });
+         // update sections
+         this.scrollItems = menuItems.map(function () {
+         var item = $($(this).attr("href"));
+         if (item.length) {
+         return item;
+         }
+         });
 
-                        }.bind(this)
-                    });
-                }
-            }
-        }, this));
+         }.bind(this)
+         });
+         }
+         }
+         }, this));
+         */
 
 
         // initialize foundation on $el

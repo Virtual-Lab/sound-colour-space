@@ -1,16 +1,18 @@
 <div>
     <div id="timeline_header" data-js-region="timeline_header"></div>
     <div id="timeline_wrapper">
-        <div id="timeline_navigator_sizer" data-sticky_navigator_parent>
-            <div id="timeline_navigator" data-sticky_navigator>
+
+            <div id="timeline_navigator">
                 <ul id="timeline_menu" class="vertical menu">
                     {#ranges}<li class="{class}"><a href="#{class}" data-bypass>{class}</a></li>{/ranges}
                 </ul>
             </div>
-        </div>
+
         {! the actual graphic "timeline" !}
         <div id="timeline"></div>
         {! the images .. !}
-        <div id="timeline_content"></div>
+        <div id="timeline_content">
+            <div id="timeline_sections" data-js-region="timeline_sections"></div>
+        </div>
     </div>
 </div>

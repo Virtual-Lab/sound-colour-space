@@ -2,7 +2,7 @@
     <section id="entries">
         <div class="row">
             <div class="small-12 columns">
-                <table class="stack hover">
+                <table class="stack unstriped">
                     <thead>
                     <tr>
                         <th>Title / Author</th>

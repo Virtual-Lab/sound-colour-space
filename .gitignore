@@ -2,7 +2,8 @@ node_modules
 
 website/static
 website/project/local_settings.py
-website/site-static/bower_components
+
+website/attachments
 website/media
 
 *.pyc

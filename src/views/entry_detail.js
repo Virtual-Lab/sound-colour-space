@@ -39,7 +39,7 @@ module.exports = Base.DetailView.extend({
             ["Typeset", MathJax.Hub, "description"],
             function () {
                 $('.description').html(marked($('.description').html(), {renderer: renderer}));
-                $('.description').css('visibility', 'visible');
+                $('.description').css('opacity', '1');
             }
         );
 
@@ -52,12 +52,19 @@ module.exports = Base.DetailView.extend({
             var lightbox = new Lightbox();
 
             lightbox.load({
-                maxImgSize: 1.0,
+                //maxImgSize: 1.0,
             });
-
             e.preventDefault();
 
-            lightbox.open(this.model.get('image').url.split('.')[0] + '.' + this.model.get('image').url.split('.')[1]);
+            var img = new Image();
+            // hack to get the full size image
+            img.src = this.model.get('image').url.split('.')[0] + '.' + this.model.get('image').url.split('.')[1];
+            // set caption
+            img.setAttribute('data-jslghtbx-caption', this.model.get('title'));
+
+            lightbox.open(
+                img
+            );
 
         }
 

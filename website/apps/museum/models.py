@@ -2,6 +2,8 @@ import os
 import uuid
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
 from django.db.models import permalink
@@ -9,8 +11,13 @@ from django.db.models import permalink
 from taggit.managers import TaggableManager
 from taggit.models import TagBase, GenericTaggedItemBase
 
+from .tasks import generate_thumbnails_task
 
 from common.storage import DataStorage
+
+import logging
+
+log = logging.getLogger(__name__)
 
 # generic data path based on uuid for folder and filename for file
 def generate_data_path(obj, filename):
@@ -71,25 +78,43 @@ class License(Base):
         return u'%s' % self.label
 
 
-'''
 class Source(Base):
+    ref = models.CharField(_('reference'), max_length=16, unique=True, blank=False, null=False)
 
-    # madek mapping:
-    # copyright_notice -> madek_core:copyright_notice
-    # source -> copyright:source
+    title = models.CharField(_('title'), max_length=200, blank=True, null=True)
+    text = models.TextField(_('text'), blank=True, null=True)
 
-    copyright_notice = models.TextField(_('copyright_notice'), blank=True, null=True)
-    source = models.TextField(_('source'), blank=True, null=True)
+    # primary or secondary source
+    PRIMARY_SOURCE = 'PS'
+    SECONDARY_SOURCE = 'SS'
+
+    SOURCE_CHOICES = (
+        (PRIMARY_SOURCE, 'Primary Source'),
+        (SECONDARY_SOURCE, 'Secondary Source'),
+    )
+    type = models.CharField(
+        max_length=2,
+        choices=SOURCE_CHOICES,
+        default=PRIMARY_SOURCE,
+    )
+
+    url = models.URLField(_('url'), null=True, blank=True)
+
+    attachment = models.FilePathField(_('attachment'), path=settings.ATTACHMENT_PATH,
+                                      max_length=2048, null=True, blank=True)
 
     class Meta:
         verbose_name = _('source')
         verbose_name_plural = _('sources')
         db_table = 'museum_source'
-        ordering = ('-source',)
+        ordering = ('ref',)
 
     def __unicode__(self):
-        return u'%s' % self.source
-'''
+        return u'%s' % self.ref
+
+    def get_absolute_url(self):
+        return 'sources/%s' % self.ref
+
 
 class Author(Base):
     date_of_birth = models.CharField(_('date of birth'), max_length=200, blank=True, null=True)
@@ -126,6 +151,7 @@ class Attachment(Base):
 
 experiment_store = DataStorage(location=settings.EXPERIMENTS_ROOT, base_url=settings.EXPERIMENTS_URL)
 
+
 class Experiment(Attachment):
     # slug for url
     slug = models.SlugField(_('slug'), allow_unicode=True)
@@ -148,6 +174,32 @@ class Experiment(Attachment):
 
     def get_absolute_url(self):
         return 'virtuallab/%s' % self.slug
+
+
+exhibition_store = DataStorage(location=settings.EXHIBITIONS_ROOT, base_url=settings.EXHIBITIONS_URL)
+
+class Exhibition(Attachment):
+    # slug for url
+    slug = models.SlugField(_('slug'), allow_unicode=True)
+
+    cover = models.ImageField(_('cover'), upload_to=generate_data_path, storage=exhibition_store, null=True,
+                              blank=True)
+    # iframe url
+    url = models.URLField(_('url'), null=True, blank=True)
+
+    description = models.TextField(_('description'), blank=True, null=True)
+
+    class Meta:
+        verbose_name = _('exhibition')
+        verbose_name_plural = _('exhibition')
+        db_table = 'museum_exhibition'
+        ordering = ('title',)
+
+    def __unicode__(self):
+        return u'%s' % self.title
+
+    def get_absolute_url(self):
+        return 'exhibition/%s' % self.slug
 
 
 
@@ -225,7 +277,7 @@ class Entry(Base):
         verbose_name = _('diagram')
         verbose_name_plural = _('diagrams')
         db_table = 'museum_entry'
-        ordering = ('date',)  # 'doc_id',
+        ordering = ('doc_id',)  # 'doc_id',
         get_latest_by = 'created'
 
     def __unicode__(self):
@@ -237,7 +289,14 @@ class Entry(Base):
 
     @property
     def filename(self):
+        log.info("foobar")
         return os.path.basename(self.image.name)
+
+
+
+@receiver(post_save, sender='museum.Entry')
+def generate_thumbnails_async(sender, instance, created, **kwargs):
+    generate_thumbnails_task.delay(app_label='museum', model_name='Entry', pk=instance.pk, field='image')
 
 
 class Collection(Base):

@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 var $ = require('jquery');
 Backbone.$ = $;
@@ -12,5 +13,15 @@ module.exports = Backbone.Collection.extend({
     url: function () {
         return apiUrl('keywords');
     },
+
+    search: function (letters) {
+        if (letters == "") return this;
+
+        var pattern = new RegExp(letters, "gi");
+
+        return this.filter(function (data) {
+            return pattern.test(data.get("name"));
+        });
+    }
 
 });

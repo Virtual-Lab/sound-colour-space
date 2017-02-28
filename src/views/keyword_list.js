@@ -1,13 +1,10 @@
-var Backbone = require('backbone');
 var _ = require('underscore');
-var $ = require('jquery');
-Backbone.$ = $;
 
 var Base = require('./base');
-var swap = require('../views/swap.js');
+
+var Keywords = require('../models/keywords.js');
 
 var KeywordSingleView = Base.SingleView.extend({
-    tagName: 'li',
     template: require('../templates/keyword_single.dust'),
 });
 
@@ -23,17 +20,40 @@ module.exports = Base.ListView.extend({
         view.onShow();
     },
 
-    onSync: function () {
-        //Base.ListView.prototype.onSync.call(this);
-        console.debug('############################################onSync list');
+    doFilter: function () {
+
+
+        var name = this.$el.find('input[type=search]').val();
+
+        App.Keywords.fetch({
+            data: {
+                order_by: 'name',
+                name__icontains: name,
+                limit: 10000 // make sure we get all
+            }
+        });
+
+
     },
 
+    removeFilter: function () {
+        App.Keywords.fetch({
+            data: {
+                order_by: 'name',
+                limit: 10000 // make sure we get all
+            }
+        });
+    },
 
-    onShow: function () {
-        console.debug("############################################onShow list");
-        this.collection.each(this.addOne, this);
+    keyPressed: function (e) {
+        if (e.which !== 13) return;  // return if not RETURN pressed
+        this.doFilter();
     },
 
     events: {
+        'keypress input[type=search]': 'keyPressed',
+        'search input[type=search]': 'keyPressed',
+        'click .remove_filter': 'removeFilter',
     }
+
 });

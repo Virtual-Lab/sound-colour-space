@@ -1,7 +1,7 @@
-<div class="small-2 column set align-self-middle" style="margin-bottom: 40px;">
+<div class="small-6 large-3 column set align-self-middle" style="margin-bottom: 40px;">
     <div class="row">
         <div class="small-12 column text-center set">
-            <span><a href="{uri}">{title}</a></span><br />
+            <span class="truncate"><a href="{uri}">{title}</a></span><br />
             <a href="{uri}"><img src="{cover}"/></a>
         </div>
     </div>

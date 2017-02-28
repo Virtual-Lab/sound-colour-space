@@ -13,9 +13,6 @@ var SetListView = require('../views/set_list');
 var SetDetailView = require('../views/set_detail');
 
 
-if (!App.preferredView)
-    App.preferredView = 'list';
-
 module.exports.List = function () {
     console.debug('##### Set Controller -> List');
     if (!App.Sets)
@@ -35,6 +32,7 @@ module.exports.Detail = function (doc_id) {
     console.debug('##### Set Controller -> Detail', doc_id);
 
     var set = new Set({doc_id: doc_id});
+
     // render
     swap(Regions.content, new SetDetailView({model: set, data: {preferredView: App.preferredView}}));
 
@@ -42,6 +40,9 @@ module.exports.Detail = function (doc_id) {
     set.fetch({
         data: {
             image_size: 'x-small',
+        },
+        success: function() {
+
         }
     });
 };

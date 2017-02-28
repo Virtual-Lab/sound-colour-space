@@ -21,27 +21,10 @@ module.exports = Base.ListView.extend({
         view.onShow();
     },
 
-    /*
-    // override render function because adding items must be done in the onShow() function
-    render: function () {
-
-        this.template(_.extend(this.data, {meta: this.collection.meta}), function (err, out) {
-            if (err) {
-                console.error(err);
-            }
-            else {
-                this.$el.html($(out).html());
-                this.$el.attr($(out).attr());
-            }
-        }.bind(this));
-
-        return this;
-    },
-
     onShow: function () {
-        //console.debug("############################################onShow list");
-        this.collection.each(this.addOne, this);
-    },
-    */
 
+        this.collection.each(this.addOne, this);
+
+
+    },
 });

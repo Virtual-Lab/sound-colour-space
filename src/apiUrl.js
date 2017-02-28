@@ -15,6 +15,13 @@ var URLs = {
         return URLs.experiments() + slug;
     },
 
+    exhibitions: function () {
+        return api_url + 'exhibition/';
+    },
+    exhibition: function (slug) {
+        return URLs.exhibitions() + slug;
+    },
+
     sets: function () {
         return api_url + 'collection/';      // CAUTION: API URI IS 'COLLECTION' NOT SET FOR DJANGO COMPATIBILITY
     },
@@ -27,6 +34,10 @@ var URLs = {
     },
     keyword: function (slug) {
         return URLs.keywords() + slug;
+    },
+
+    source: function (slug) {
+        return api_url + 'source/' + slug;
     },
 
 

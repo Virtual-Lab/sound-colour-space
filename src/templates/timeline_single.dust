@@ -1,21 +1,23 @@
-<div class="entry">
-    {! <div class="title">{title}</div> !}
+<div class="entry grid-item {uuid}">
+    <div><h4>{title}</h4></div>
     <div class="wrapper">
+
         <img src="{image.url}"/>
         <div class="overlay"></div>
 
         <div class="eye"><i class="fi-eye"></i></div>
-        <div class="description">
+        <div class="card">
             <h7>{portrayed_object_date}</h7>
-            <h4>{title}</h4>
+            <h4><a href="{uri}" class="permalink">&nbsp;<i class="fi-link"></i></a></h4>
             <h6>{#author}<span>{first_name} {last_name} {@sep} and {/sep}</span><br/>{/author}</h6>
-            <p>{description|markdown|s}</p>
+            <div id="{uuid}">{description}</div>
+        </div>
+
+        <div class="connector">
+            <div class="circle"></div>
         </div>
 
     </div>
-    <div class="connector">
-        <div class="circle"></div>
-    </div>
-</div>
 
+</div>
 

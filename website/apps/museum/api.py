@@ -5,7 +5,7 @@ from django.conf.urls import *
 from easy_thumbnails.files import get_thumbnailer
 from haystack.inputs import Raw, AutoQuery
 from haystack.query import SearchQuerySet, EmptySearchQuerySet, SQ
-from museum.models import Keyword, Entry, Author, License, Experiment, Collection
+from museum.models import Keyword, Entry, Author, License, Experiment, Exhibition, Collection, Source
 from tastypie import fields
 from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
@@ -120,6 +120,64 @@ class ExperimentResource(ModelResource):
         return bundle.obj.get_absolute_url()
 
 
+
+class ExhibitionResource(ModelResource):
+    uri = fields.CharField(blank=True, readonly=True)
+
+    class Meta:
+        queryset = Exhibition.objects.all()
+        resource_name = 'exhibition'
+        detail_uri_name = 'slug'
+        always_return_data = True
+
+        authentication = Authentication()
+        authorization = Authorization()
+
+        excludes = ['id', 'created', 'modified', 'slug']
+
+        list_allowed_methods = ["get"]
+        detail_allowed_methods = ["get"]
+
+        include_resource_uri = True  # ATTENTION: This needs to be True for backbone-tastypie to work!!!
+
+        filtering = {
+            'title': ('icontains',),
+        }
+
+        ordering = {
+            'title',
+        }
+
+    def dehydrate_uri(self, bundle):
+        return bundle.obj.get_absolute_url()
+
+
+class SourceResource(ModelResource):
+    uri = fields.CharField(blank=True, readonly=True)
+
+    class Meta:
+        queryset = Source.objects.all()
+        resource_name = 'source'
+        detail_uri_name = 'ref'
+        always_return_data = True
+
+        authentication = Authentication()
+        authorization = Authorization()
+
+        excludes = ['id','created', 'modified']
+
+        list_allowed_methods = ["get"]
+        detail_allowed_methods = ["get"]
+
+        include_resource_uri = True  # ATTENTION: This needs to be True for backbone-tastypie to work!!!
+
+    def dehydrate_uri(self, bundle):
+        return bundle.obj.get_absolute_url()
+
+    def dehydrate_type(self, bundle):
+        return 'Primary Source' if bundle.obj.type == 'PS' else 'Secondary Source'
+
+
 class EntryResource(ModelResource):
     image = fields.FileField(attribute='image', blank=True, null=True, readonly=True)
     author = fields.ToManyField(AuthorResource, 'author', full=True, blank=True, null=True)
@@ -144,7 +202,7 @@ class EntryResource(ModelResource):
         authentication = Authentication()
         authorization = Authorization()
 
-        excludes = ['id']
+        excludes = ['id', 'created', 'modified']
 
         list_allowed_methods = ["get"]
         detail_allowed_methods = ["get"]
@@ -443,6 +501,10 @@ class KeywordResource(ModelResource):
 
         ordering = {
             'name',
+        }
+
+        filtering = {
+            'name': ('icontains',),
         }
 
     def dehydrate_uri(self, bundle):

@@ -5,97 +5,85 @@ $timeline_color: #888
   display: block
   position: fixed
   z-index: 100000
-  left: calc(50% - 189px)
-
-  //background-color: white
 
   #date_slider
     margin-bottom: 1.25rem
 
 // wrapper could be used together with section classes for different colors etc.
 #timeline_wrapper
+  @include fadeIn(2.75s)
 
-  .entry
-    .connector
-      background-color: $timeline_color
-      transition: background-color 3000ms
-
-      .circle
-        background-color: $timeline_color
-        transition: background-color 3000ms
 
 #timeline
-  width: 1px
-  min-height: 1200px
+  //@include fadeIn(0.75s)
   position: absolute
   top: 0
+  left: 50%
+
+  min-height: 1200px
+  width: 1px
+
   background-color: $timeline_color
-  transition: background-color 3000ms
+  //transition: background-color 3000ms
   z-index: 1
 
-  //margin-bottom: 600px
+.connector
+  position: absolute
+  width: 4%
+  height: 1px
+  display: block
+  //opacity: 0.0
+  background-color: $timeline_color
 
-  @media screen
-    @include breakpoint(medium up)
-      left: 50%
-      margin-left: -1px
+.circle
+  position: absolute
+  content: ' '
+  width: 7px
+  height: 7px
+  display: block
+  margin-top: -3px
+  border-radius: 50%
+  //opacity: 0.0
+  background-color: $timeline_color
+
 
 #timeline_content
-  width: calc(100% - 30px)
-  max-width: 1200px
-  min-height: 1440px
+
+  width: 85% // maybe adjusted easily
+
   padding-top: 15px
   margin: 0 auto
-  position: relative
+
   z-index: 1
 
   // date section header
-  .section
-    position: absolute
-    left: 27px
-    width: calc(100% - 57px)
-
-
+  .section-header, .load_more
+    z-index: 100
+    position: relative
+    width: 190px
+    left: calc(50% - 95px) // width/2
 
     h1
-      //color: $timeline_color
       font-size: 1.125rem
       padding: 20px
       background-color: darken($body-background, 1)
       border: 1px $timeline_color solid
 
-    .connector
-
-      width: 16px
-      height: 1px
-      display: block
+    .circle
       position: absolute
-      left: 50%
-      top: 0%
-      //background-color: transparent
+      left: 48.5%
+      top: 0
 
-      .circle
-        background-color: $timeline_color
-        content: ' '
-        width: 6px
-        height: 6px
-        display: block
-        position: absolute
-        left: -2px
-        top: 0%
-        margin-top: -3px
-        border-radius: 50%
+  .gutter-sizer
+    width: 4%
 
-  .entry
-    width: calc(100% - 15px)
-    margin-left: 15px
+  .grid-sizer,
+  .grid-item
+
+    width: 48%
+
     margin-bottom: 15px
     position: relative
-
-    @media screen
-      @include breakpoint(medium up)
-        width: calc(50% - 16px)
-        margin-left: 0
 
     .eye
       position: absolute
@@ -103,34 +91,25 @@ $timeline_color: #888
       left: 15px
       z-index: 1000
       cursor: pointer
+      opacity: 0.5
       font-size: 60px
       color: #000
-      opacity: 0.5
       //text-shadow: 0 0 5px $timeline_color,0 0 5px #fff,0 0 5px #fff,0 0 10px $timeline_color,0 0 30px $timeline_color,0 0 40px $timeline_color,0 0 50px $timeline_color,0 0 75px $timeline_color
       transition: all .2s ease-in-out
     .eye:hover
       transform: scale(1.1)
 
+
     .connector
-      width: 16px
-      height: 1px
-      display: block
-      position: absolute
-      left: -16px
       top: 50%
-      //background-color: transparent
+      left: -4%
 
       .circle
-        content: ' '
-        width: 6px
-        height: 6px
-        display: block
-        position: absolute
-        left: -3px
+        width: 7px
+        heigh: 7px
+        left: -4px
         top: 50%
         margin-top: -3px
-        border-radius: 50%
-    //background-color: transparent
 
     .title
       font-size: 20px
@@ -145,14 +124,11 @@ $timeline_color: #888
       position: relative
       z-index: 1
 
-    img:hover
-    //filter: grayscale(0)
-    //filter: blur(5px)
-
     .wrapper
       height: 100%
       z-index: 10
       position: relative
+      padding-bottom: 1px // error correction :P
       display: inline-block
       border: 1px solid $timeline_color
 
@@ -170,13 +146,16 @@ $timeline_color: #888
       opacity: 0.7
       transition: opacity 0.5s
 
-    .description
+    .card
       display: none
+
+      .permalink
+        color: $body-font-color
 
     img.active
       filter: blur(2px)
 
-    .description.active
+    .card.active
       display: block
       position: absolute
 
@@ -199,55 +178,55 @@ $timeline_color: #888
       h1, h2, h3, h4, h5, h6
         color: #222
       a
-        color: lighten($timeline_color, 20)
+        //color: darken($timeline_color, 20)
 
-    .description::-webkit-scrollbar-thumb:vertical
+    .card::-webkit-scrollbar-thumb:vertical
       width: 10px
       height: 10px
       background-color: $timeline_color
 
-    .description::-webkit-scrollbar
+    .card::-webkit-scrollbar
       width: 5px
       height: 5px
       background: #FFF
       margin-right: 5px
 
-  // left column adjustments
+  // right left adjustments!!!!
   .entry.left-col
     text-align: right
 
-    @media screen
-      @include breakpoint(medium up)
-        .connector
-          left: auto
-          right: -12px
+    .connector
+      left: 100%
+      .circle
+        left: 97.5%
 
-          .circle
-            left: auto
-            right: -6px
+////////////////////////////////////////////////////////////////
+// NAVIGATOR
+////////////////////////////////////////////////////////////////
+#timeline_navigator
+  position: fixed
+  top: 140px
 
-    .expand
-      right: 15px
-      left: auto
+  width: 50px
 
-    .description.active
-      left: 65px
+  @media screen
+    @include breakpoint(xlarge down)
+      left: calc(2%)
+      background-color: darken($body-background, 5%)
+      opacity: 0.9
 
-// quick navigation
-#timeline_navigator_sizer
-  position: absolute
-  left: 550px
-  width: 100px
-  height: 500px
-  background-color: transparent
+    @include breakpoint(xxlarge up)
+      left: calc(50% - 700px)
 
-  #timeline_navigator
-    //background-color: darken($body-background, 5%)
-    //padding: 10px
+  z-index: 100
 
-    .menu > li > a
-      color: $timeline_color
-      padding: 0.5rem 0.0rem 0.0rem 0.0rem
+  padding: 10px 5px 10px 5px
 
-    .menu .active > a
-      font-weight: bold
+  .menu > li > a
+    padding: 3px
+
+  .menu > li.active > a
+    background-color: transparent
+    font-weight: bold
+
+

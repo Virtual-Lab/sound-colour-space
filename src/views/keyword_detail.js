@@ -72,6 +72,7 @@ module.exports = Base.DetailView.extend({
             this.render();
             var view = new EntryListView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'list');
         },
 
         'click .toggle-even-grid': function () {
@@ -83,6 +84,7 @@ module.exports = Base.DetailView.extend({
                 data: {num_columns: this.model.get('num_columns')}
             });
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'even-grid');
         },
         'click .toggle-grid': function () {
             App.preferredView = "grid";
@@ -90,6 +92,7 @@ module.exports = Base.DetailView.extend({
             this.render();
             var view = new EntryGridView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'grid');
         },
 
     },

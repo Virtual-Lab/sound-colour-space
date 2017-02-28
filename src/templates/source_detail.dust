@@ -1,0 +1,12 @@
+<div>
+    <div class="row">
+        <div class="column large-12 text-center">
+            <div class="source">
+                <h4>{title}</h4>
+                <div>{text|markdown|s}</div>
+                {?url}<div><a href="{url}" data-bypass>{url}</a></div><br />{/url}
+                {>"history_go_back" /}
+            </div>
+        </div>
+    </div>
+</div>

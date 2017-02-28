@@ -1,9 +1,10 @@
 import datetime
 from haystack import indexes
+from celery_haystack.indexes import CelerySearchIndex
 from museum.models import Entry, Author
 
 
-class EntryIndex(indexes.SearchIndex, indexes.Indexable):
+class EntryIndex(CelerySearchIndex, indexes.SearchIndex, indexes.Indexable):
 
     fulltext = indexes.CharField(document=True, use_template=True)
 
@@ -25,6 +26,7 @@ class EntryIndex(indexes.SearchIndex, indexes.Indexable):
     def get_model(self):
         return Entry
 
+    '''
     def prepare(self, object):
         self.prepared_data = super(EntryIndex, self).prepare(object)
         self.prepared_data['tags'] = [tag.name for tag in object.tags.all()]
@@ -33,6 +35,7 @@ class EntryIndex(indexes.SearchIndex, indexes.Indexable):
 
 
         return self.prepared_data
+    '''
 
     def prepare_author(self, obj):
         if obj.author is not None:

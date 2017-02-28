@@ -1,13 +1,13 @@
 <div>
     <div class="row">
-        <div class="large-10 large-offset-2 columns">
+        <div class="small-12 medium-8 medium-offset-2 columns">
             <div class="row">
-                <div class="small-8 columns">
+                <div class="small-12 columns">
                     <h4>About</h4>
                 </div>
             </div>
             <div class="row">
-                <div class="small-8 columns">
+                <div class="small-12 columns">
                     <p>
                         The project "Sound Colour Space – A Virtual Museum", based at the Zurich University of the Arts
                         (ZHdK),
@@ -18,12 +18,12 @@
                 </div>
             </div>
             <div class="row">
-                <div class="small-8 columns">
+                <div class="small-12 columns">
                     <h4>Project Team</h4>
                 </div>
             </div>
             <div class="row">
-                <div class="small-8 columns">
+                <div class="small-12 columns">
                     <dl>
                         <dt>Applicants</dt>
                         <dd>Prof. Dr. Martin Neukom, ICST, ZHdK</dd>
@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="small-8 columns">
+                <div class="small-12 columns">
                     <dl>
                         <dt>Project Management</dt>
                         <dd>Dr. Daniel Muzzulini, ICST, ZHdK</dd>
@@ -40,7 +40,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="small-8 columns">
+                <div class="small-12 columns">
                     <dl>
                         <dt>Team</dt>
                         <dd>Lucas Bennett, ICST, ZHdK</dd>
@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="small-8 columns">
+                <div class="small-12 columns">
                     <dl>
                         <dt>Partners</dt>
                         <dd>Prof. Dr. Christoph Reuter, Institut für Systematische Musikwissenschaft, Universität Wien
@@ -64,13 +64,13 @@
                 </div>
             </div>
             <div class="row">
-                <div class="small-8 columns">
+                <div class="small-12 columns">
                     <h4>Funding</h4>
                     <p>Schweizerischer Nationalfond (SNF: 105216_156979)</p>
                 </div>
             </div>
             <div class="row">
-                <div class="small-8 columns">
+                <div class="small-12 columns">
                     <h4>How to quote this website?</h4>
                     <p>
                         „Sound Colour Space – A Virtual Museum“, Zurich University of the Arts, 2017,&nbsp;
@@ -80,7 +80,7 @@
             </div>
 
             <div class="row">
-                <div class="small-8 columns">
+                <div class="small-12 columns">
                     <h4>More information and additional material</h4>
                     <dl>
                         <dd><a href="https://www.zhdk.ch/forschungsprojekt/426348" target="_blank" data-bypass>Zürcher

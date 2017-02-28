@@ -131,7 +131,7 @@ module.exports = Base.ListView.extend({
     template: require('../templates/archive.dust'),
 
     data: {
-        logged_in_slug: SLUG    // used in the template to check if the user is on his own profile page
+        logged_in_slug: SLUG,    // used in the template to check if the user is on his own profile page
     },
 
     addOne: function (model) {
@@ -140,8 +140,11 @@ module.exports = Base.ListView.extend({
 
     onShow: function () {
         // render and fetch entries
-        if (!App.preferredView)
+        App.preferredView = Cookies.get('preferredView');
+        if (!App.preferredView) {
             App.preferredView = 'list';
+            Cookies.set('preferredView', 'list');
+        }
 
         if (App.preferredView === 'list')
             var view = new EntryListView({collection: this.collection});
@@ -154,26 +157,60 @@ module.exports = Base.ListView.extend({
 
         this.header();
 
+        if (this.collection.meta !== undefined && this.collection.meta.next == null) {
+            this.disableLoadMore()
+        }
+
         // fetch on bottom
-        $(window).on("scroll", _.bind(function () {
-            var scrollHeight = $(document).height();
-            var scrollPosition = $(window).height() + $(window).scrollTop();
-            // console.log((scrollHeight - scrollPosition) / scrollHeight);
-            if ((scrollHeight - scrollPosition) / scrollHeight < 0.1) {
-                // load more!
-                if (this.collection.meta !== undefined && this.collection.meta.next != null) {
-                    //console.warn(this.collection.meta.next);
-                    this.collection.url = this.collection.meta.next;
-                    this.collection.fetch({
-                        remove: false,
-                        success: function (collection, response, options) {
-                            //console.warn("adding", response.objects.length, "total", this.collection.length);
-                            this.entry_list_header_meta();
-                        }.bind(this)
-                    });
-                }
-            }
-        }, this));
+        /*
+         $(window).on("scroll", _.bind(function () {
+         var scrollHeight = $(document).height();
+         var scrollPosition = $(window).height() + $(window).scrollTop();
+         // console.log((scrollHeight - scrollPosition) / scrollHeight);
+         if ((scrollHeight - scrollPosition) / scrollHeight < 0.1) {
+         // load more!
+         if (this.collection.meta !== undefined && this.collection.meta.next != null) {
+         //console.warn(this.collection.meta.next);
+         this.collection.url = this.collection.meta.next;
+
+         this.collection.fetch({
+         remove: false,
+         success: function (collection, response, options) {
+         //console.warn("adding", response.objects.length, "total", this.collection.length);
+         this.entry_list_header_meta();
+
+         }.bind(this)
+         });
+         }
+         }
+         }, this));
+         */
+    },
+
+    loadMore: function () {
+        // load more!
+        if (this.collection.meta !== undefined && this.collection.meta.next != null) {
+            //console.warn(this.collection.meta.next);
+            this.collection.url = this.collection.meta.next;
+
+            this.collection.fetch({
+                remove: false,
+                success: function (collection, response, options) {
+                    //console.warn("adding", response.objects.length, "total", this.collection.length);
+                    this.entry_list_header_meta();
+
+                    if (this.collection.meta.next == null) {
+                        this.disableLoadMore();
+                    }
+
+                }.bind(this)
+            });
+        }
+    },
+
+    disableLoadMore: function () {
+        this.$el.find('.load_more').addClass('secondary');
+        this.$el.find('.load_more').html("All diagrams loaded.");
     },
 
     onRemove: function () {
@@ -236,7 +273,7 @@ module.exports = Base.ListView.extend({
         else if ($('.label.tone_systems').hasClass('selected'))
             this.collection.query.category = 'tone_systems';
         else
-            // make sure we remove category
+        // make sure we remove category
             this.collection.query = _.omit(this.collection.query, 'category');
 
         // set date__range
@@ -263,6 +300,8 @@ module.exports = Base.ListView.extend({
 
     events: {
 
+        'click .load_more': 'loadMore',
+
         'click #date_range_toggle': function (e) {
             this.query({trigger: true, replace: true});
         },
@@ -277,18 +316,21 @@ module.exports = Base.ListView.extend({
             this.header(); // re-render header for button
             var view = new EntryEvenGridView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'even-grid');
         },
         'click .toggle-grid': function () {
             App.preferredView = "grid";
             this.header(); // re-render header for button
             var view = new EntryGridView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'grid');
         },
         'click .toggle-list': function () {
             App.preferredView = "list";
             this.header(); // re-render header for button
             var view = new EntryListView({collection: this.collection});
             swap($('[data-js-region="entry_list"]'), view);
+            Cookies.set('preferredView', 'list');
         },
 
     }

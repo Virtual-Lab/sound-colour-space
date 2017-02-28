@@ -331,6 +331,8 @@ module.exports.ListView = Backbone.View.extend({
 
     template: '',   // template name
 
+    data: {},
+
     initialize: function (options) {
         this.options = _.extend({}, options);
         //this.data = _.extend({}, options.data);

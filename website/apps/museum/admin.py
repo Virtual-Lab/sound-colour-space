@@ -55,18 +55,14 @@ class LicenseAdmin(admin.ModelAdmin):
     )
 admin.site.register(License, LicenseAdmin)
 
-'''
+
 class SourceAdmin(admin.ModelAdmin):
-    list_display = ('copyright_notice', 'source')
-    search_fields = ('copyright_notice', 'source')
-    fieldsets = (
-        (None, {
-            'fields': ('copyright_notice', 'source')
-        }),
-    )
+    list_display = ('ref', 'title', 'text', 'type')
+    search_fields = ('ref', 'title', 'text')
+    list_filter = ('type',)
 
 admin.site.register(Source, SourceAdmin)
-'''
+
 
 
 class LinkAdmin(admin.ModelAdmin):
@@ -100,14 +96,34 @@ class ExperimentAdmin(admin.ModelAdmin):
 
 admin.site.register(Experiment, ExperimentAdmin)
 
+class ExhibitionAdmin(admin.ModelAdmin):
+    list_display = ('title', 'view', 'url',)
+    search_fields = ('title', )
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'slug', 'url', 'cover', 'description')
+        }),
+    )
+    prepopulated_fields = {"slug": ("title",)}
+
+    def view(self, obj):
+        if obj.slug is not None:
+            return format_html(
+                '<a href="/{}">{}</a>',
+                obj.get_absolute_url(),
+                obj.get_absolute_url()
+            )
+
+admin.site.register(Exhibition, ExhibitionAdmin)
+
 
 
 class EntryAdmin(admin.ModelAdmin):
     list_display = (
     'title', 'doc_id', 'subtitle', 'portrayed_object_date', 'date', 'uuid', 'madek', 'show_image', 'tag_list')  # 'show_image', 'link_to_author', 'source'
-    list_filter = ('author', 'portrayed_object_date', 'tags', 'license',)
+    list_filter = ('category', 'author', 'portrayed_object_date', 'tags', 'license',)
     search_fields = (
-    'uuid', 'image', 'title', 'description', 'portrayed_object_date', 'author__first_name', 'author__last_name', 'author__pseudonym')
+    'doc_id', 'uuid', 'image', 'title', 'description', 'portrayed_object_date', 'author__first_name', 'author__last_name', 'author__pseudonym')
     readonly_fields = ('show_image', 'uuid', 'created', 'modified', 'title', 'subtitle', 'tags', 'portrayed_object_date', 'source',
                        'copyright_notice', 'author', 'license')
 

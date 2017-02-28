@@ -9,6 +9,8 @@ var entryController = require('./controllers/entry_controller');
 var setController = require('./controllers/set_controller');
 var keywordController = require('./controllers/keyword_controller');
 var virtualLabController = require('./controllers/virtual_lab_controller');
+var exhibitionController = require('./controllers/exhibition_controller');
+
 
 // views
 var Base = require('./views/base.js');
@@ -21,11 +23,14 @@ var Error404View = require('./views/404.js');
 var EditorView = require('./views/editor.js');
 var ArchiveView = require('./views/archive.js');
 
+var Source = require('./models/source.js');
+var SourceDetailView = require('./views/source_detail.js');
+
 
 ArchiveView.viewState = new Backbone.Model();
 ArchiveView.viewState.set('scrollPosition', 0);
 
-var defaultRoute = function (actions) {
+var route404 = function (actions) {
     swap(Regions.content, new Error404View({}));
 };
 
@@ -36,7 +41,7 @@ var home = function () {
 var exhibitions = function () {
     var ExhibitionsView = Base.TemplateView.extend({
         data: {
-          MEDIA_URL: MEDIA_URL,
+            MEDIA_URL: MEDIA_URL,
         },
         template: require('./templates/exhibitions.dust'),
     });
@@ -54,11 +59,28 @@ var editor = function (actions) {
     swap(Regions.content, new EditorView({}));
 };
 
+var sources = function (slug) {
+
+    var source = new Source({slug: slug});
+
+    App.source = source;
+
+    source.fetch(
+        {
+            success: function (model, response, options) {
+                var view = new SourceDetailView({model: source});
+                swap(Regions.content, view);
+            }
+        }
+    )
+};
+
 
 module.exports = Backbone.Router.extend({
 
     initialize: function () {
         console.debug("##################################initialize router");
+        this.routesHit = 0;
         // render the base layout
         this.renderBase();
         // define regions RIGHT HERE after base layout has been rendered
@@ -66,23 +88,29 @@ module.exports = Backbone.Router.extend({
         Regions.content = $('[data-js-region="content"]');
         // render navigation
         //this.renderNavigation();
+
+        // keep count of number of routes handled by the application
+        Backbone.history.on('route', function() { this.routesHit++; }, this);
     },
 
     routes: {
         '(/)': home,
+        '404(/)': route404,
         'archive(?*query)(/)': entryController.Archive,
         'sets(/)': setController.List,
         'sets/:doc_id(/)': setController.Detail,
         'timeline(?*query)(/)': entryController.Timeline,
         'keywords(/)': keywordController.List,
         'keywords/:slug(/)': keywordController.Detail,
+        'sources/:slug(/)': sources,
         'editor(/)': editor,
         'diagrams/:doc_id(/)': entryController.Detail,
-        'exhibitions(/)': exhibitions,
+        'exhibitions(/)': exhibitionController.List,
+        'exhibition/:slug(/)': exhibitionController.Detail,
         'virtuallab(/)': virtualLabController.List,
         'virtuallab/:slug(/)': virtualLabController.Detail,
         'about(/)': about,
-        '*actions': defaultRoute
+        '*actions': route404
     },
 
     renderBase: function () {
@@ -94,6 +122,21 @@ module.exports = Backbone.Router.extend({
 
     renderNavigation: function () {
         //swap(Regions.navigation, new NavigationView({}));
+    },
+
+    back: function () {
+        if (this.routesHit > 1) {
+            // More than one route hit -> user did not land to current page directly
+            // Subtract 2 from routesHit, then when its redirected to the "back" page it'll gain only 1
+            this.routesHit = this.routesHit - 2;
+            window.history.back();
+        } else {
+            // otherwise go to the home page. Use replaceState if available so
+            // the navigation doesn't create an extra history entry
+            if (Backbone.history.getFragment() != '/')
+                this.routesHit = 0;
+            this.navigate('/', {trigger: true, replace: true});
+        }
     }
 });
 

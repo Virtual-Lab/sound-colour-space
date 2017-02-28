@@ -16,7 +16,7 @@ nprogress.configure({
     speed: 50
 });
 // patch backbone
-require('backbone-nprogress');
+require('./backbone-nprogress');
 
 
 //var sticky = require('../helpers/sticky-kit');
@@ -94,6 +94,13 @@ module.exports = Base.TemplateView.extend({
         //this.$el.foundation();
 
     },
+
+    events: {
+        'click .menu': function () {
+            //this.$el.find('#mobile_menu').css('display', 'block');
+            this.$el.find('#mobile_menu').toggle();
+        }
+    }
 
 })
 ;
