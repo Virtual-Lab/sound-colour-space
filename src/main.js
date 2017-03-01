@@ -12,7 +12,7 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 Backbone.$ = $;
 
-Cookies= require('js-cookie');
+Cookies = require('js-cookie');
 
 App.preferredView = Cookies.get('preferredView');
 if (!App.preferredView) {
@@ -53,13 +53,12 @@ key('t', function () {
 });
 
 
-(function($) {
-    $.QueryString = (function(a) {
+(function ($) {
+    $.QueryString = (function (a) {
         if (a == "") return {};
         var b = {};
-        for (var i = 0; i < a.length; ++i)
-        {
-            var p=a[i].split('=', 2);
+        for (var i = 0; i < a.length; ++i) {
+            var p = a[i].split('=', 2);
             if (p.length != 2) continue;
             b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
         }
@@ -123,31 +122,28 @@ $(function () {
         return res;
     });
 
+    // before url change we save the position
     Backbone.history.bind('before:url-change', function (path, e) {
-        // console.log("before url change", path, e);
+        App.Helper.offsetTop = $(window).scrollTop();
     });
 
+    // event on BACKSPACE or history.back etc.
+    window.addEventListener('popstate', function (e) {
+
+        if (App.Helper.offsetTop != undefined) {
+            $('html, body').stop().animate({
+                scrollTop: App.Helper.offsetTop
+            }, 300);
+        }
+    });
+
+    // event on url changed (but not BACKSPACE.. for some reason)
     Backbone.history.bind('url-changed', function () {
-        //console.warn("url-changed");
-        window.scrollTo(0, 0); // scroll to top on url change! TODO: finer control when to scroll top ie. when navigation from detail to list views that were scrolled before...
 
-        // if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
-        //$(document).scrollTop(App.currentView.viewState.get('scrollPosition'));
-        //}
+        //console.warn("url-changed", window.location);
+        window.scrollTo(0, 0);
 
     });
-
-
-    /*
-     App.currentView = false;
-     $(window).on('scroll', function () {
-     // Not all views will be interested in maintaining scroll position, so we need to check them first.
-     if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
-     //console.warn('setting scrollPosition ', App.currentView.viewState.attributes, $(document).scrollTop());
-     App.currentView.viewState.set('scrollPosition', $(document).scrollTop());
-     }
-     });
-     */
 
     // override href clicks
     $(document).on('click', 'a:not([data-bypass])', function (evt) {

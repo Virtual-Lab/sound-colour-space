@@ -32,10 +32,6 @@ module.exports = Base.TemplateView.extend({
         STATIC_URL: STATIC_URL,
 
         "currentUrl": function () {
-            //console.log(Backbone.history.getFragment().split('/')[0]);
-            //return (Backbone.History.started == true ? Backbone.history.getFragment().split('/')[0] : '/');
-
-            //console.log("uri directory:", URI(window.location.href).segment(0));
             return (Backbone.History.started == true ? '/'+URI(window.location.href).segment(0): '/');
         },
 
@@ -96,10 +92,16 @@ module.exports = Base.TemplateView.extend({
     },
 
     events: {
-        'click .menu': function () {
+
+        // undefine offsetTop when clicked on navigation menu point
+        'click .nav_link': function () {
+            App.Helper.offsetTop = 0;
+        },
+
+        'click .toggle_menu': function () {
             //this.$el.find('#mobile_menu').css('display', 'block');
             this.$el.find('#mobile_menu').toggle();
-        }
+        },
     }
 
 })

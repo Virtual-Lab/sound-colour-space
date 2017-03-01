@@ -46,11 +46,6 @@ module.exports = Base.ListView.extend({
 
                 $('#timeline').height($(document).height());
 
-                //view.$el.find('.eye').css('opacity', 0.5);
-                //view.$el.find('.connector').css('opacity', 1.0);
-                //view.$el.find('.circle').css('opacity', 1.0);
-
-
             }.bind(this));
     },
 
@@ -100,22 +95,8 @@ module.exports = Base.ListView.extend({
         //this.$el.find('.load_more').html("All diagrams loaded.");
     },
 
-    search: function () {
-        var params = _.extend({date__range: this.data.range}, this.collection.query);
-
-        this.collection.search({
-            reset: false,
-            //remove: false,
-            data: params,
-        });
-
-    },
-
 
     onShow: function () {
-
-        //this.$el.find('.circle').css('opacity', 1.0);
-        //this.$el.css('opacity', 1.0);
 
         $('.entries').append('<div class="grid-sizer"></div>');
         this.$el.find(".entries").append('<div class="gutter-sizer"></div>');

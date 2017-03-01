@@ -18,6 +18,8 @@ var EntrySingleTimelineView = require('./timeline_single');
 require('../helpers/sticky-kit');
 
 
+App.Collection.timelineCollections = {};
+
 module.exports = Base.TemplateView.extend({
 
     template: require('../templates/timeline.dust'),
@@ -43,33 +45,45 @@ module.exports = Base.TemplateView.extend({
         var offset_top = 140;
 
         /*
-
-        $("[data-sticky_navigator]").stick_in_parent({
-            parent: "[data-sticky_navigator_parent]",
-            offset_top: offset_top,
-            bottoming: false,
-        });
-        */
-
-
-
+         $("[data-sticky_navigator]").stick_in_parent({
+         parent: "[data-sticky_navigator_parent]",
+         offset_top: offset_top,
+         bottoming: false,
+         });
+         */
 
         var _sectionViews = [];
         _.each(this.data.ranges, function (element, index, list) {
-            console.log(element.title, index);
 
-            var collection = new Entries({});
+            if (!App.Collection.timelineCollections[element.title]) {
+                App.Collection.timelineCollections[element.title] = new Entries({});
 
-            var image_size = 'x-small';
-            if (Foundation.MediaQuery.atLeast('large')) {
-                image_size = 'medium'
+                var image_size = 'x-small';
+                if (Foundation.MediaQuery.atLeast('large')) {
+                    image_size = 'medium'
+                }
+                App.Collection.timelineCollections[element.title].query = {
+                    limit: 4,
+                    order_by: 'date',
+                    image_size: image_size,
+                    date__range: element.range
+                };
+
+                App.Collection.timelineCollections[element.title].search({
+                    reset: true,
+                    data: App.Collection.timelineCollections[element.title].query,
+                });
             }
-            collection.query = {limit: 4, order_by: 'date', image_size: image_size};
-            var view = new TimelineSection({collection: collection, data: element});
+
+            var view = new TimelineSection({
+                collection: App.Collection.timelineCollections[element.title],
+                data: element
+            });
             this.$('[data-js-region="timeline_sections"]').append(view.render().el);
             view.onShow();
-            view.search();
         });
+
+        //console.log(App.Collection.timelineCollections['10th century']);
 
 
         // Cache selectors
@@ -95,6 +109,10 @@ module.exports = Base.TemplateView.extend({
             $('html, body').stop().animate({
                 scrollTop: offsetTop
             }, 300);
+
+
+            //App.Router.r.navigate('/timeline/'+href, {replace: true, trigger: false});
+
             e.preventDefault();
         });
 
@@ -119,10 +137,12 @@ module.exports = Base.TemplateView.extend({
                 menuItems
                     .parent().removeClass("active")
                     .end().filter("[href='#" + id + "']").parent().addClass("active");
-                //console.warn(id);
+
             }
 
         });
+
+
 
         /*
          // fetch on scroll

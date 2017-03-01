@@ -48715,23 +48715,9 @@ module.exports.Archive = function (query) {
 module.exports.Timeline = function (query) {
     console.debug('##### Controller -> Timeline');
 
-    App.TimelineEntries = new Entries();
-
-    console.debug(Foundation.MediaQuery.current);
-
-    var image_size = 'x-small';
-
-    if (Foundation.MediaQuery.atLeast('large')) {
-         image_size = 'medium'
-    }
-
     if (Foundation.MediaQuery.atLeast('medium')) {
 
-        App.TimelineEntries.query = {limit: 10, order_by: 'date', image_size: image_size};
-
-        var timeline = new TimelineView({collection: App.TimelineEntries});
-
-        swap(Regions.content, timeline);
+        swap(Regions.content, new TimelineView({}));
 
     } else {
 
@@ -50201,7 +50187,7 @@ var _ = require('lodash');
 var Backbone = require('backbone');
 Backbone.$ = $;
 
-Cookies= require('js-cookie');
+Cookies = require('js-cookie');
 
 App.preferredView = Cookies.get('preferredView');
 if (!App.preferredView) {
@@ -50242,13 +50228,12 @@ key('t', function () {
 });
 
 
-(function($) {
-    $.QueryString = (function(a) {
+(function ($) {
+    $.QueryString = (function (a) {
         if (a == "") return {};
         var b = {};
-        for (var i = 0; i < a.length; ++i)
-        {
-            var p=a[i].split('=', 2);
+        for (var i = 0; i < a.length; ++i) {
+            var p = a[i].split('=', 2);
             if (p.length != 2) continue;
             b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
         }
@@ -50312,31 +50297,28 @@ $(function () {
         return res;
     });
 
+    // before url change we save the position
     Backbone.history.bind('before:url-change', function (path, e) {
-        // console.log("before url change", path, e);
+        App.Helper.offsetTop = $(window).scrollTop();
     });
 
+    // event on BACKSPACE or history.back etc.
+    window.addEventListener('popstate', function (e) {
+
+        if (App.Helper.offsetTop != undefined) {
+            $('html, body').stop().animate({
+                scrollTop: App.Helper.offsetTop
+            }, 300);
+        }
+    });
+
+    // event on url changed (but not BACKSPACE.. for some reason)
     Backbone.history.bind('url-changed', function () {
-        //console.warn("url-changed");
-        window.scrollTo(0, 0); // scroll to top on url change! TODO: finer control when to scroll top ie. when navigation from detail to list views that were scrolled before...
 
-        // if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
-        //$(document).scrollTop(App.currentView.viewState.get('scrollPosition'));
-        //}
+        //console.warn("url-changed", window.location);
+        window.scrollTo(0, 0);
 
     });
-
-
-    /*
-     App.currentView = false;
-     $(window).on('scroll', function () {
-     // Not all views will be interested in maintaining scroll position, so we need to check them first.
-     if (App.currentView.viewState && typeof(App.currentView.viewState.get('scrollPosition')) !== 'undefined') {
-     //console.warn('setting scrollPosition ', App.currentView.viewState.attributes, $(document).scrollTop());
-     App.currentView.viewState.set('scrollPosition', $(document).scrollTop());
-     }
-     });
-     */
 
     // override href clicks
     $(document).on('click', 'a:not([data-bypass])', function (evt) {
@@ -50748,6 +50730,7 @@ module.exports = Backbone.Router.extend({
     },
 
     back: function () {
+
         if (this.routesHit > 1) {
             // More than one route hit -> user did not land to current page directly
             // Subtract 2 from routesHit, then when its redirected to the "back" page it'll gain only 1
@@ -50916,7 +50899,7 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":4}],77:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("navigation",body_0);function body_0(chk,ctx){return chk.w("<div><nav><div class=\"row text-center\"><div class=\"small-2 show-for-small-only text-center columns\"><button class=\"medium button menu\"><i class=\"fi-list\"></i></button><div id=\"mobile_menu\" style=\"display: none; margin-top: 14px;\"><div class=\"row\"><div class=\"column\"><ul class=\"menu vertical align-center\">").s(ctx.get(["menu"], false),ctx,{"block":body_1},{"current":ctx.get(["currentUrl"], false)}).w("</ul></div></div></div></div><div class=\"small-8 medium-12 columns\" style=\"margin:5px;\"><a href=\"/\"><h3>Sound Colour Space - A Virtual Museum</h3></a></div></div><div class=\"row show-for-medium\"><div class=\"column\"><ul class=\"menu align-center\">").s(ctx.get(["menu"], false),ctx,{"block":body_3},{"current":ctx.get(["currentUrl"], false)}).w("</ul></div></div></nav></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<li ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["url"], false),"value":ctx.get(["current"], false)},"h").w("><a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\">").f(ctx.get(["text"], false),ctx,"h").w("</a></li>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("class=\"active\"");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<li ").h("eq",ctx,{"block":body_4},{"key":ctx.get(["url"], false),"value":ctx.get(["current"], false)},"h").w("><a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\">").f(ctx.get(["text"], false),ctx,"h").w("</a></li>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w("class=\"active\"");}body_4.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("navigation", context || {}, callback); };
+(function(dust){dust.register("navigation",body_0);function body_0(chk,ctx){return chk.w("<div><nav><div class=\"row text-center\"><div class=\"small-2 show-for-small-only text-center columns\"><button class=\"medium button toggle_menu\"><i class=\"fi-list\"></i></button><div id=\"mobile_menu\" style=\"display: none; margin-top: 14px;\"><div class=\"row\"><div class=\"column\"><ul class=\"menu vertical align-center\">").s(ctx.get(["menu"], false),ctx,{"block":body_1},{"current":ctx.get(["currentUrl"], false)}).w("</ul></div></div></div></div><div class=\"small-8 medium-12 columns\" style=\"margin:5px;\"><a href=\"/\"><h3>Sound Colour Space - A Virtual Museum</h3></a></div></div><div class=\"row show-for-medium\"><div class=\"column\"><ul class=\"menu align-center\">").s(ctx.get(["menu"], false),ctx,{"block":body_3},{"current":ctx.get(["currentUrl"], false)}).w("</ul></div></div></nav></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("<li ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["url"], false),"value":ctx.get(["current"], false)},"h").w("><a href=\"").f(ctx.get(["url"], false),ctx,"h").w("\">").f(ctx.get(["text"], false),ctx,"h").w("</a></li>");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("class=\"active\"");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("<li ").h("eq",ctx,{"block":body_4},{"key":ctx.get(["url"], false),"value":ctx.get(["current"], false)},"h").w("><a class=\"nav_link\" href=\"").f(ctx.get(["url"], false),ctx,"h").w("\">").f(ctx.get(["text"], false),ctx,"h").w("</a></li>");}body_3.__dustBody=!0;function body_4(chk,ctx){return chk.w("class=\"active\"");}body_4.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("navigation", context || {}, callback); };
 }).call(this);
 
 },{"dustjs-linkedin":4}],78:[function(require,module,exports){
@@ -50940,10 +50923,11 @@ var dust = require('dustjs-linkedin');
 },{"dustjs-linkedin":4}],81:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
-(function(dust){dust.register("set_list",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><h1 class=\"text-center\">Sets</h1><div class=\"row entries\"></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_list", context || {}, callback); };
+require('./history_go_back.dust');
+(function(dust){dust.register("set_list",body_0);function body_0(chk,ctx){return chk.w("<div class=\"row\"><div class=\"small-12 columns\"><h1 class=\"text-center\">Sets</h1><div class=\"row entries\"></div><div class=\"text-center\">").p("history_go_back",ctx,ctx,{}).w("</div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_list", context || {}, callback); };
 }).call(this);
 
-},{"dustjs-linkedin":4}],82:[function(require,module,exports){
+},{"./history_go_back.dust":72,"dustjs-linkedin":4}],82:[function(require,module,exports){
 (function() {
 var dust = require('dustjs-linkedin');
 (function(dust){dust.register("set_single",body_0);function body_0(chk,ctx){return chk.w("<div class=\"small-6 large-3 column set align-self-middle\" style=\"margin-bottom: 40px;\"><div class=\"row\"><div class=\"small-12 column text-center set\"><span class=\"truncate\"><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\">").f(ctx.get(["title"], false),ctx,"h").w("</a></span><br /><a href=\"").f(ctx.get(["uri"], false),ctx,"h").w("\"><img src=\"").f(ctx.get(["cover"], false),ctx,"h").w("\"/></a></div></div></div>");}body_0.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("set_single", context || {}, callback); };
@@ -52749,10 +52733,6 @@ module.exports = Base.TemplateView.extend({
         STATIC_URL: STATIC_URL,
 
         "currentUrl": function () {
-            //console.log(Backbone.history.getFragment().split('/')[0]);
-            //return (Backbone.History.started == true ? Backbone.history.getFragment().split('/')[0] : '/');
-
-            //console.log("uri directory:", URI(window.location.href).segment(0));
             return (Backbone.History.started == true ? '/'+URI(window.location.href).segment(0): '/');
         },
 
@@ -52813,10 +52793,16 @@ module.exports = Base.TemplateView.extend({
     },
 
     events: {
-        'click .menu': function () {
+
+        // undefine offsetTop when clicked on navigation menu point
+        'click .nav_link': function () {
+            App.Helper.offsetTop = 0;
+        },
+
+        'click .toggle_menu': function () {
             //this.$el.find('#mobile_menu').css('display', 'block');
             this.$el.find('#mobile_menu').toggle();
-        }
+        },
     }
 
 })
@@ -53076,6 +53062,8 @@ var EntrySingleTimelineView = require('./timeline_single');
 require('../helpers/sticky-kit');
 
 
+App.Collection.timelineCollections = {};
+
 module.exports = Base.TemplateView.extend({
 
     template: require('../templates/timeline.dust'),
@@ -53101,33 +53089,45 @@ module.exports = Base.TemplateView.extend({
         var offset_top = 140;
 
         /*
-
-        $("[data-sticky_navigator]").stick_in_parent({
-            parent: "[data-sticky_navigator_parent]",
-            offset_top: offset_top,
-            bottoming: false,
-        });
-        */
-
-
-
+         $("[data-sticky_navigator]").stick_in_parent({
+         parent: "[data-sticky_navigator_parent]",
+         offset_top: offset_top,
+         bottoming: false,
+         });
+         */
 
         var _sectionViews = [];
         _.each(this.data.ranges, function (element, index, list) {
-            console.log(element.title, index);
 
-            var collection = new Entries({});
+            if (!App.Collection.timelineCollections[element.title]) {
+                App.Collection.timelineCollections[element.title] = new Entries({});
 
-            var image_size = 'x-small';
-            if (Foundation.MediaQuery.atLeast('large')) {
-                image_size = 'medium'
+                var image_size = 'x-small';
+                if (Foundation.MediaQuery.atLeast('large')) {
+                    image_size = 'medium'
+                }
+                App.Collection.timelineCollections[element.title].query = {
+                    limit: 4,
+                    order_by: 'date',
+                    image_size: image_size,
+                    date__range: element.range
+                };
+
+                App.Collection.timelineCollections[element.title].search({
+                    reset: true,
+                    data: App.Collection.timelineCollections[element.title].query,
+                });
             }
-            collection.query = {limit: 4, order_by: 'date', image_size: image_size};
-            var view = new TimelineSection({collection: collection, data: element});
+
+            var view = new TimelineSection({
+                collection: App.Collection.timelineCollections[element.title],
+                data: element
+            });
             this.$('[data-js-region="timeline_sections"]').append(view.render().el);
             view.onShow();
-            view.search();
         });
+
+        //console.log(App.Collection.timelineCollections['10th century']);
 
 
         // Cache selectors
@@ -53153,6 +53153,10 @@ module.exports = Base.TemplateView.extend({
             $('html, body').stop().animate({
                 scrollTop: offsetTop
             }, 300);
+
+
+            //App.Router.r.navigate('/timeline/'+href, {replace: true, trigger: false});
+
             e.preventDefault();
         });
 
@@ -53177,10 +53181,12 @@ module.exports = Base.TemplateView.extend({
                 menuItems
                     .parent().removeClass("active")
                     .end().filter("[href='#" + id + "']").parent().addClass("active");
-                //console.warn(id);
+
             }
 
         });
+
+
 
         /*
          // fetch on scroll
@@ -53308,11 +53314,6 @@ module.exports = Base.ListView.extend({
 
                 $('#timeline').height($(document).height());
 
-                //view.$el.find('.eye').css('opacity', 0.5);
-                //view.$el.find('.connector').css('opacity', 1.0);
-                //view.$el.find('.circle').css('opacity', 1.0);
-
-
             }.bind(this));
     },
 
@@ -53362,22 +53363,8 @@ module.exports = Base.ListView.extend({
         //this.$el.find('.load_more').html("All diagrams loaded.");
     },
 
-    search: function () {
-        var params = _.extend({date__range: this.data.range}, this.collection.query);
-
-        this.collection.search({
-            reset: false,
-            //remove: false,
-            data: params,
-        });
-
-    },
-
 
     onShow: function () {
-
-        //this.$el.find('.circle').css('opacity', 1.0);
-        //this.$el.css('opacity', 1.0);
 
         $('.entries').append('<div class="grid-sizer"></div>');
         this.$el.find(".entries").append('<div class="gutter-sizer"></div>');

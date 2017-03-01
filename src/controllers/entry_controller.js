@@ -79,23 +79,9 @@ module.exports.Archive = function (query) {
 module.exports.Timeline = function (query) {
     console.debug('##### Controller -> Timeline');
 
-    App.TimelineEntries = new Entries();
-
-    console.debug(Foundation.MediaQuery.current);
-
-    var image_size = 'x-small';
-
-    if (Foundation.MediaQuery.atLeast('large')) {
-         image_size = 'medium'
-    }
-
     if (Foundation.MediaQuery.atLeast('medium')) {
 
-        App.TimelineEntries.query = {limit: 10, order_by: 'date', image_size: image_size};
-
-        var timeline = new TimelineView({collection: App.TimelineEntries});
-
-        swap(Regions.content, timeline);
+        swap(Regions.content, new TimelineView({}));
 
     } else {
 

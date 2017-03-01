@@ -125,6 +125,7 @@ module.exports = Backbone.Router.extend({
     },
 
     back: function () {
+
         if (this.routesHit > 1) {
             // More than one route hit -> user did not land to current page directly
             // Subtract 2 from routesHit, then when its redirected to the "back" page it'll gain only 1
