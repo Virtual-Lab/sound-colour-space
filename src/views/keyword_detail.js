@@ -39,12 +39,12 @@ module.exports = Base.DetailView.extend({
             success: function (collection, response, options) {
 
                 if (App.preferredView === 'list')
-                    var view = new EntryListView({collection: this.collection});
+                    var view = new EntryListView({collection: collection});
                 else if (App.preferredView === 'grid')
-                    var view = new EntryGridView({collection: this.collection});
+                    var view = new EntryGridView({collection: collection});
                 else
                     var view = new EntryEvenGridView({
-                        collection: this.collection,
+                        collection: collection,
                         data: {num_columns: this.model.get('num_columns')}
                     });
 
@@ -52,7 +52,6 @@ module.exports = Base.DetailView.extend({
 
             }.bind(this)
         });
-
     },
 
     events: {

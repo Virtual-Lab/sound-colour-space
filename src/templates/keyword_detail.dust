@@ -5,9 +5,9 @@
             {>"history_go_back" /}
         </div>
     </div>
-    <div class="row description">
+    <div class="row">
         <div class="small-12 columns">
-            <p>{description|markdown|s}</p>
+            {description|markdown|s}
         </div>
     </div>
 

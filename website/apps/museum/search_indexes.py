@@ -26,16 +26,13 @@ class EntryIndex(CelerySearchIndex, indexes.SearchIndex, indexes.Indexable):
     def get_model(self):
         return Entry
 
-    '''
+
     def prepare(self, object):
         self.prepared_data = super(EntryIndex, self).prepare(object)
         self.prepared_data['tags'] = [tag.name for tag in object.tags.all()]
-
         self.prepared_data['category'] = object.category
 
-
         return self.prepared_data
-    '''
 
     def prepare_author(self, obj):
         if obj.author is not None:

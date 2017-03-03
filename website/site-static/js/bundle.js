@@ -48176,7 +48176,7 @@ var dust = require('dustjs-linkedin');
 var dust = require('dustjs-linkedin');
 require('./history_go_back.dust');
 require('./history_go_back.dust');
-(function(dust){dust.register("keyword_detail",body_0);function body_0(chk,ctx){return chk.w("<div id=\"keyword\"><div class=\"row\"><div class=\"small-12 columns text-center\"><h1>&#171;").f(ctx.get(["name"], false),ctx,"h").w("&#187;</h1>").p("history_go_back",ctx,ctx,{}).w("</div></div><div class=\"row description\"><div class=\"small-12 columns\"><p>").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</p></div></div><div class=\"row align-right\"><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_1},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_3},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div><div class=\"row\"><div class=\"small-12 columns text-center\">").p("history_go_back",ctx,ctx,{}).w("</div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("active");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("active");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("active");}body_3.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_detail", context || {}, callback); };
+(function(dust){dust.register("keyword_detail",body_0);function body_0(chk,ctx){return chk.w("<div id=\"keyword\"><div class=\"row\"><div class=\"small-12 columns text-center\"><h1>&#171;").f(ctx.get(["name"], false),ctx,"h").w("&#187;</h1>").p("history_go_back",ctx,ctx,{}).w("</div></div><div class=\"row\"><div class=\"small-12 columns\">").f(ctx.get(["description"], false),ctx,"h",["markdown","s"]).w("</div></div><div class=\"row align-right\"><div class=\"small-2 shrink columns\"><div class=\"button-group float-right\"><div class='button ").h("eq",ctx,{"block":body_1},{"key":ctx.get(["preferredView"], false),"value":"list"},"h").w(" toggle-list'><i class=\"fi-list\"></i></div><div class='button ").h("eq",ctx,{"block":body_2},{"key":ctx.get(["preferredView"], false),"value":"even-grid"},"h").w(" toggle-even-grid'><i class=\"fi-thumbnails\"></i></div><div class='button ").h("eq",ctx,{"block":body_3},{"key":ctx.get(["preferredView"], false),"value":"grid"},"h").w(" toggle-grid'><i class=\"fi-graph-bar\"></i></div></div></div></div><div class=\"row\"><div class=\"small-12 columns\"><div id=\"entry_list\" data-js-region=\"entry_list\"></div></div></div><div class=\"row\"><div class=\"small-12 columns text-center\">").p("history_go_back",ctx,ctx,{}).w("</div></div></div>");}body_0.__dustBody=!0;function body_1(chk,ctx){return chk.w("active");}body_1.__dustBody=!0;function body_2(chk,ctx){return chk.w("active");}body_2.__dustBody=!0;function body_3(chk,ctx){return chk.w("active");}body_3.__dustBody=!0;return body_0}(dust));module.exports = function (context, callback) { dust.render("keyword_detail", context || {}, callback); };
 }).call(this);
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/src/templates/keyword_detail.dust","/src/templates")
@@ -49864,12 +49864,12 @@ module.exports = Base.DetailView.extend({
             success: function (collection, response, options) {
 
                 if (App.preferredView === 'list')
-                    var view = new EntryListView({collection: this.collection});
+                    var view = new EntryListView({collection: collection});
                 else if (App.preferredView === 'grid')
-                    var view = new EntryGridView({collection: this.collection});
+                    var view = new EntryGridView({collection: collection});
                 else
                     var view = new EntryEvenGridView({
-                        collection: this.collection,
+                        collection: collection,
                         data: {num_columns: this.model.get('num_columns')}
                     });
 
@@ -49877,7 +49877,6 @@ module.exports = Base.DetailView.extend({
 
             }.bind(this)
         });
-
     },
 
     events: {
