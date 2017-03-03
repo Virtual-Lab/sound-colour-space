@@ -111,6 +111,8 @@ USE_TZ = False
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # django compressor
+    'compressor.finders.CompressorFinder',
 )
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'site-static'),
