@@ -406,7 +406,7 @@ class EntryResource(ModelResource):
 
         # object_list['meta']['search_scope'] = SEARCH_SCOPES
         object_list['meta']['search_query'] = search_items
-        #object_list['meta']['tags'] = tag_objects
+        object_list['meta']['tags'] = tag_objects
         object_list['meta']['order_by'] = order_by
         object_list['meta']['match'] = match
 
@@ -471,7 +471,7 @@ class CollectionResource(ModelResource):
                 if key == 'cover':
 
                     if entry_qs.exists():
-                        bundle.data[key] = get_thumbnailer(obj.entry.all()[0].image)['x-small'].url
+                        bundle.data[key] = (get_thumbnailer(obj.entry.all()[0].image)['x-small'].url).encode('utf-8')
                 else:
                     bundle.data[key] = getattr(obj, key)
 
