@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
-var $ = require('jquery');
+
 var _ = require('underscore');
-var foundation = require('foundation-sites');
+
 Backbone.$ = $;
 
 var Base = require('./base');
@@ -9,6 +9,8 @@ var swap = require('./swap');
 var EntryListView = require('./entry_list');
 var EntryGridView = require('./entry_grid');
 var EntryEvenGridView = require('./entry_even_grid');
+
+var helper = require('../helpers/helper.js');
 
 var marked = require('marked');
 
@@ -33,9 +35,8 @@ module.exports = Base.DetailView.extend({
     },
 
     onShow: function () {
-        // scroll to top
-        $(window).scrollTop(0);
 
+        // create a collection based on entries
         this.collection = new Backbone.Collection(this.model.get('entry'));
 
         if (!App.preferredView)
@@ -64,6 +65,9 @@ module.exports = Base.DetailView.extend({
                 swap($('[data-js-region="entry_list"]'), view);
             }
         );
+
+
+        //helper.scrollToPosition(App.Helper.offsetTop);
 
 
     },

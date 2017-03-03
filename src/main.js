@@ -1,3 +1,14 @@
+global.$ = global.jQuery = require('jquery');
+require('./lib/foundation.js');
+var _ = require('lodash');
+var Backbone = require('backbone');
+Backbone.$ = $;
+
+require('dustjs-helpers');
+require('./dust-filters.js');
+
+Cookies = require('js-cookie');
+
 window.App = {
     Helper: {},
     Router: {},
@@ -7,30 +18,21 @@ window.App = {
     Form: {}
 };
 
-global.$ = global.jQuery = require('jquery');
-var _ = require('lodash');
-var Backbone = require('backbone');
-Backbone.$ = $;
 
-Cookies = require('js-cookie');
-
-App.preferredView = Cookies.get('preferredView');
-if (!App.preferredView) {
-    App.preferredView = 'list';
-    Cookies.set('preferredView', App.preferredView);
-}
-
-
-// we do need this for dustjs helpers!!!
-require('dustjs-helpers');
-require('./dust-filters.js');
-
+var helper = require ('./helpers/helper.js');
 var Router = require('./router.js');
 
 var swap = require('./views/swap.js');
 var Regions = require('./views/regions.js');
 var NavigationView = require('./views/navigation.js');
 
+
+
+App.preferredView = Cookies.get('preferredView');
+if (!App.preferredView) {
+    App.preferredView = 'list';
+    Cookies.set('preferredView', App.preferredView);
+}
 
 // global key shortcuts
 var key = require('keymaster');
@@ -91,6 +93,7 @@ key('t', function () {
 
 
 $(function () {
+    console.info("Sound-Colour-Space");
     // set the csrftoken
     //Backbone.Tastypie.csrfToken = Cookies.get('csrftoken');
 
@@ -124,25 +127,20 @@ $(function () {
 
     // before url change we save the position
     Backbone.history.bind('before:url-change', function (path, e) {
+        //console.warn("before:url-change", window.location);
         App.Helper.offsetTop = $(window).scrollTop();
     });
 
     // event on BACKSPACE or history.back etc.
     window.addEventListener('popstate', function (e) {
-
-        if (App.Helper.offsetTop != undefined) {
-            $('html, body').stop().animate({
-                scrollTop: App.Helper.offsetTop
-            }, 300);
-        }
+        //console.warn("popstate", window.location);
+        helper.scrollToPosition(App.Helper.offsetTop);
     });
 
     // event on url changed (but not BACKSPACE.. for some reason)
     Backbone.history.bind('url-changed', function () {
-
         //console.warn("url-changed", window.location);
         window.scrollTo(0, 0);
-
     });
 
     // override href clicks

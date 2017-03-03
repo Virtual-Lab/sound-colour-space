@@ -1,7 +1,6 @@
 var Backbone = require('backbone');
 global.$ = global.jQuery = require('jquery');
 var _ = require('underscore');
-var foundation = require('foundation-sites');
 Backbone.$ = $;
 
 var marked = require('marked');
@@ -31,9 +30,6 @@ module.exports = Base.DetailView.extend({
     },
 
     onShow: function () {
-
-        // scroll to top
-        $(window).scrollTop(0);
 
         MathJax.Hub.Queue(
             ["Typeset", MathJax.Hub, "description"],

@@ -1,22 +1,8 @@
-global.$ = global.jQuery = require('jquery');
-
-var foundation = require('foundation-sites');
-var Backbone = require('backbone');
-Backbone.$ = $;
 var _ = require('underscore');
 
-var imagesLoaded = require('imagesloaded');
-imagesLoaded.makeJQueryPlugin($);
-
 var Base = require('./base');
-
 var Entries = require('../models/entries');
-
 var TimelineSection = require('./timeline_section.js');
-var EntrySingleTimelineView = require('./timeline_single');
-
-require('../helpers/sticky-kit');
-
 
 App.Collection.timelineCollections = {};
 
@@ -43,14 +29,6 @@ module.exports = Base.TemplateView.extend({
     onShow: function () {
 
         var offset_top = 140;
-
-        /*
-         $("[data-sticky_navigator]").stick_in_parent({
-         parent: "[data-sticky_navigator_parent]",
-         offset_top: offset_top,
-         bottoming: false,
-         });
-         */
 
         var _sectionViews = [];
         _.each(this.data.ranges, function (element, index, list) {
@@ -83,9 +61,6 @@ module.exports = Base.TemplateView.extend({
             view.onShow();
         });
 
-        //console.log(App.Collection.timelineCollections['10th century']);
-
-
         // Cache selectors
         var lastId,
             timelineMenu = $("#timeline_menu"),
@@ -100,7 +75,6 @@ module.exports = Base.TemplateView.extend({
             }
         });
 
-
         // Bind click handler to menu items
         // so we can get a fancy scroll animation
         menuItems.click(function (e) {
@@ -109,9 +83,6 @@ module.exports = Base.TemplateView.extend({
             $('html, body').stop().animate({
                 scrollTop: offsetTop
             }, 300);
-
-
-            //App.Router.r.navigate('/timeline/'+href, {replace: true, trigger: false});
 
             e.preventDefault();
         });

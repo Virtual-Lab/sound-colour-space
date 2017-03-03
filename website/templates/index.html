@@ -1,5 +1,5 @@
-<!DOCTYPE html>{% load static staticfiles %}
-<html>
+{% load static compress sekizai_tags %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
@@ -7,10 +7,25 @@
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
     <title>Sound Colour Space</title>
-    <link type="text/css" rel="stylesheet" href="{% static 'css/screen.css' %}"/>
-    <link type="text/css" rel="stylesheet" href="{% static 'fonts/foundation-icons.css' %}"/>
-    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
 
+    <!-- start: css -->
+    {% compress css %}
+    {% if debug %}
+    <link type="text/css" rel="stylesheet" href="{% static 'css/screen.css' %}"/>
+    {% else %}
+    <link type="text/css" rel="stylesheet" href="{% static 'dist/css/screen.css' %}"/>
+    {% endif %}
+
+    <link type="text/css" rel="stylesheet" href="{% static 'dist/fonts/foundation-icons.css' %}"/>
+
+    <link type='text/css' rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat'>
+    {% endcompress %}
+    <!-- end: css -->
+
+    {% render_block "css" %}
+    {# render_block "css" postprocessor "compressor.contrib.sekizai.compress" #}
+
+    {% block js-ext %}
     <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
         skipStartupTypeset: true,
@@ -23,25 +38,30 @@
     MathJax.Hub.Configured();
     </script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    {% endblock js-ext %}
 
+    <!-- start: compressed js -->
+    {% compress js %}
+    <script>
+        var BASE_URL = '{{ BASE_URL|escapejs }}';
+        var STATIC_URL = '{{ STATIC_URL|escapejs }}';
+        var MEDIA_URL = '{{ MEDIA_URL|escapejs }}';
+        var DIAGRAMS_URL = '{{ DIAGRAMS_URL|escapejs }}';
+        var API_URL = '{{ API_URL|escapejs }}';
+    </script>
+
+    {% if debug %}
+    <script type="text/javascript" src="{% static 'js/bundle.js' %}"></script>
+    {% else %}
+    <script type="text/javascript" src="{% static 'dist/js/bundle.js' %}"></script>
+    {% endif %}
+    {% endcompress %}
+    <!-- end: compressed js -->
+
+    {% render_block "js-ext" %}
+    {% render_block "js" %}
 </head>
 <body>
 {% block content %}{% endblock %}
-<script>
-    var BASE_URL = '{{ BASE_URL|escapejs }}';
-    var STATIC_URL = '{{ STATIC_URL|escapejs }}';
-    var MEDIA_URL = '{{ MEDIA_URL|escapejs }}';
-    var DIAGRAMS_URL = '{{ DIAGRAMS_URL|escapejs }}';
-    var API_URL = '{{ API_URL|escapejs }}';
-    {% if request.user.is_authenticated %}
-    var SLUG = '{{ request.user.slug }}';
-    {% else %}
-    var SLUG = 'Anonymous';
-    {% endif %}
-</script>
-
-
-<script type="text/javascript" src="{% static 'js/bundle.js' %}"></script>
-
 </body>
 </html>

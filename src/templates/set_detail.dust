@@ -27,4 +27,11 @@
             <div id="entry_list" data-js-region="entry_list"></div>
         </div>
     </div>
+
+    <div class="row">
+        <div class="small-12 columns text-center">
+            {>"history_go_back" /}
+            </div>
+        </div>
+    </div>
 </div>

@@ -28,7 +28,7 @@
             <div class="column">
                 <ul class="menu align-center">
                     {#menu current=currentUrl}
-                    <li {@eq key=url value=current}class="active"{/eq}><a class="nav_link" href="{url}">{text}</a></li>
+                    <li {@eq key=url value=current}class="active"{/eq}><a href="{url}">{text}</a></li>
                     {/menu}
                 </ul>
             </div>

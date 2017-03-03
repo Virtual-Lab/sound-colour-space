@@ -20,11 +20,4 @@ module.exports = Base.ListView.extend({
         this.$(".entries").append(view.render().el);
         view.onShow();
     },
-
-    onShow: function () {
-
-        this.collection.each(this.addOne, this);
-
-
-    },
 });

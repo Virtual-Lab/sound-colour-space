@@ -2,6 +2,5 @@
     <div class="small-12 columns">
         <h1 class="text-center">Sets</h1>
         <div class="row entries"></div>
-        <div class="text-center">{> "history_go_back" /}</div>
     </div>
 </div>

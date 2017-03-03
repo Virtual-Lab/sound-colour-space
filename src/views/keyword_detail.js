@@ -1,9 +1,3 @@
-var Backbone = require('backbone');
-var $ = require('jquery');
-var _ = require('underscore');
-var foundation = require('foundation-sites');
-Backbone.$ = $;
-
 var Base = require('./base');
 var swap = require('./swap');
 var EntryListView = require('./entry_list');
@@ -25,9 +19,6 @@ module.exports = Base.DetailView.extend({
     },
 
     onShow: function () {
-        // scroll to top
-        $(window).scrollTop(0);
-
         // create entry collection for tagged entries
         this.collection = new Entries();
         // search query for keyword (tags)

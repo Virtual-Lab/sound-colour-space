@@ -59,7 +59,6 @@ module.exports = Base.ListView.extend({
         //console.debug("############################################onShow list");
 
         $('.grid').append('<div class="grid-sizer"></div>');
-        //this.$el.find(".entries").append('<div class="gutter-sizer"></div>');
 
         $('.grid').packery({
             "itemSelector": ".grid-item",

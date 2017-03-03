@@ -27,6 +27,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'gunicorn',
     'django_extensions',
+    'compressor',
+    'sekizai',
     'celery_haystack',
     'easy_thumbnails',
     'tastypie',
@@ -62,6 +64,8 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.template.context_processors.request',
+                # sekizai
+                'sekizai.context_processors.sekizai',
                 # api and base url
                 'common.context_processors.api_url',
                 'common.context_processors.base_url',

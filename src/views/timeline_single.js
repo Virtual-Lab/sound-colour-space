@@ -10,13 +10,6 @@ var imagesLoaded = require('imagesloaded');
 imagesLoaded.makeJQueryPlugin($);
 
 
-window.jQuery = window.$ = $;
-require('velocity-animate');
-require('velocity-animate/velocity.ui');
-delete window.jQuery;
-delete window.$;
-
-
 var Base = require('./base');
 
 var renderer = new marked.Renderer();

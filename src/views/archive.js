@@ -130,10 +130,6 @@ module.exports = Base.ListView.extend({
 
     template: require('../templates/archive.dust'),
 
-    data: {
-        logged_in_slug: SLUG,    // used in the template to check if the user is on his own profile page
-    },
-
     addOne: function (model) {
         return;
     },

@@ -1,1 +1,1 @@
-<span class="back_link" onclick="javascript:App.Router.r.back();">back</span>
+<button class="medium secondary hollow button back_link" onclick="javascript:App.Router.r.back();">back</button>
