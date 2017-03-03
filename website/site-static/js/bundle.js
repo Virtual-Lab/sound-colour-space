@@ -43743,13 +43743,12 @@ module.exports.Detail = function (slug) {
     // create model
     var keyword = new Keyword({slug: slug});
 
-    // create & render view
-    swap(Regions.content, new KeywordDetailView({model: keyword, data: {}}));
-
     // fetch data
     keyword.fetch({
-        data: {
-
+        data: {},
+        success: function () {
+            // create & render view
+            swap(Regions.content, new KeywordDetailView({model: keyword, data: {}}));
         }
     });
 };
