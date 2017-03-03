@@ -1,6 +1,5 @@
 <tr class="entry">
-    <td><div class="truncate"><a href="{uri}" style="display: block;"><span class="title">{title}</span><br/>{#author}{first_name} {last_name} {?pseudonym}({pseudonym}){/pseudonym}{/author}</a></div></td>
-    {!<td>{#author}{first_name} {last_name} {?pseudonym}({pseudonym}){/pseudonym}{/author}</td>!}
+    <td><div class="truncate"><a href="{uri}" style="display: block;"><span class="title">{title}</span><br/>{#author}{first_name} {last_name}{?pseudonym} ({pseudonym}){/pseudonym}{@sep} / {/sep}{/author}</a></div></td>
     <td>{portrayed_object_date}</td>
     <td class="diagram"><a href="{uri}"><img src="{image.url}" /></a></td>
     <td class="annotation" style="width: 450px;"><a href="{uri}"><div class="truncate"><div class="description">{description}</div></div></a></td>

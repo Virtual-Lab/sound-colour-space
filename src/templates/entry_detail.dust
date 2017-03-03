@@ -4,7 +4,7 @@
         <h6>{subtitle}</h6>
         {! <span>{image.url}</span> !}
         <h6><i>{portrayed_object_date}</i></h6>
-        <h6>{#author}{first_name} {last_name} {?pseudonym}({pseudonym}){/pseudonym}{/author}</h6>
+        <h6>{#author}{first_name} {last_name}{?pseudonym} ({pseudonym}){/pseudonym}{@sep} / {/sep}{/author}</h6>
         {?tags}<h6>Tags:{#tags} <a href="/keywords/{slug}">{name}</a>{@sep},{/sep}{/tags}</h6>{/tags}
         {originalImage}
         <img class="diagram" src="{image.url}"/>

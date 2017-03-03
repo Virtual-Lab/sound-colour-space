@@ -2,8 +2,8 @@
     <!--<div class="entry column align-self-bottom grid-item">-->
     <div class="entry_wrapper text-center grow">
         <a href="{uri}">
-            <img src="{image.url}" /> {! TODO !}
-            {#author}<span>{first_name} {last_name} {@sep} and {/sep}</span><br />{/author}
+            <img src="{image.url}" />
+            <span>{#author}{first_name} {last_name}{?pseudonym} ({pseudonym}){/pseudonym}{@sep} / {/sep}{/author}</span>
             <span>{portrayed_object_date}</span>
         </a>
     </div>
