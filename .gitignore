@@ -23,7 +23,7 @@ __pycache__/
 env/
 build/
 develop-eggs/
-dist/
+# dist/
 eggs/
 lib64/
 parts/
