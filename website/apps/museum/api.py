@@ -293,6 +293,8 @@ class EntryResource(ModelResource):
         # ?q=author::peter&q=fulltext::blabla&tags=foo,bar,etc
         #####################################################################
 
+        results = SearchQuerySet().models(Entry).all()
+
         query = None
         for x in request.GET.lists():
             if x[0] == 'q':
@@ -303,26 +305,23 @@ class EntryResource(ModelResource):
         tags = request.GET.get('tags', [])
         cat = request.GET.get('category', None)
 
-        category = None
-
         if cat:
             if cat == 'tone_systems':
-                category = 'TO'
+                # for some fucking reason, i must exclude and cannot use filter for 'TO' category.. :S
+                results = SearchQuerySet().models(Entry).exclude(category='CO')
             elif cat == 'colour_systems':
                 category = 'CO'
+                results = SearchQuerySet().models(Entry).filter(category=category)
+            else:
+                results = EmptySearchQuerySet()
+
 
         match = request.GET.get('match', 'OR')
         operator = SQ.OR if (match == 'OR') else SQ.AND
 
         search_items = []
 
-        results = SearchQuerySet().models(Entry).all()
-
-        if not query:
-            # raise BadRequest('Please supply the search parameter (e.g. "/api/' + settings.API_VERSION + '/entry/search/?q=Term::Newton")')
-            pass
-
-        else:
+        if query:
             '''
             search_items = [
                 {
@@ -374,9 +373,6 @@ class EntryResource(ModelResource):
         else:
             new_tags = Keyword.objects.all()
 
-        if category:
-            results = results.filter(category=category)
-
         tag_objects = [] # what we will return
         for t in new_tags: tag_objects.append(
             {"name": t.name, "slug": t.slug, "selected": True if t.slug in selected_tags else False})
@@ -410,7 +406,7 @@ class EntryResource(ModelResource):
 
         # object_list['meta']['search_scope'] = SEARCH_SCOPES
         object_list['meta']['search_query'] = search_items
-        object_list['meta']['tags'] = tag_objects
+        #object_list['meta']['tags'] = tag_objects
         object_list['meta']['order_by'] = order_by
         object_list['meta']['match'] = match
 

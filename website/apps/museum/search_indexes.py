@@ -10,7 +10,7 @@ class EntryIndex(CelerySearchIndex, indexes.SearchIndex, indexes.Indexable):
 
     title = indexes.CharField(model_attr='title', null=True)
 
-    #category = indexes.CharField(model_attr='category', null=True)
+    category = indexes.CharField(model_attr='category', null=True)
 
     portrayed_object_date = indexes.CharField(model_attr='portrayed_object_date', null=True)
     portrayed_object_date_auto = indexes.EdgeNgramField(model_attr='portrayed_object_date', null=True)
