@@ -215,7 +215,7 @@ class CollectionAdmin(admin.ModelAdmin):
     )
 
     def view(self, obj):
-        if obj.slug is not None:
+        if obj.doc_id is not None:
             return format_html(
                 '<a href="/{}">{}</a>',
                 obj.get_absolute_url(),

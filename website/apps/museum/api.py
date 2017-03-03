@@ -471,7 +471,10 @@ class CollectionResource(ModelResource):
                 if key == 'cover':
 
                     if entry_qs.exists():
-                        bundle.data[key] = unicode(get_thumbnailer(obj.entry.all()[0].image)['x-small'].url)
+                        try:
+                            bundle.data[key] = unicode(get_thumbnailer(obj.entry.all()[0].image)['x-small'].url)
+                        except Exception:
+                            bundle.data[key] = {}
                 else:
                     bundle.data[key] = getattr(obj, key)
 
