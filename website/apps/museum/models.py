@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 # generic data path based on uuid for folder and filename for file and ignore non-ascii chars
 def generate_data_path(obj, filename):
     #path = u'%s/%s' % (obj.uuid, filename.encode('utf-8', 'ignore'))
-    path = '{}/{}'.format(obj.uuid, filename.encode('utf-8', 'ignore'))
+    path = '{}/{}'.format(obj.uuid, filename.decode('utf-8', 'ignore'))
     return path.replace('-', '/')
 
 class Base(models.Model):
