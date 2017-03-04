@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import uuid
 from django.conf import settings
@@ -19,7 +21,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-# generic data path based on uuid for folder and filename for file
+# generic data path based on uuid for folder and filename for file and ignore non-ascii chars
 def generate_data_path(obj, filename):
     path = "%s/%s" % (obj.uuid, filename)
     return path.replace('-', '/')

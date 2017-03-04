@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from celery import shared_task
 from django.apps import apps
 from easy_thumbnails.files import generate_all_aliases
@@ -12,4 +14,5 @@ def generate_thumbnails_task(app_label, model_name, pk, field):
     instance = m._default_manager.get(pk=pk)
     fieldfile = getattr(instance, field)
     log.debug('task - generate thumbnail for {}'.format(instance))
+    print (fieldfile)
     generate_all_aliases(fieldfile, include_global=True)
