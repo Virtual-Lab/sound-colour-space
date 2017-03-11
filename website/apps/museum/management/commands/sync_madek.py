@@ -239,6 +239,8 @@ class Command(BaseCommand):
                 with open(f.name, 'r') as f:
                     self.stdout.write(self.style.SUCCESS(image.get('filename')))
                     obj.image.save(image.get('filename'), File(f), save=True)
+                    # save original image name
+                    obj.image_name = image.get('filename')
 
                 f.close()
                 os.unlink(f.name)
@@ -257,7 +259,9 @@ class Command(BaseCommand):
             date = timezone.make_aware(date, timezone.get_current_timezone())
             obj.date = date
             obj.date_accuracy = 3
-            obj.save()
+
+        # save the entry
+        obj.save()
 
         return obj
 

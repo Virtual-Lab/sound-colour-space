@@ -22,11 +22,13 @@ import logging
 
 log = logging.getLogger(__name__)
 
-# generic data path based on uuid for folder and filename for file and ignore non-ascii chars
+# generic data path based on uuid for folder and filename
 def generate_data_path(obj, filename):
-    #path = u'%s/%s' % (obj.uuid, filename.encode('utf-8', 'ignore'))
-    path = '{}/{}'.format(obj.uuid, filename.decode('utf-8', 'ignore'))
-    return path.replace('-', '/')
+    ext = filename.split('.')[-1]
+    directory = '{}'.format(obj.uuid)
+    directory = directory.replace('-', '/')
+    path = '{}/{}.{}'.format(directory, obj.uuid, ext)
+    return path
 
 class Base(models.Model):
     """Base model."""
@@ -239,6 +241,7 @@ class Entry(Base):
     author = models.ManyToManyField(Author, related_name='museums_entries',blank=True)
     license = models.ManyToManyField(License, related_name='museums_entries', blank=True)
     image = models.ImageField(_('image'), max_length=200, upload_to=generate_data_path, storage=museum_store, null=True, blank=True)
+    image_name = models.CharField(_('image name'), max_length=1024, null=True, blank=True)
     portrayed_object_date = models.CharField(_('portrayed_object_date'), max_length=200, blank=True, null=True)
     date = models.DateField(_('date'), null=True, blank=True)
     date_accuracy = models.IntegerField(choices=ACCURACY_CHOICES, default=3, null=True, blank=True)

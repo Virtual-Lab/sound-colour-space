@@ -54,7 +54,8 @@ module.exports = Base.DetailView.extend({
 
             var img = new Image();
             // hack to get the full size image
-            img.src = this.model.get('image').url.split('.')[0] + '.' + this.model.get('image').url.split('.')[1];
+            //img.src = this.model.get('image').url.split('.')[0] + '.' + this.model.get('image').url.split('.')[1];
+            img.src = this.model.get('image').original;
             // set caption
             img.setAttribute('data-jslghtbx-caption', this.model.get('title'));
 

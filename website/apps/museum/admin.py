@@ -171,7 +171,7 @@ class EntryAdmin(admin.ModelAdmin):
             return format_html(
                 '<img src={} width=100px /><br /><span>{}</span>',
                 obj.image.url,
-                os.path.split(obj.image.name)[1]
+                obj.image_name
             )
         else:
             return ''

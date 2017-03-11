@@ -243,7 +243,8 @@ class EntryResource(ModelResource):
             image = ({
                 'url': thumbnail.url,
                 'width': thumbnail.width,
-                'height': thumbnail.height
+                'height': thumbnail.height,
+                'original': bundle.obj.image.url,
             })
             return image
         except Exception:
