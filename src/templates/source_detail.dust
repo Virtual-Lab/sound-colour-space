@@ -1,6 +1,6 @@
 <div>
     <div class="row">
-        <div class="column large-12 text-center">
+        <div class="small-12 text-center column">
             <div class="source">
                 <h4>{title}</h4>
                 <div>{text|markdown|s}</div>
