@@ -189,6 +189,8 @@ class EntryResource(ModelResource):
     # related = fields.ToManyField('self', 'related', full=False, blank=True, null=True)
     related = fields.ListField(blank=True)
 
+    sets = fields.ListField(blank=True)
+
     # source = fields.ForeignKey(SourceResource, 'source', full=True, blank=True, null=True)
     # link = fields.ForeignKey(LinkResource, 'gallery', full=True, blank=True, null=True)
 
@@ -265,6 +267,17 @@ class EntryResource(ModelResource):
             })
 
         return related_entries
+
+    def dehydrate_sets(self, bundle):
+
+        sets = []
+        for set in bundle.obj.museums_collections.all():
+            sets.append({
+                'uri': set.get_absolute_url(),
+                'title': set.title
+            })
+
+        return sets
 
     def save_m2m(self, bundle):
         """

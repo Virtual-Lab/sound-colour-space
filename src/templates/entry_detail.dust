@@ -9,6 +9,16 @@
         {originalImage}
         <img class="diagram" src="{image.url}"/>
         <div id="description" class="description">{description}</div>
+        {?sets}
+        <div class="related text-left">
+            Related sets:
+            <ul>
+                {#sets}
+                <li><a href="/{uri}">{title}</a></li>
+                {~n}{/sets}
+            </ul>
+        </div>
+        {/sets}
         {?related}
         <div class="related text-left">
             See also:
