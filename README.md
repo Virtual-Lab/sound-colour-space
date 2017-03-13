@@ -1,4 +1,4 @@
 Sound Colour Space - A Virtual Museum
 =====================================
 
-[https://www.zhdk.ch/index.php?id=icst_soundcolourspace](https://www.zhdk.ch/index.php?id=icst_soundcolourspace)
+[http://www.sound-colour-space.zhdk.ch](http://www.sound-colour-space.zhdk.ch)
