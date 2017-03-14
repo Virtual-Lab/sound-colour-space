@@ -49849,7 +49849,7 @@ module.exports = Base.DetailView.extend({
         // search query for keyword (tags)
         this.collection.query = {
             tags: this.model.get('slug'),
-            limit: 30,
+            limit: 300,
             order_by: 'date',
             match: 'OR',
             image_size: 'x-small'
