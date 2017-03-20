@@ -11,7 +11,7 @@
     </div>
     <div class="row">
         <div class="small-12 columns text-center">
-            <a href="{url}" data-bypass>Open {title}&nbsp;&nbsp;<i class="fi-arrows-out"></i></a>
+            <a href="{url}" target="_blank" data-bypass>Open {title}&nbsp;&nbsp;<i class="fi-arrows-out"></i></a>
         </div>
     </div>
     <div class="row iframe">
