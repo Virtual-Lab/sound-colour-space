@@ -1,11 +1,15 @@
 All steps require server login and virtual env activation (see below)
 
+# Source code
+
+https://github.com/Sound-Colour-Space/sound-colour-space
+
 # Server Login + Virtual Env activation
 
     ssh user@sound-colour-space.zhdk.ch
     
     cd /var/www/sound-colour-space.zhdk.ch/sound-colour-space
-    source env/bin/actrivate
+    source env/bin/activate
     cd website
     
 # Update from github
@@ -17,7 +21,7 @@ All steps require server login and virtual env activation (see below)
     
 # Restart webserver
     sudo supervisorctl
-    restart sound-colour-space.zhdk.ch:web.test.sound-colour-space.zhdk.ch
+    restart sound-colour-space.zhdk.ch:web.sound-colour-space.zhdk.ch
     exit
     
 # Status of webserver
