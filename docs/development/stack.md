@@ -10,6 +10,10 @@ PostgreSql 9.1
 
 The backend is based on Python 2.7, mainly implemented in django (version 1.9).
 
+# Search
+
+The search backend is based on elasticsearch and haystack.
+
 # Javascript
 
 The frontend is entirely based on javascript and html. All packages are defined in package.json and can be installed via the node package manager ("npm install").
