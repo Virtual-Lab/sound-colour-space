@@ -50,6 +50,9 @@ var exhibitions = function () {
 
 var about = function () {
     var AboutView = Base.TemplateView.extend({
+        data: {
+            STATIC_URL: STATIC_URL,
+        },
         template: require('./templates/about.dust'),
     });
     swap(Regions.content, new AboutView({}));

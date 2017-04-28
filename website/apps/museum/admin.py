@@ -1,16 +1,21 @@
 from __future__ import unicode_literals
 import os
+
+import six
 from django.contrib import admin
+from django.contrib.admin.widgets import AdminTextareaWidget, AdminTextInputWidget
 from django.core import urlresolvers
 from django.utils.html import format_html
 #from django.urls import reverse
 from django.core import urlresolvers
+from django.forms import TextInput, Textarea
+from django.db import models
 from museum.models import *
 
 
 class KeywordAdmin(admin.ModelAdmin):
     list_display = ('name', 'description',)
-    readonly_fields = ('name', 'remote_uuid', 'tagged')
+    readonly_fields = ('remote_uuid', 'tagged')
     search_fields = ('name',)
     fieldsets = (
         (None, {
@@ -117,22 +122,39 @@ class ExhibitionAdmin(admin.ModelAdmin):
 admin.site.register(Exhibition, ExhibitionAdmin)
 
 
+# class TaggitAdminTextareaWidget(AdminTextInputWidget):
+#     # taken from taggit.forms.TagWidget
+#     final_attrs = {'size': '80'}
+#     def render(self, name, value, attrs=final_attrs):
+#         if value is not None and not isinstance(value, six.string_types):
+#             value = edit_string_for_tags([o.tag for o in value.select_related("tag")])
+#         return super(TaggitAdminTextareaWidget, self).render(name, value, attrs)
 
 class EntryAdmin(admin.ModelAdmin):
+    # class Meta:
+    #     model = Entry
+    #     widgets = {
+    #         'tags': TaggitAdminTextareaWidget(),
+    #     }
+
     list_display = (
     'title', 'doc_id', 'subtitle', 'portrayed_object_date', 'date', 'uuid', 'madek', 'show_image', 'tag_list')  # 'show_image', 'link_to_author', 'source'
     list_filter = ('category', 'author', 'portrayed_object_date', 'tags', 'license',)
     search_fields = (
     'doc_id', 'uuid', 'image', 'title', 'description', 'portrayed_object_date', 'author__first_name', 'author__last_name', 'author__pseudonym')
-    readonly_fields = ('show_image', 'uuid', 'created', 'modified', 'title', 'subtitle', 'tags', 'portrayed_object_date', 'source',
-                       'copyright_notice', 'author', 'license')
+    # readonly_fields = ('show_image', 'uuid', 'created', 'modified', 'title', 'subtitle', 'tags', 'portrayed_object_date', 'source',
+    #                    'copyright_notice', 'author', 'license')
+    readonly_fields = ('show_image', 'uuid', 'madek', )
+
+    #inlines = [TaggitTabularInline]
 
     fieldsets = (
         (None, {
             'fields': (
-                'doc_id', 'uuid', 'show_image', 'author', 'portrayed_object_date', 'date', 'date_accuracy',
-                'title', 'subtitle', 'category', 'description', 'tags', 'source',
-                'copyright_notice', 'license', 'related', 'link')
+                'doc_id', 'uuid', 'madek', 'show_image', 'image', 'title', 'subtitle', 'category', 'description',
+                'portrayed_object_date', 'date', 'date_accuracy',
+                'author', 'source', 'tags',
+                'copyright_notice', 'license', 'related',)
         }),
 
         ('Advanced options', {
@@ -141,6 +163,12 @@ class EntryAdmin(admin.ModelAdmin):
         }),
 
     )
+
+    formfield_overrides = {
+        models.CharField: {'widget': TextInput(attrs={'size': '80'})},
+        models.TextField: {'widget': Textarea(attrs={'rows': 10, 'cols': 80})},
+        #models.ForeignKey: {'widget': Textarea(attrs={'rows': 10, 'cols': 80})},
+    }
 
     # prepopulated_fields = {'Tetraktys squareslug': ('title',)}
 
@@ -204,12 +232,13 @@ class CollectionAdmin(admin.ModelAdmin):
 
     list_display = ('title', 'view', 'madek', 'doc_id')
     search_fields = ('title', )
-    readonly_fields = ('uuid', 'madek', 'created', 'modified', 'title', 'slug', 'subtitle', 'author', 'show_image')
+    #readonly_fields = ('uuid', 'madek', 'created', 'modified', 'title', 'slug', 'subtitle', 'author', 'show_image')
+    readonly_fields = ('uuid', 'madek', 'created', 'modified', 'show_image')
 
     fieldsets = (
         (None, {
             'fields': (
-                 'uuid', 'madek', 'doc_id', 'title', 'slug', 'subtitle', 'description', 'num_columns', 'author', 'entry', 'show_image', 'tags',
+                 'uuid', 'madek', 'doc_id', 'title', 'subtitle', 'description', 'num_columns', 'author', 'entry', 'show_image', 'tags',
             )
         }),
     )

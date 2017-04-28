@@ -77,13 +77,22 @@
 
             <div class="row">
                 <div class="small-12 columns">
+                    <h4>Contact</h4>
+                    <p>Dr. Daniel Muzzulini &lt;daniel.muzzulini@edulu.ch&gt;</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="small-12 columns">
                     <h4>More information and additional material</h4>
                     <dl>
-                        <dd><a href="https://www.zhdk.ch/forschungsprojekt/426348" target="_blank" data-bypass>Zürcher
-                            Hochschule der Künste - Forschungsprojekte: Sound Colour Space</a></dd>
+                        <dd><a href="https://www.zhdk.ch/forschungsprojekt/426348" target="_blank" data-bypass>Zürcher Hochschule der Künste - Forschungsprojekte: Sound Colour Space</a></dd>
                         <dd><a href="https://medienarchiv.zhdk.ch/sets/4222fb4a-f454-421f-b646-c679007bd8ed"
-                               target="_blank" data-bypass>Forschungsprojekt «Sound Color Space»: Quellen, Ergebnisse
-                            und Dokumentation</a></dd>
+                               target="_blank" data-bypass>Forschungsprojekt «Sound Color Space»: Quellen, Ergebnisse und Dokumentation</a></dd>
+                        <dd>
+                            <br /><br />
+                            <a href="https://www.zhdk.ch" target="_blank" data-bypass><img src="{STATIC_URL}img/zhdk_logo_DeutschEnglisch.png"/></a>
+                        </dd>
                     </dl>
                 </div>
             </div>
