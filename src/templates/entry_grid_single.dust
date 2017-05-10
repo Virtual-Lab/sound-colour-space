@@ -1,7 +1,7 @@
 <div class="entry grid-item {uuid}">
     <!--<div class="entry column align-self-bottom grid-item">-->
     <div class="entry_wrapper text-center grow">
-        <a href="{uri}">
+        <a href="/{uri}">
             <img src="{image.url}" />
             <span>{#author}{first_name} {last_name}{?pseudonym} ({pseudonym}){/pseudonym}{@sep} / {/sep}{/author}</span>
             <span>{portrayed_object_date}</span>
