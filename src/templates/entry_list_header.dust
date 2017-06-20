@@ -125,8 +125,6 @@
             <select class="order_by">
                 <option value="-date">Date (newest first)</option>
                 <option value="date">Date (oldest first)</option>
-                <option value="title">Title (A-Z)</option>
-                <option value="-title">Title (Z-A)</option>
                 <option value="author__last_name">Author (A-Z)</option>
                 <option value="-author__last_name">Author (Z-A)</option>
             </select>
