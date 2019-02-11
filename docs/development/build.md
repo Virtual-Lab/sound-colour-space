@@ -62,7 +62,18 @@ Install django + other packages
     pip install -r requirements.txt
     pip install -r requirements-dev.txt
 
+# Install Node Version 6.9.0 (best with nvm: https://github.com/creationix/nvm)
     
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
+ or:   
+    wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
+
+Install Node 6.9.0:
+    nvm install 6.9.0
+    
+Use Node 6.9.0
+    nvm use 6.9.0
+     
 # Install javascript packages
     npm install
     
